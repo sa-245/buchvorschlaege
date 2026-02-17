@@ -805,8 +805,20 @@
 
   .cat-book-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
 
-  .cat-book-actions-wrap { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
-  .cat-book-actions { display: flex; gap: 8px; align-items: center; }
+  .cat-book-links {
+    display: flex; gap: 10px; margin-top: 3px;
+  }
+  .cat-book-links a {
+    font-size: 0.62rem; color: var(--accent); text-decoration: none;
+    border-bottom: 1px dotted var(--accent); transition: opacity 0.2s;
+  }
+  .cat-book-links a:hover { opacity: 0.7; }
+
+  .cat-book-date {
+    font-size: 0.62rem; color: var(--text-muted); white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .cat-book-actions-wrap { flex-shrink: 0; }
 
   .edit-btn {
     background: none; border: none; color: var(--text-muted);
@@ -846,6 +858,28 @@
     font-family: var(--sans); font-size: 0.65rem; cursor: pointer;
   }
   .edit-cancel-btn:hover { color: var(--text); }
+
+  .edit-upload-row {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 6px;
+  }
+  .edit-upload-label {
+    font-size: 0.65rem; color: var(--text-muted); white-space: nowrap;
+  }
+  .edit-file-input {
+    font-family: var(--sans); font-size: 0.65rem; color: var(--text-soft);
+  }
+  .edit-file-input::file-selector-button {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); color: var(--text-soft);
+    font-family: var(--sans); font-size: 0.62rem;
+    padding: 4px 10px; cursor: pointer; margin-right: 8px;
+    transition: border-color 0.2s;
+  }
+  .edit-file-input::file-selector-button:hover { border-color: var(--accent); }
+  .upload-progress {
+    font-size: 0.6rem; color: var(--accent); display: none;
+  }
+  .upload-progress.active { display: inline; }
 
   .status-select {
     background: var(--card); border: 1px solid var(--card-border);
@@ -1143,6 +1177,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
 <script>
   var firebaseConfig = {
@@ -1157,6 +1192,7 @@
   firebase.initializeApp(firebaseConfig);
   var auth = firebase.auth();
   var db = firebase.firestore();
+  var storage = firebase.storage();
   var currentUser = null;
 
   // ─── Redirect-Ergebnis abfangen ───
@@ -1356,9 +1392,9 @@
   function renderDashboard(books) {
     var container = document.getElementById('dashCategories');
     var categories = [
-      { key: 'lese-ich', label: 'Lese ich aktuell', icon: '&#9656;' },
-      { key: 'merkliste', label: 'M\u00F6chte ich lesen', icon: '&#9733;' },
-      { key: 'gelesen', label: 'Habe ich gelesen', icon: '&#10003;' }
+      { key: 'lese-ich', label: 'Lese ich aktuell', icon: '&#128214;' },
+      { key: 'merkliste', label: 'M\u00F6chte ich lesen', icon: '&#9203;' },
+      { key: 'gelesen', label: 'Habe ich gelesen', icon: '&#9733;' }
     ];
 
     var html = '';
@@ -1393,38 +1429,22 @@
           html += '<div class="cat-book-info">';
           html += '<div class="cat-book-title">' + escapeHtml(book.title) + '</div>';
           html += '<div class="cat-book-author">' + escapeHtml(book.author) + '</div>';
-          html += '</div>';
-          html += '<div class="cat-book-actions-wrap">';
-          html += '<div class="cat-book-actions">';
-          html += '<select class="status-select" onchange="changeStatus(\'' + book.id + '\',this.value)">';
-          html += '<option value="lese-ich"' + (book.status === 'lese-ich' ? ' selected' : '') + '>Lese ich</option>';
-          html += '<option value="merkliste"' + (book.status === 'merkliste' ? ' selected' : '') + '>M\u00F6chte ich lesen</option>';
-          html += '<option value="gelesen"' + (book.status === 'gelesen' ? ' selected' : '') + '>Gelesen</option>';
-          html += '</select>';
-          html += '<button class="edit-btn" onclick="toggleEditForm(\'' + book.id + '\')" title="Bearbeiten">&#9998;</button>';
-          html += '<button class="remove-btn" onclick="removeBook(\'' + book.id + '\')" title="Entfernen">&times;</button>';
-          html += '</div>';
-          if (book.status === 'gelesen') {
-            var months = ['','Jan','Feb','M\u00E4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-            var selMonth = book.readMonth || 0;
-            var selYear = book.readYear || 0;
-            var curYear = new Date().getFullYear();
-            html += '<div class="read-date-row">';
-            html += '<label>Gelesen:</label>';
-            html += '<select class="read-date-select" onchange="updateReadDate(\'' + book.id + '\',\'month\',this.value)">';
-            html += '<option value="0">Monat</option>';
-            for (var m = 1; m <= 12; m++) {
-              html += '<option value="' + m + '"' + (selMonth == m ? ' selected' : '') + '>' + months[m] + '</option>';
-            }
-            html += '</select>';
-            html += '<select class="read-date-select" onchange="updateReadDate(\'' + book.id + '\',\'year\',this.value)">';
-            html += '<option value="0">Jahr</option>';
-            for (var y = curYear; y >= curYear - 10; y--) {
-              html += '<option value="' + y + '"' + (selYear == y ? ' selected' : '') + '>' + y + '</option>';
-            }
-            html += '</select>';
+          var hasLinks = book.buyLink || book.infoLink;
+          if (hasLinks) {
+            html += '<div class="cat-book-links">';
+            if (book.buyLink) html += '<a href="' + escapeHtml(book.buyLink) + '" target="_blank" rel="noopener">Kaufen</a>';
+            if (book.infoLink) html += '<a href="' + escapeHtml(book.infoLink) + '" target="_blank" rel="noopener">Mehr erfahren</a>';
             html += '</div>';
           }
+          html += '</div>';
+          var months = ['','Jan','Feb','M\u00E4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+          if (book.status === 'gelesen' && (book.readMonth || book.readYear)) {
+            html += '<div class="cat-book-date">';
+            html += (book.readMonth ? months[book.readMonth] + ' ' : '') + (book.readYear || '');
+            html += '</div>';
+          }
+          html += '<div class="cat-book-actions-wrap">';
+          html += '<button class="edit-btn" onclick="toggleEditForm(\'' + book.id + '\')" title="Bearbeiten">&#9998;</button>';
           html += '</div>';
           html += '<div class="edit-form" id="edit-' + book.id + '">';
           html += '<div class="edit-form-row">';
@@ -1432,10 +1452,42 @@
           html += '<input class="edit-form-input" id="editAuthor-' + book.id + '" placeholder="Autor" value="' + escapeHtml(book.author) + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
-          html += '<input class="edit-form-input full" id="editCover-' + book.id + '" placeholder="Cover-URL (Bild-Link einf\u00FCgen)" value="' + escapeHtml(book.coverUrl || '') + '">';
+          html += '<select class="status-select" id="editStatus-' + book.id + '">';
+          html += '<option value="lese-ich"' + (book.status === 'lese-ich' ? ' selected' : '') + '>Lese ich</option>';
+          html += '<option value="merkliste"' + (book.status === 'merkliste' ? ' selected' : '') + '>M\u00F6chte ich lesen</option>';
+          html += '<option value="gelesen"' + (book.status === 'gelesen' ? ' selected' : '') + '>Gelesen</option>';
+          html += '</select>';
+          var selMonth = book.readMonth || 0;
+          var selYear = book.readYear || 0;
+          var curYear = new Date().getFullYear();
+          html += '<select class="read-date-select" id="editReadMonth-' + book.id + '">';
+          html += '<option value="0">Monat</option>';
+          for (var m = 1; m <= 12; m++) {
+            html += '<option value="' + m + '"' + (selMonth == m ? ' selected' : '') + '>' + months[m] + '</option>';
+          }
+          html += '</select>';
+          html += '<select class="read-date-select" id="editReadYear-' + book.id + '">';
+          html += '<option value="0">Jahr</option>';
+          for (var y = curYear; y >= curYear - 10; y--) {
+            html += '<option value="' + y + '"' + (selYear == y ? ' selected' : '') + '>' + y + '</option>';
+          }
+          html += '</select>';
+          html += '</div>';
+          html += '<div class="edit-upload-row">';
+          html += '<label class="edit-upload-label">Cover hochladen:</label>';
+          html += '<input type="file" class="edit-file-input" id="editFile-' + book.id + '" accept="image/*">';
+          html += '<span class="upload-progress" id="uploadProgress-' + book.id + '">Wird hochgeladen...</span>';
+          html += '</div>';
+          html += '<div class="edit-form-row">';
+          html += '<input class="edit-form-input full" id="editCover-' + book.id + '" placeholder="oder Cover-URL einf\u00FCgen" value="' + escapeHtml(book.coverUrl || '') + '">';
+          html += '</div>';
+          html += '<div class="edit-form-row">';
+          html += '<input class="edit-form-input" id="editBuyLink-' + book.id + '" placeholder="Link zum Kaufen (z.B. Amazon, Thalia)" value="' + escapeHtml(book.buyLink || '') + '">';
+          html += '<input class="edit-form-input" id="editInfoLink-' + book.id + '" placeholder="Link zum Inhalt (z.B. Goodreads)" value="' + escapeHtml(book.infoLink || '') + '">';
           html += '</div>';
           html += '<div class="edit-form-actions">';
           html += '<button class="edit-save-btn" onclick="saveEdit(\'' + book.id + '\')">Speichern</button>';
+          html += '<button class="remove-btn" onclick="removeBook(\'' + book.id + '\')" title="Entfernen" style="font-size:0.65rem;">Entfernen</button>';
           html += '<button class="edit-cancel-btn" onclick="toggleEditForm(\'' + book.id + '\')">Abbrechen</button>';
           html += '</div>';
           html += '</div>';
@@ -1465,11 +1517,44 @@
     var title = document.getElementById('editTitle-' + bookId).value.trim();
     var author = document.getElementById('editAuthor-' + bookId).value.trim();
     var coverUrl = document.getElementById('editCover-' + bookId).value.trim();
+    var buyLink = document.getElementById('editBuyLink-' + bookId).value.trim();
+    var infoLink = document.getElementById('editInfoLink-' + bookId).value.trim();
+    var status = document.getElementById('editStatus-' + bookId).value;
+    var readMonth = parseInt(document.getElementById('editReadMonth-' + bookId).value) || 0;
+    var readYear = parseInt(document.getElementById('editReadYear-' + bookId).value) || 0;
     if (!title) return;
-    var update = { title: title, author: author || 'Unbekannt', coverUrl: coverUrl };
-    db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(update).then(function() {
-      loadUserBooks();
-    });
+
+    var baseUpdate = {
+      title: title, author: author || 'Unbekannt', coverUrl: coverUrl,
+      buyLink: buyLink, infoLink: infoLink, status: status,
+      readMonth: readMonth, readYear: readYear
+    };
+
+    var fileInput = document.getElementById('editFile-' + bookId);
+    var file = fileInput && fileInput.files[0];
+
+    if (file) {
+      var progress = document.getElementById('uploadProgress-' + bookId);
+      progress.classList.add('active');
+      var path = 'covers/' + currentUser.uid + '/' + bookId + '-' + Date.now();
+      var ref = storage.ref(path);
+      ref.put(file).then(function(snapshot) {
+        return snapshot.ref.getDownloadURL();
+      }).then(function(url) {
+        progress.classList.remove('active');
+        baseUpdate.coverUrl = url;
+        return db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate);
+      }).then(function() {
+        loadUserBooks();
+      }).catch(function(err) {
+        progress.classList.remove('active');
+        alert('Upload-Fehler: ' + err.message);
+      });
+    } else {
+      db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
+        loadUserBooks();
+      });
+    }
   }
 
   function toggleGelesenSort() {
