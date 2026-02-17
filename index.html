@@ -1642,16 +1642,16 @@
       if (cat.key === 'gelesen' && list.length > 0) {
         var f = window._gelesenFilter || 'newest';
         html += '<div class="filter-row">';
-        html += '<button class="filter-btn' + (f === 'newest' ? ' active' : '') + '" onclick="setGelesenFilter(\'newest\')">Neueste</button>';
-        html += '<button class="filter-btn' + (f === 'oldest' ? ' active' : '') + '" onclick="setGelesenFilter(\'oldest\')">\u00C4lteste</button>';
+        html += '<select class="filter-year-select active" onchange="setGelesenFilter(this.value)">';
+        html += '<option value="newest"' + (f === 'newest' ? ' selected' : '') + '>Alle (Neueste zuerst)</option>';
+        html += '<option value="oldest"' + (f === 'oldest' ? ' selected' : '') + '>Alle (\u00C4lteste zuerst)</option>';
         if (years.length > 0) {
-          html += '<select class="filter-year-select' + (typeof f === 'number' ? ' active' : '') + '" onchange="setGelesenFilter(this.value===\'\'?\'newest\':parseInt(this.value))">';
-          html += '<option value="">Jahr...</option>';
+          html += '<option disabled>──────</option>';
           years.forEach(function(y) {
-            html += '<option value="' + y + '"' + (f === y ? ' selected' : '') + '>' + y + '</option>';
+            html += '<option value="' + y + '"' + (f == y ? ' selected' : '') + '>' + y + '</option>';
           });
-          html += '</select>';
         }
+        html += '</select>';
         html += '</div>';
       }
       html += '</div>';
@@ -1809,7 +1809,11 @@
   }
 
   function setGelesenFilter(val) {
-    window._gelesenFilter = val;
+    if (val !== 'newest' && val !== 'oldest') {
+      window._gelesenFilter = parseInt(val);
+    } else {
+      window._gelesenFilter = val;
+    }
     loadUserBooks();
   }
 
