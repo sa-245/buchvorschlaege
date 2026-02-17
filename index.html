@@ -852,14 +852,26 @@
     margin-left: auto;
   }
 
-  .sort-btn {
+  .filter-row {
+    display: flex; gap: 6px; align-items: center;
+    margin-left: auto;
+  }
+  .filter-btn {
     background: none; border: 1px solid var(--card-border);
     border-radius: var(--radius); color: var(--text-muted);
     font-family: var(--sans); font-size: 0.6rem;
     padding: 3px 8px; cursor: pointer;
     transition: color 0.2s, border-color 0.2s;
   }
-  .sort-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .filter-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .filter-btn.active { color: var(--accent); border-color: var(--accent); font-weight: 500; }
+  .filter-year-select {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); color: var(--text-muted);
+    font-family: var(--sans); font-size: 0.6rem;
+    padding: 3px 6px; cursor: pointer;
+  }
+  .filter-year-select.active { color: var(--accent); border-color: var(--accent); }
 
   .category-books { }
 
@@ -1593,30 +1605,62 @@
     var html = '';
     categories.forEach(function(cat) {
       var list = books[cat.key] || [];
-      if (cat.key === 'gelesen' && list.length > 1) {
-        var dir = window._gelesenSortDir || 'newest';
-        list.sort(function(a, b) {
-          var aVal = (a.readYear || 0) * 100 + (a.readMonth || 0);
-          var bVal = (b.readYear || 0) * 100 + (b.readMonth || 0);
-          return dir === 'newest' ? bVal - aVal : aVal - bVal;
-        });
+      var displayList = list;
+      var displayCount = list.length;
+
+      if (cat.key === 'gelesen' && list.length > 0) {
+        var filter = window._gelesenFilter || 'newest';
+
+        // Collect available years
+        var yearSet = {};
+        list.forEach(function(b) { if (b.readYear) yearSet[b.readYear] = true; });
+        var years = Object.keys(yearSet).map(Number).sort(function(a,b) { return b - a; });
+
+        // Filter by year if a year is selected
+        if (typeof filter === 'number') {
+          displayList = list.filter(function(b) { return b.readYear === filter; });
+          displayCount = displayList.length;
+          displayList.sort(function(a, b) {
+            return (b.readMonth || 0) - (a.readMonth || 0);
+          });
+        } else {
+          displayList = list.slice();
+          displayCount = list.length;
+          displayList.sort(function(a, b) {
+            var aVal = (a.readYear || 0) * 100 + (a.readMonth || 0);
+            var bVal = (b.readYear || 0) * 100 + (b.readMonth || 0);
+            return filter === 'newest' ? bVal - aVal : aVal - bVal;
+          });
+        }
       }
+
       html += '<div class="book-category">';
       html += '<div class="category-header">';
       html += '<span class="category-icon">' + cat.icon + '</span>';
       html += '<span class="category-title">' + cat.label + '</span>';
-      html += '<span class="category-count">' + list.length + '</span>';
-      if (cat.key === 'gelesen' && list.length > 1) {
-        var sortLabel = (window._gelesenSortDir || 'newest') === 'newest' ? 'Neueste zuerst' : '\u00C4lteste zuerst';
-        html += '<button class="sort-btn" onclick="toggleGelesenSort()">' + sortLabel + '</button>';
+      html += '<span class="category-count">' + displayCount + (cat.key === 'gelesen' && typeof (window._gelesenFilter) === 'number' ? ' / ' + list.length + ' gesamt' : '') + '</span>';
+      if (cat.key === 'gelesen' && list.length > 0) {
+        var f = window._gelesenFilter || 'newest';
+        html += '<div class="filter-row">';
+        html += '<button class="filter-btn' + (f === 'newest' ? ' active' : '') + '" onclick="setGelesenFilter(\'newest\')">Neueste</button>';
+        html += '<button class="filter-btn' + (f === 'oldest' ? ' active' : '') + '" onclick="setGelesenFilter(\'oldest\')">\u00C4lteste</button>';
+        if (years.length > 0) {
+          html += '<select class="filter-year-select' + (typeof f === 'number' ? ' active' : '') + '" onchange="setGelesenFilter(this.value===\'\'?\'newest\':parseInt(this.value))">';
+          html += '<option value="">Jahr...</option>';
+          years.forEach(function(y) {
+            html += '<option value="' + y + '"' + (f === y ? ' selected' : '') + '>' + y + '</option>';
+          });
+          html += '</select>';
+        }
+        html += '</div>';
       }
       html += '</div>';
       html += '<div class="category-books">';
 
-      if (list.length === 0) {
+      if (displayList.length === 0) {
         html += '<div class="category-empty">Noch keine B\u00FCcher in dieser Kategorie.</div>';
       } else {
-        list.forEach(function(book) {
+        displayList.forEach(function(book) {
           html += '<div class="cat-book-item">';
           html += '<div class="cat-book-cover"><img src="' + (book.coverUrl || '') + '" alt="" onerror="this.style.display=\'none\'"></div>';
           html += '<div class="cat-book-info">';
@@ -1764,8 +1808,8 @@
     });
   }
 
-  function toggleGelesenSort() {
-    window._gelesenSortDir = (window._gelesenSortDir || 'newest') === 'newest' ? 'oldest' : 'newest';
+  function setGelesenFilter(val) {
+    window._gelesenFilter = val;
     loadUserBooks();
   }
 
