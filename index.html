@@ -661,6 +661,52 @@
     .suggestions-overlay-grid { grid-template-columns: 1fr; }
   }
 
+  /* ─── Book Detail Overlay ─── */
+  .book-detail-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 1000;
+    justify-content: center; align-items: center;
+    padding: 20px;
+  }
+  .book-detail-overlay.active { display: flex; }
+  .book-detail-inner {
+    background: var(--card); border-radius: 8px;
+    padding: 28px 32px; max-width: 520px; width: 100%;
+    position: relative; box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    max-height: 80vh; overflow-y: auto;
+  }
+  .book-detail-close {
+    position: absolute; top: 12px; right: 16px;
+    background: none; border: none; color: var(--text-muted);
+    font-size: 1.3rem; cursor: pointer;
+  }
+  .book-detail-close:hover { color: var(--text); }
+  .book-detail-header {
+    display: flex; gap: 18px; margin-bottom: 16px;
+  }
+  .book-detail-cover {
+    width: 80px; height: 120px; border-radius: 3px; overflow: hidden;
+    background: rgba(0,0,0,0.05); flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  }
+  .book-detail-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .book-detail-title {
+    font-family: var(--serif); font-size: 1.05rem; font-weight: 700;
+    color: var(--text); line-height: 1.3;
+  }
+  .book-detail-author {
+    font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;
+  }
+  .book-detail-desc {
+    font-size: 0.78rem; color: var(--text-soft); line-height: 1.6;
+  }
+  .book-detail-loading {
+    font-size: 0.75rem; color: var(--text-muted); font-style: italic;
+  }
+  .book-detail-none {
+    font-size: 0.75rem; color: var(--text-muted); font-style: italic;
+  }
+
   /* ─── Search in Dashboard ─── */
   .dash-search {
     margin-bottom: 28px;
@@ -1459,6 +1505,14 @@
   </div>
 </div>
 
+<!-- Book Detail Overlay -->
+<div id="bookDetailOverlay" class="book-detail-overlay" onclick="if(event.target===this)closeBookDetail()">
+  <div class="book-detail-inner">
+    <button class="book-detail-close" onclick="closeBookDetail()">&times;</button>
+    <div id="bookDetailContent"></div>
+  </div>
+</div>
+
 <!-- Login Modal -->
 <div id="loginOverlay" class="login-overlay" onclick="if(event.target===this)closeLoginModal()">
   <div class="login-modal">
@@ -1905,11 +1959,11 @@
 
           // ── Row 1: Cover + Title/Author/Hearts ──
           html += '<div class="cat-book-header">';
-          html += '<div class="cat-book-cover"><img src="' + (book.coverUrl || '') + '" alt="" onerror="this.style.display=\'none\'"></div>';
+          html += '<div class="cat-book-cover sidebar-clickable" onclick="showBookDetail(\'' + book.id + '\')"><img src="' + (book.coverUrl || '') + '" alt="" onerror="this.style.display=\'none\'"></div>';
           html += '<div class="cat-book-info">';
           var bookGenres = book.genres || [];
           html += '<div class="cat-book-title-row">';
-          html += '<span class="cat-book-title">' + escapeHtml(book.title) + '</span>';
+          html += '<span class="cat-book-title sidebar-clickable" onclick="showBookDetail(\'' + book.id + '\')">' + escapeHtml(book.title) + '</span>';
           if (bookGenres.length > 0) {
             html += '<span class="cat-book-genres">';
             bookGenres.forEach(function(g) { html += '<span class="genre-pill">' + escapeHtml(g) + '</span>'; });
@@ -2256,10 +2310,12 @@
     btn.disabled = true;
     btn.textContent = 'Suche...';
 
-    var googleUrl = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&maxResults=10&printType=books';
-    var openLibUrl = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query) + '&limit=10&language=ger';
+    performSearch(query, btn);
+  }
 
-    var googlePromise = fetch(googleUrl).then(function(r) { return r.json(); }).then(function(data) {
+  function fetchGoogleBooks(q) {
+    var url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(q) + '&maxResults=10&printType=books';
+    return fetch(url).then(function(r) { return r.json(); }).then(function(data) {
       return (data.items || []).map(function(item) {
         var info = item.volumeInfo || {};
         var cover = '';
@@ -2272,12 +2328,16 @@
           author: (info.authors || ['Unbekannt']).join(', '),
           year: (info.publishedDate || '').substring(0, 4),
           coverUrl: cover,
+          description: info.description || '',
           source: 'Google'
         };
       });
     }).catch(function() { return []; });
+  }
 
-    var openLibPromise = fetch(openLibUrl).then(function(r) { return r.json(); }).then(function(data) {
+  function fetchOpenLibrary(q) {
+    var url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(q) + '&limit=10&language=ger';
+    return fetch(url).then(function(r) { return r.json(); }).then(function(data) {
       return (data.docs || []).map(function(doc) {
         var coverId = doc.cover_i;
         var cover = coverId ? ('https://covers.openlibrary.org/b/id/' + coverId + '-M.jpg') : '';
@@ -2286,24 +2346,47 @@
           author: (doc.author_name || ['Unbekannt']).join(', '),
           year: doc.first_publish_year ? String(doc.first_publish_year) : '',
           coverUrl: cover,
+          description: '',
           source: 'Open Library'
         };
       });
     }).catch(function() { return []; });
+  }
 
-    Promise.all([googlePromise, openLibPromise]).then(function(results) {
+  function deduplicateBooks(all) {
+    var seen = {};
+    var unique = [];
+    all.forEach(function(book) {
+      var key = slugify(book.title);
+      if (!seen[key]) { seen[key] = true; unique.push(book); }
+    });
+    return unique;
+  }
+
+  function performSearch(query, btn) {
+    Promise.all([fetchGoogleBooks(query), fetchOpenLibrary(query)]).then(function(results) {
+      var unique = deduplicateBooks(results[0].concat(results[1]));
+
+      // Wenn wenige Ergebnisse: vereinfachte Suche mit weniger W\u00F6rtern
+      var words = query.split(/\s+/);
+      if (unique.length < 3 && words.length > 2) {
+        var shortQuery = words.slice(0, Math.min(3, words.length - 1)).join(' ');
+        return Promise.all([fetchGoogleBooks(shortQuery), fetchOpenLibrary(shortQuery)]).then(function(r2) {
+          var extra = deduplicateBooks(r2[0].concat(r2[1]));
+          // Merge: originals first, then extras not yet seen
+          var allKeys = {};
+          unique.forEach(function(b) { allKeys[slugify(b.title)] = true; });
+          extra.forEach(function(b) {
+            var k = slugify(b.title);
+            if (!allKeys[k]) { allKeys[k] = true; unique.push(b); }
+          });
+          return unique;
+        });
+      }
+      return unique;
+    }).then(function(unique) {
       btn.disabled = false;
       btn.textContent = 'Suchen';
-      var all = results[0].concat(results[1]);
-      var seen = {};
-      var unique = [];
-      all.forEach(function(book) {
-        var key = slugify(book.title);
-        if (!seen[key]) {
-          seen[key] = true;
-          unique.push(book);
-        }
-      });
       renderSearchResults(unique);
     });
   }
@@ -2323,7 +2406,8 @@
       var bookSlug = slugify(book.title);
       var escapedTitle = escapeHtml(book.title);
       var escapedAuthor = escapeHtml(book.author);
-      var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(book.coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '"';
+      var escapedDesc = escapeHtml(book.description || '');
+      var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(book.coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '" data-desc="' + escapedDesc + '"';
 
       html += '<div class="search-result-item">';
       html += '<div class="search-result-cover"><img src="' + book.coverUrl + '" alt="" onerror="this.style.display=\'none\'"></div>';
@@ -2352,6 +2436,7 @@
       title: btn.getAttribute('data-title'),
       author: btn.getAttribute('data-author'),
       coverUrl: btn.getAttribute('data-cover'),
+      description: btn.getAttribute('data-desc') || '',
       rating: 0,
       status: status,
       addedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -2386,6 +2471,54 @@
   function closeSuggestionsOverlay() {
     document.getElementById('suggestionsOverlay').classList.remove('active');
     document.body.style.overflow = '';
+  }
+
+  function showBookDetail(bookId) {
+    if (!currentUser) return;
+    var content = document.getElementById('bookDetailContent');
+    content.innerHTML = '<div class="book-detail-loading">Lade Buchdetails\u2026</div>';
+    document.getElementById('bookDetailOverlay').classList.add('active');
+
+    db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).get().then(function(doc) {
+      if (!doc.exists) { content.innerHTML = '<div class="book-detail-none">Buch nicht gefunden.</div>'; return; }
+      var book = doc.data();
+      var html = '<div class="book-detail-header">';
+      html += '<div class="book-detail-cover"><img src="' + (book.coverUrl || '') + '" alt="" onerror="this.style.display=\'none\'"></div>';
+      html += '<div>';
+      html += '<div class="book-detail-title">' + escapeHtml(book.title) + '</div>';
+      html += '<div class="book-detail-author">' + escapeHtml(book.author) + '</div>';
+      html += '</div></div>';
+
+      if (book.description) {
+        html += '<div class="book-detail-desc">' + escapeHtml(book.description) + '</div>';
+        content.innerHTML = html;
+      } else {
+        // Versuche Beschreibung von Google Books zu holen
+        content.innerHTML = html + '<div class="book-detail-loading">Suche Inhaltsangabe\u2026</div>';
+        var q = encodeURIComponent(book.title + ' ' + book.author);
+        fetch('https://www.googleapis.com/books/v1/volumes?q=' + q + '&maxResults=1&printType=books')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var desc = '';
+            if (data.items && data.items[0] && data.items[0].volumeInfo) {
+              desc = data.items[0].volumeInfo.description || '';
+            }
+            if (desc) {
+              // Speichere f\u00FCr sp\u00E4ter
+              db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update({ description: desc });
+              content.innerHTML = html + '<div class="book-detail-desc">' + escapeHtml(desc) + '</div>';
+            } else {
+              content.innerHTML = html + '<div class="book-detail-none">Keine Inhaltsangabe verf\u00FCgbar. Du kannst sie im Bearbeitungsmodus selbst erg\u00E4nzen.</div>';
+            }
+          }).catch(function() {
+            content.innerHTML = html + '<div class="book-detail-none">Inhaltsangabe konnte nicht geladen werden.</div>';
+          });
+      }
+    });
+  }
+
+  function closeBookDetail() {
+    document.getElementById('bookDetailOverlay').classList.remove('active');
   }
 
   function closeSearch() {
