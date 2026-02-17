@@ -1609,49 +1609,50 @@
       var displayCount = list.length;
 
       if (cat.key === 'gelesen' && list.length > 0) {
-        var filter = window._gelesenFilter || 'newest';
+        var sortDir = window._gelesenSort || 'newest';
+        var filterYear = window._gelesenYear || 'all';
 
         // Collect available years
         var yearSet = {};
         list.forEach(function(b) { if (b.readYear) yearSet[b.readYear] = true; });
         var years = Object.keys(yearSet).map(Number).sort(function(a,b) { return b - a; });
 
-        // Filter by year if a year is selected
-        if (typeof filter === 'number') {
-          displayList = list.filter(function(b) { return b.readYear === filter; });
+        // Filter by year
+        if (filterYear !== 'all') {
+          displayList = list.filter(function(b) { return b.readYear === filterYear; });
           displayCount = displayList.length;
-          displayList.sort(function(a, b) {
-            return (b.readMonth || 0) - (a.readMonth || 0);
-          });
         } else {
           displayList = list.slice();
           displayCount = list.length;
-          displayList.sort(function(a, b) {
-            var aVal = (a.readYear || 0) * 100 + (a.readMonth || 0);
-            var bVal = (b.readYear || 0) * 100 + (b.readMonth || 0);
-            return filter === 'newest' ? bVal - aVal : aVal - bVal;
-          });
         }
+
+        // Sort
+        displayList.sort(function(a, b) {
+          var aVal = (a.readYear || 0) * 100 + (a.readMonth || 0);
+          var bVal = (b.readYear || 0) * 100 + (b.readMonth || 0);
+          return sortDir === 'newest' ? bVal - aVal : aVal - bVal;
+        });
       }
 
       html += '<div class="book-category">';
       html += '<div class="category-header">';
       html += '<span class="category-icon">' + cat.icon + '</span>';
       html += '<span class="category-title">' + cat.label + '</span>';
-      html += '<span class="category-count">' + displayCount + (cat.key === 'gelesen' && typeof (window._gelesenFilter) === 'number' ? ' / ' + list.length + ' gesamt' : '') + '</span>';
+      html += '<span class="category-count">' + displayCount + (cat.key === 'gelesen' && filterYear !== 'all' ? ' / ' + list.length + ' gesamt' : '') + '</span>';
       if (cat.key === 'gelesen' && list.length > 0) {
-        var f = window._gelesenFilter || 'newest';
         html += '<div class="filter-row">';
-        html += '<select class="filter-year-select active" onchange="setGelesenFilter(this.value)">';
-        html += '<option value="newest"' + (f === 'newest' ? ' selected' : '') + '>Alle (Neueste zuerst)</option>';
-        html += '<option value="oldest"' + (f === 'oldest' ? ' selected' : '') + '>Alle (\u00C4lteste zuerst)</option>';
-        if (years.length > 0) {
-          html += '<option disabled>──────</option>';
-          years.forEach(function(y) {
-            html += '<option value="' + y + '"' + (f == y ? ' selected' : '') + '>' + y + '</option>';
-          });
-        }
+        html += '<select class="filter-year-select active" onchange="setGelesenSort(this.value)">';
+        html += '<option value="newest"' + (sortDir === 'newest' ? ' selected' : '') + '>Neueste zuerst</option>';
+        html += '<option value="oldest"' + (sortDir === 'oldest' ? ' selected' : '') + '>\u00C4lteste zuerst</option>';
         html += '</select>';
+        if (years.length > 0) {
+          html += '<select class="filter-year-select active" onchange="setGelesenYear(this.value)">';
+          html += '<option value="all"' + (filterYear === 'all' ? ' selected' : '') + '>Alle Jahre</option>';
+          years.forEach(function(y) {
+            html += '<option value="' + y + '"' + (filterYear === y ? ' selected' : '') + '>' + y + '</option>';
+          });
+          html += '</select>';
+        }
         html += '</div>';
       }
       html += '</div>';
@@ -1808,12 +1809,13 @@
     });
   }
 
-  function setGelesenFilter(val) {
-    if (val !== 'newest' && val !== 'oldest') {
-      window._gelesenFilter = parseInt(val);
-    } else {
-      window._gelesenFilter = val;
-    }
+  function setGelesenSort(val) {
+    window._gelesenSort = val;
+    loadUserBooks();
+  }
+
+  function setGelesenYear(val) {
+    window._gelesenYear = val === 'all' ? 'all' : parseInt(val);
     loadUserBooks();
   }
 
