@@ -815,6 +815,45 @@
 
   .cat-book-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
 
+  .cat-book-hearts {
+    display: flex; gap: 2px; margin-top: 3px;
+  }
+  .cat-book-hearts span {
+    font-size: 0.7rem; color: var(--text-muted); opacity: 0.3;
+  }
+  .cat-book-hearts span.filled { color: #e25555; opacity: 1; }
+
+  .cat-book-fazit {
+    font-size: 0.68rem; color: var(--text-soft); margin-top: 4px;
+    font-style: italic; line-height: 1.4;
+    max-width: 320px;
+  }
+
+  .edit-hearts-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .edit-hearts-label {
+    font-size: 0.65rem; color: var(--text-muted);
+  }
+  .edit-heart-btn {
+    background: none; border: none; font-size: 1rem; cursor: pointer;
+    color: var(--text-muted); opacity: 0.3; transition: opacity 0.15s, color 0.15s;
+    padding: 0 1px;
+  }
+  .edit-heart-btn.filled { color: #e25555; opacity: 1; }
+  .edit-heart-btn:hover { opacity: 0.7; }
+
+  .edit-fazit-input {
+    width: 100%;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: var(--sans); font-size: 0.75rem; font-weight: 300;
+    padding: 8px 10px; outline: none; resize: vertical; min-height: 60px;
+    transition: border-color 0.2s;
+  }
+  .edit-fazit-input::placeholder { color: var(--text-muted); }
+  .edit-fazit-input:focus { border-color: var(--accent); }
+
   .cat-book-links {
     display: flex; gap: 10px; margin-top: 3px;
   }
@@ -868,28 +907,6 @@
     font-family: var(--sans); font-size: 0.65rem; cursor: pointer;
   }
   .edit-cancel-btn:hover { color: var(--text); }
-
-  .edit-upload-row {
-    display: flex; gap: 8px; align-items: center; margin-bottom: 6px;
-  }
-  .edit-upload-label {
-    font-size: 0.65rem; color: var(--text-muted); white-space: nowrap;
-  }
-  .edit-file-input {
-    font-family: var(--sans); font-size: 0.65rem; color: var(--text-soft);
-  }
-  .edit-file-input::file-selector-button {
-    background: var(--card); border: 1px solid var(--card-border);
-    border-radius: var(--radius); color: var(--text-soft);
-    font-family: var(--sans); font-size: 0.62rem;
-    padding: 4px 10px; cursor: pointer; margin-right: 8px;
-    transition: border-color 0.2s;
-  }
-  .edit-file-input::file-selector-button:hover { border-color: var(--accent); }
-  .upload-progress {
-    font-size: 0.6rem; color: var(--accent); display: none;
-  }
-  .upload-progress.active { display: inline; }
 
   .status-select {
     background: var(--card); border: 1px solid var(--card-border);
@@ -1187,7 +1204,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
 <script>
   var firebaseConfig = {
@@ -1202,7 +1218,6 @@
   firebase.initializeApp(firebaseConfig);
   var auth = firebase.auth();
   var db = firebase.firestore();
-  var storage = firebase.storage();
   var currentUser = null;
 
   // ─── Redirect-Ergebnis abfangen ───
@@ -1446,6 +1461,17 @@
             if (book.infoLink) html += '<a href="' + escapeHtml(book.infoLink) + '" target="_blank" rel="noopener">Mehr erfahren</a>';
             html += '</div>';
           }
+          var hearts = book.hearts || 0;
+          if (hearts > 0) {
+            html += '<div class="cat-book-hearts">';
+            for (var h = 1; h <= 5; h++) {
+              html += '<span class="' + (h <= hearts ? 'filled' : '') + '">&hearts;</span>';
+            }
+            html += '</div>';
+          }
+          if (book.fazit) {
+            html += '<div class="cat-book-fazit">&bdquo;' + escapeHtml(book.fazit) + '&ldquo;</div>';
+          }
           html += '</div>';
           var months = ['','Jan','Feb','M\u00E4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
           if (book.status === 'gelesen' && (book.readMonth || book.readYear)) {
@@ -1483,17 +1509,21 @@
           }
           html += '</select>';
           html += '</div>';
-          html += '<div class="edit-upload-row">';
-          html += '<label class="edit-upload-label">Cover hochladen:</label>';
-          html += '<input type="file" class="edit-file-input" id="editFile-' + book.id + '" accept="image/*">';
-          html += '<span class="upload-progress" id="uploadProgress-' + book.id + '">Wird hochgeladen...</span>';
-          html += '</div>';
           html += '<div class="edit-form-row">';
-          html += '<input class="edit-form-input full" id="editCover-' + book.id + '" placeholder="oder Cover-URL einf\u00FCgen" value="' + escapeHtml(book.coverUrl || '') + '">';
+          html += '<input class="edit-form-input full" id="editCover-' + book.id + '" placeholder="Cover-URL einf\u00FCgen (optional)" value="' + escapeHtml(book.coverUrl || '') + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
           html += '<input class="edit-form-input" id="editBuyLink-' + book.id + '" placeholder="Link zum Kaufen (z.B. Amazon, Thalia)" value="' + escapeHtml(book.buyLink || '') + '">';
           html += '<input class="edit-form-input" id="editInfoLink-' + book.id + '" placeholder="Link zum Inhalt (z.B. Goodreads)" value="' + escapeHtml(book.infoLink || '') + '">';
+          html += '</div>';
+          html += '<div class="edit-hearts-row">';
+          html += '<span class="edit-hearts-label">Bewertung:</span>';
+          for (var hh = 1; hh <= 5; hh++) {
+            html += '<button class="edit-heart-btn' + (hh <= (book.hearts || 0) ? ' filled' : '') + '" data-book="' + book.id + '" data-val="' + hh + '" onclick="setHearts(this)">&hearts;</button>';
+          }
+          html += '</div>';
+          html += '<div class="edit-form-row">';
+          html += '<textarea class="edit-fazit-input" id="editFazit-' + book.id + '" placeholder="Pers\u00F6nliches Fazit oder Notiz (optional)">' + escapeHtml(book.fazit || '') + '</textarea>';
           html += '</div>';
           html += '<div class="edit-form-actions">';
           html += '<button class="edit-save-btn" onclick="saveEdit(\'' + book.id + '\')">Speichern</button>';
@@ -1517,6 +1547,18 @@
     setTimeout(loadUserBooks, 300);
   }
 
+  function setHearts(btn) {
+    var val = parseInt(btn.getAttribute('data-val'));
+    var bookId = btn.getAttribute('data-book');
+    var row = btn.parentElement;
+    row.querySelectorAll('.edit-heart-btn').forEach(function(b) {
+      var bv = parseInt(b.getAttribute('data-val'));
+      if (bv <= val) b.classList.add('filled');
+      else b.classList.remove('filled');
+    });
+    row.setAttribute('data-selected', val);
+  }
+
   function toggleEditForm(bookId) {
     var form = document.getElementById('edit-' + bookId);
     if (form) form.classList.toggle('active');
@@ -1534,37 +1576,24 @@
     var readYear = parseInt(document.getElementById('editReadYear-' + bookId).value) || 0;
     if (!title) return;
 
+    var heartsRow = document.querySelector('#edit-' + bookId + ' .edit-hearts-row');
+    var hearts = parseInt(heartsRow ? heartsRow.getAttribute('data-selected') : '0') || 0;
+    // Fallback: count filled hearts
+    if (!hearts && heartsRow) {
+      hearts = heartsRow.querySelectorAll('.edit-heart-btn.filled').length;
+    }
+    var fazit = document.getElementById('editFazit-' + bookId).value.trim();
+
     var baseUpdate = {
       title: title, author: author || 'Unbekannt', coverUrl: coverUrl,
       buyLink: buyLink, infoLink: infoLink, status: status,
-      readMonth: readMonth, readYear: readYear
+      readMonth: readMonth, readYear: readYear,
+      hearts: hearts, fazit: fazit
     };
 
-    var fileInput = document.getElementById('editFile-' + bookId);
-    var file = fileInput && fileInput.files[0];
-
-    if (file) {
-      var progress = document.getElementById('uploadProgress-' + bookId);
-      progress.classList.add('active');
-      var path = 'covers/' + currentUser.uid + '/' + bookId + '-' + Date.now();
-      var ref = storage.ref(path);
-      ref.put(file).then(function(snapshot) {
-        return snapshot.ref.getDownloadURL();
-      }).then(function(url) {
-        progress.classList.remove('active');
-        baseUpdate.coverUrl = url;
-        return db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate);
-      }).then(function() {
-        loadUserBooks();
-      }).catch(function(err) {
-        progress.classList.remove('active');
-        alert('Upload-Fehler: ' + err.message);
-      });
-    } else {
-      db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
-        loadUserBooks();
-      });
-    }
+    db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
+      loadUserBooks();
+    });
   }
 
   function toggleGelesenSort() {
