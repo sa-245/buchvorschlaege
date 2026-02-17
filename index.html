@@ -1031,6 +1031,31 @@
   }
 
 
+  .cat-book-location {
+    font-size: 0.62rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px;
+  }
+  .cat-book-location-icon { font-size: 0.7rem; }
+
+  .edit-location-row {
+    display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;
+  }
+  .edit-location-chip {
+    font-size: 0.6rem; padding: 3px 8px; border-radius: 12px;
+    border: 1px solid var(--card-border); background: var(--card);
+    color: var(--text-muted); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .edit-location-chip.selected { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .edit-location-custom {
+    flex: 1; min-width: 100px; max-width: 180px;
+    font-size: 0.62rem; padding: 3px 8px; border-radius: 12px;
+    border: 1px solid var(--card-border); background: var(--card);
+    color: var(--text); font-family: var(--sans); outline: none;
+    transition: border-color 0.2s;
+  }
+  .edit-location-custom::placeholder { color: var(--text-muted); }
+  .edit-location-custom:focus { border-color: var(--accent); }
+
   .edit-genre-row {
     display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;
   }
@@ -1950,9 +1975,12 @@
             html += '</div>';
           }
 
-          // ── Row 3: Footer (date + edit) ──
+          // ── Row 3: Footer (date + location + edit) ──
           html += '<div class="cat-book-footer">';
           var months = ['','Jan','Feb','M\u00E4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+          if (book.readLocation) {
+            html += '<div class="cat-book-location"><span class="cat-book-location-icon">&#128205;</span>' + escapeHtml(book.readLocation) + '</div>';
+          }
           if (book.status === 'gelesen' && (book.readMonth || book.readYear)) {
             html += '<div class="cat-book-date">';
             html += (book.readMonth ? months[book.readMonth] + ' ' : '') + (book.readYear || '');
@@ -1988,6 +2016,16 @@
             html += '<option value="' + y + '"' + (selYear == y ? ' selected' : '') + '>' + y + '</option>';
           }
           html += '</select>';
+          html += '</div>';
+          var locationPresets = ['Zuhause','Pendeln','Urlaub','Strand','Caf\u00E9','Garten','Reise','Zug'];
+          var curLoc = book.readLocation || '';
+          var isCustomLoc = curLoc && locationPresets.indexOf(curLoc) < 0;
+          html += '<div class="edit-location-row" id="editLocation-' + book.id + '">';
+          locationPresets.forEach(function(loc) {
+            var sel = curLoc === loc ? ' selected' : '';
+            html += '<span class="edit-location-chip' + sel + '" onclick="toggleLocationChip(this)" data-loc="' + loc + '">' + loc + '</span>';
+          });
+          html += '<input class="edit-location-custom" id="editLocationCustom-' + book.id + '" placeholder="Anderer Ort\u2026" value="' + escapeHtml(isCustomLoc ? curLoc : '') + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
           html += '<input class="edit-form-input full readonly" id="editCover-' + book.id + '" placeholder="Cover-URL (automatisch)" value="' + escapeHtml(book.coverUrl || '') + '" readonly tabindex="-1">';
@@ -2061,6 +2099,17 @@
     el.classList.toggle('selected');
   }
 
+  function toggleLocationChip(el) {
+    var row = el.parentElement;
+    var wasSelected = el.classList.contains('selected');
+    row.querySelectorAll('.edit-location-chip').forEach(function(c) { c.classList.remove('selected'); });
+    if (!wasSelected) {
+      el.classList.add('selected');
+      var customInput = row.querySelector('.edit-location-custom');
+      if (customInput) customInput.value = '';
+    }
+  }
+
   function saveEdit(bookId) {
     if (!currentUser) return;
     var title = document.getElementById('editTitle-' + bookId).value.trim();
@@ -2089,12 +2138,21 @@
     var quotesRaw = document.getElementById('editQuotes-' + bookId).value.trim();
     var quotes = quotesRaw ? quotesRaw.split('\n').map(function(q) { return q.trim(); }).filter(function(q) { return q.length > 0; }) : [];
 
+    var readLocation = '';
+    var selectedLoc = document.querySelector('#editLocation-' + bookId + ' .edit-location-chip.selected');
+    if (selectedLoc) {
+      readLocation = selectedLoc.getAttribute('data-loc');
+    }
+    var customLoc = document.getElementById('editLocationCustom-' + bookId).value.trim();
+    if (customLoc) readLocation = customLoc;
+
     var baseUpdate = {
       title: title, author: author || 'Unbekannt', coverUrl: coverUrl,
       bookLink: bookLink, status: status,
       readMonth: readMonth, readYear: readYear,
       hearts: hearts, fazit: fazit,
-      recommendedBy: recommendedBy, genres: genres, quotes: quotes
+      recommendedBy: recommendedBy, genres: genres, quotes: quotes,
+      readLocation: readLocation
     };
 
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
