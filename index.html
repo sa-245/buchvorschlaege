@@ -877,20 +877,25 @@
 
   .cat-book-item {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 10px 0;
+    flex-direction: column;
+    gap: 0;
+    padding: 14px 0;
     border-bottom: 1px solid var(--divider);
     transition: background 0.2s;
-    flex-wrap: wrap;
   }
 
-  .cat-book-item:hover { background: rgba(0,0,0,0.02); }
+  .cat-book-item:hover { background: rgba(0,0,0,0.015); }
+
+  .cat-book-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
 
   .cat-book-cover {
-    width: 42px; height: 63px; border-radius: 2px;
+    width: 50px; height: 75px; border-radius: 3px;
     overflow: hidden; background: rgba(0,0,0,0.05); flex-shrink: 0;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
 
   .cat-book-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -902,20 +907,32 @@
     font-weight: 700; color: var(--white); line-height: 1.3;
   }
 
-  .cat-book-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+  .cat-book-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+
+  .cat-book-meta {
+    display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap;
+  }
 
   .cat-book-hearts {
-    display: flex; gap: 2px; margin-top: 3px;
+    display: flex; gap: 2px;
   }
   .cat-book-hearts span {
-    font-size: 0.7rem; color: var(--text-muted); opacity: 0.3;
+    font-size: 0.72rem; color: var(--text-muted); opacity: 0.3;
   }
   .cat-book-hearts span.filled { color: #e25555; opacity: 1; }
 
+  .cat-book-details {
+    padding-left: 64px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
   .cat-book-fazit {
-    font-size: 0.68rem; color: var(--text-soft); margin-top: 4px;
-    font-style: italic; line-height: 1.4;
-    max-width: 320px;
+    font-size: 0.7rem; color: var(--text-soft);
+    font-style: italic; line-height: 1.5;
+    max-width: 400px;
   }
 
   .edit-hearts-row {
@@ -944,23 +961,23 @@
   .edit-fazit-input:focus { border-color: var(--accent); }
 
   .cat-book-recommended {
-    font-size: 0.62rem; color: var(--accent); margin-top: 2px;
+    font-size: 0.65rem; color: var(--accent); font-weight: 400;
   }
 
   .cat-book-genres {
-    display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px;
+    display: flex; gap: 5px; flex-wrap: wrap;
   }
   .genre-pill {
-    font-size: 0.55rem; color: var(--text-soft); background: rgba(0,0,0,0.04);
-    padding: 1px 6px; border-radius: 10px; white-space: nowrap;
+    font-size: 0.58rem; color: var(--text-soft); background: rgba(0,0,0,0.04);
+    padding: 2px 9px; border-radius: 10px; white-space: nowrap;
   }
 
   .cat-book-quotes {
-    margin-top: 4px;
+    display: flex; flex-direction: column; gap: 4px;
   }
   .cat-book-quote {
-    font-size: 0.62rem; color: var(--text-soft); font-style: italic;
-    line-height: 1.3; margin-top: 2px; padding-left: 8px;
+    font-size: 0.65rem; color: var(--text-soft); font-style: italic;
+    line-height: 1.4; padding-left: 10px;
     border-left: 2px solid var(--accent-soft);
   }
 
@@ -989,31 +1006,31 @@
 
   /* ─── Statistics ─── */
   .stats-section {
-    margin-bottom: 28px; padding: 20px;
+    margin-bottom: 28px; padding: 22px 24px;
     background: var(--card); border: 1px solid var(--card-border);
     border-radius: var(--radius);
   }
   .stats-title {
     font-family: var(--serif); font-size: 0.9rem; font-weight: 700;
-    color: var(--text); margin-bottom: 16px;
+    color: var(--text); margin-bottom: 18px;
   }
   .stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 14px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
   }
   .stat-card {
-    text-align: center; padding: 12px 8px;
+    text-align: center; padding: 14px 8px;
     background: var(--bg); border-radius: var(--radius);
   }
   .stat-number {
-    font-family: var(--serif); font-size: 1.6rem; font-weight: 700;
+    font-family: var(--serif); font-size: 1.5rem; font-weight: 700;
     color: var(--accent); line-height: 1;
   }
   .stat-label {
-    font-size: 0.62rem; color: var(--text-muted); margin-top: 4px;
+    font-size: 0.6rem; color: var(--text-muted); margin-top: 6px; line-height: 1.3;
   }
   .stats-genres {
-    margin-top: 14px; display: flex; gap: 6px; flex-wrap: wrap;
+    margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap;
   }
   .stats-genre-pill {
     font-size: 0.6rem; padding: 3px 10px; border-radius: 12px;
@@ -1021,17 +1038,21 @@
   }
 
   .cat-book-links {
-    display: flex; gap: 10px; margin-top: 3px;
+    display: flex; gap: 12px;
   }
   .cat-book-links a {
-    font-size: 0.62rem; color: var(--accent); text-decoration: none;
+    font-size: 0.65rem; color: var(--accent); text-decoration: none;
     border-bottom: 1px dotted var(--accent); transition: opacity 0.2s;
   }
   .cat-book-links a:hover { opacity: 0.7; }
 
+  .cat-book-footer {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 10px; padding-left: 64px; margin-top: 4px;
+  }
+
   .cat-book-date {
     font-size: 0.62rem; color: var(--text-muted); white-space: nowrap;
-    flex-shrink: 0;
   }
   .cat-book-actions-wrap { flex-shrink: 0; }
 
@@ -1787,46 +1808,68 @@
       } else {
         displayList.forEach(function(book) {
           html += '<div class="cat-book-item">';
+
+          // ── Row 1: Cover + Title/Author/Hearts ──
+          html += '<div class="cat-book-header">';
           html += '<div class="cat-book-cover"><img src="' + (book.coverUrl || '') + '" alt="" onerror="this.style.display=\'none\'"></div>';
           html += '<div class="cat-book-info">';
           html += '<div class="cat-book-title">' + escapeHtml(book.title) + '</div>';
           html += '<div class="cat-book-author">' + escapeHtml(book.author) + '</div>';
-          if (book.recommendedBy) {
-            html += '<div class="cat-book-recommended">Empfohlen von ' + escapeHtml(book.recommendedBy) + '</div>';
-          }
-          var bookGenres = book.genres || [];
-          if (bookGenres.length > 0) {
-            html += '<div class="cat-book-genres">';
-            bookGenres.forEach(function(g) { html += '<span class="genre-pill">' + escapeHtml(g) + '</span>'; });
-            html += '</div>';
-          }
-          var hasLinks = book.buyLink || book.infoLink;
-          if (hasLinks) {
-            html += '<div class="cat-book-links">';
-            if (book.buyLink) html += '<a href="' + escapeHtml(book.buyLink) + '" target="_blank" rel="noopener">Kaufen</a>';
-            if (book.infoLink) html += '<a href="' + escapeHtml(book.infoLink) + '" target="_blank" rel="noopener">Mehr erfahren</a>';
-            html += '</div>';
-          }
+
+          // Meta row: hearts + recommended
           var hearts = book.hearts || 0;
-          if (hearts > 0) {
-            html += '<div class="cat-book-hearts">';
-            for (var h = 1; h <= 5; h++) {
-              html += '<span class="' + (h <= hearts ? 'filled' : '') + '">&hearts;</span>';
+          var hasMetaContent = hearts > 0 || book.recommendedBy;
+          if (hasMetaContent) {
+            html += '<div class="cat-book-meta">';
+            if (hearts > 0) {
+              html += '<div class="cat-book-hearts">';
+              for (var h = 1; h <= 5; h++) {
+                html += '<span class="' + (h <= hearts ? 'filled' : '') + '">&hearts;</span>';
+              }
+              html += '</div>';
+            }
+            if (book.recommendedBy) {
+              html += '<div class="cat-book-recommended">Empfohlen von ' + escapeHtml(book.recommendedBy) + '</div>';
             }
             html += '</div>';
           }
-          if (book.fazit) {
-            html += '<div class="cat-book-fazit">&bdquo;' + escapeHtml(book.fazit) + '&ldquo;</div>';
-          }
+          html += '</div>';
+          html += '</div>';
+
+          // ── Row 2: Details (indented under cover) ──
+          var bookGenres = book.genres || [];
+          var hasLinks = book.buyLink || book.infoLink;
           var quotes = book.quotes || [];
-          if (quotes.length > 0) {
-            html += '<div class="cat-book-quotes">';
-            quotes.forEach(function(q) {
-              html += '<div class="cat-book-quote">&bdquo;' + escapeHtml(q) + '&ldquo;</div>';
-            });
+          var hasDetails = bookGenres.length > 0 || hasLinks || book.fazit || quotes.length > 0;
+
+          if (hasDetails) {
+            html += '<div class="cat-book-details">';
+            if (bookGenres.length > 0) {
+              html += '<div class="cat-book-genres">';
+              bookGenres.forEach(function(g) { html += '<span class="genre-pill">' + escapeHtml(g) + '</span>'; });
+              html += '</div>';
+            }
+            if (book.fazit) {
+              html += '<div class="cat-book-fazit">&bdquo;' + escapeHtml(book.fazit) + '&ldquo;</div>';
+            }
+            if (quotes.length > 0) {
+              html += '<div class="cat-book-quotes">';
+              quotes.forEach(function(q) {
+                html += '<div class="cat-book-quote">&bdquo;' + escapeHtml(q) + '&ldquo;</div>';
+              });
+              html += '</div>';
+            }
+            if (hasLinks) {
+              html += '<div class="cat-book-links">';
+              if (book.buyLink) html += '<a href="' + escapeHtml(book.buyLink) + '" target="_blank" rel="noopener">Kaufen</a>';
+              if (book.infoLink) html += '<a href="' + escapeHtml(book.infoLink) + '" target="_blank" rel="noopener">Mehr erfahren</a>';
+              html += '</div>';
+            }
             html += '</div>';
           }
-          html += '</div>';
+
+          // ── Row 3: Footer (date + edit) ──
+          html += '<div class="cat-book-footer">';
           var months = ['','Jan','Feb','M\u00E4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
           if (book.status === 'gelesen' && (book.readMonth || book.readYear)) {
             html += '<div class="cat-book-date">';
@@ -1835,6 +1878,7 @@
           }
           html += '<div class="cat-book-actions-wrap">';
           html += '<button class="edit-btn" onclick="toggleEditForm(\'' + book.id + '\')" title="Bearbeiten">&#9998;</button>';
+          html += '</div>';
           html += '</div>';
           html += '<div class="edit-form" id="edit-' + book.id + '">';
           html += '<div class="edit-form-row">';
