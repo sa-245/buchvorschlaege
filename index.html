@@ -2032,8 +2032,9 @@
           // ── Row 3: Footer (date + location + edit) ──
           html += '<div class="cat-book-footer">';
           var months = ['','Jan','Feb','M\u00E4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-          if (book.readLocation) {
-            html += '<div class="cat-book-location"><span class="cat-book-location-icon">&#128205;</span>' + escapeHtml(book.readLocation) + '</div>';
+          var locs = book.readLocations || (book.readLocation ? [book.readLocation] : []);
+          if (locs.length > 0) {
+            html += '<div class="cat-book-location"><span class="cat-book-location-icon">&#128205;</span>' + locs.map(function(l) { return escapeHtml(l); }).join(', ') + '</div>';
           }
           if (book.status === 'gelesen' && (book.readMonth || book.readYear)) {
             html += '<div class="cat-book-date">';
@@ -2072,14 +2073,14 @@
           html += '</select>';
           html += '</div>';
           var locationPresets = ['Zuhause','Pendeln','Urlaub','Strand','Caf\u00E9','Garten','Reise','Zug'];
-          var curLoc = book.readLocation || '';
-          var isCustomLoc = curLoc && locationPresets.indexOf(curLoc) < 0;
+          var curLocs = book.readLocations || (book.readLocation ? [book.readLocation] : []);
+          var customLocs = curLocs.filter(function(l) { return locationPresets.indexOf(l) < 0; });
           html += '<div class="edit-location-row" id="editLocation-' + book.id + '">';
           locationPresets.forEach(function(loc) {
-            var sel = curLoc === loc ? ' selected' : '';
+            var sel = curLocs.indexOf(loc) >= 0 ? ' selected' : '';
             html += '<span class="edit-location-chip' + sel + '" onclick="toggleLocationChip(this)" data-loc="' + loc + '">' + loc + '</span>';
           });
-          html += '<input class="edit-location-custom" id="editLocationCustom-' + book.id + '" placeholder="Anderer Ort\u2026" value="' + escapeHtml(isCustomLoc ? curLoc : '') + '">';
+          html += '<input class="edit-location-custom" id="editLocationCustom-' + book.id + '" placeholder="Anderer Ort\u2026" value="' + escapeHtml(customLocs.join(', ')) + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
           html += '<input class="edit-form-input full readonly" id="editCover-' + book.id + '" placeholder="Cover-URL (automatisch)" value="' + escapeHtml(book.coverUrl || '') + '" readonly tabindex="-1">';
@@ -2154,14 +2155,7 @@
   }
 
   function toggleLocationChip(el) {
-    var row = el.parentElement;
-    var wasSelected = el.classList.contains('selected');
-    row.querySelectorAll('.edit-location-chip').forEach(function(c) { c.classList.remove('selected'); });
-    if (!wasSelected) {
-      el.classList.add('selected');
-      var customInput = row.querySelector('.edit-location-custom');
-      if (customInput) customInput.value = '';
-    }
+    el.classList.toggle('selected');
   }
 
   function saveEdit(bookId) {
@@ -2192,13 +2186,12 @@
     var quotesRaw = document.getElementById('editQuotes-' + bookId).value.trim();
     var quotes = quotesRaw ? quotesRaw.split('\n').map(function(q) { return q.trim(); }).filter(function(q) { return q.length > 0; }) : [];
 
-    var readLocation = '';
-    var selectedLoc = document.querySelector('#editLocation-' + bookId + ' .edit-location-chip.selected');
-    if (selectedLoc) {
-      readLocation = selectedLoc.getAttribute('data-loc');
-    }
+    var readLocations = [];
+    document.querySelectorAll('#editLocation-' + bookId + ' .edit-location-chip.selected').forEach(function(c) {
+      readLocations.push(c.getAttribute('data-loc'));
+    });
     var customLoc = document.getElementById('editLocationCustom-' + bookId).value.trim();
-    if (customLoc) readLocation = customLoc;
+    if (customLoc) readLocations.push(customLoc);
 
     var baseUpdate = {
       title: title, author: author || 'Unbekannt', coverUrl: coverUrl,
@@ -2206,7 +2199,7 @@
       readMonth: readMonth, readYear: readYear,
       hearts: hearts, fazit: fazit,
       recommendedBy: recommendedBy, genres: genres, quotes: quotes,
-      readLocation: readLocation
+      readLocations: readLocations
     };
 
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
