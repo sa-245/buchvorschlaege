@@ -1983,7 +1983,7 @@
           html += '<input class="edit-form-input full" id="editBookLink-' + book.id + '" placeholder="Link zum Buch (z.B. Amazon, Thalia, Goodreads)" value="' + escapeHtml(book.bookLink || book.buyLink || book.infoLink || '') + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
-          html += '<input class="edit-form-input" id="editRecommended-' + book.id + '" placeholder="Empfohlen von (optional)" value="' + escapeHtml(book.recommendedBy || '') + '">';
+          html += '<input class="edit-form-input" id="editRecommended-' + book.id + '" placeholder="Empfohlen von" value="' + escapeHtml(book.recommendedBy || '') + '">';
           html += '</div>';
           var allGenres = ['Thriller','Krimi','Psychothriller','Nordic Noir','Mystery','Science Fiction','Fantasy','Liebesroman','Sachbuch','Biografie','Historisch','Horror','Humor','Klassiker'];
           var bookGenres = book.genres || [];
@@ -2003,7 +2003,7 @@
           }
           html += '</div>';
           html += '<div class="edit-form-row">';
-          html += '<textarea class="edit-fazit-input" id="editFazit-' + book.id + '" placeholder="Pers\u00F6nliches Fazit oder Notiz (optional)">' + escapeHtml(book.fazit || '') + '</textarea>';
+          html += '<textarea class="edit-fazit-input" id="editFazit-' + book.id + '" placeholder="Pers\u00F6nliche Notizen zum Buch">' + escapeHtml(book.fazit || '') + '</textarea>';
           html += '</div>';
           html += '<div class="edit-form-actions">';
           html += '<button class="edit-save-btn" onclick="saveEdit(\'' + book.id + '\')">Speichern</button>';
