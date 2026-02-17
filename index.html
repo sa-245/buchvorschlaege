@@ -733,6 +733,16 @@
 
   .search-close:hover { color: var(--text-soft); }
 
+  .search-manual-hint {
+    text-align: center; padding: 12px 0; font-size: 0.72rem; color: var(--text-muted);
+  }
+  .search-manual-hint button {
+    background: none; border: none; color: var(--accent);
+    font-family: var(--sans); font-size: 0.72rem; cursor: pointer;
+    text-decoration: underline; padding: 0;
+  }
+  .search-manual-hint button:hover { opacity: 0.7; }
+
   /* ─── Book Category Sections ─── */
   .book-category {
     margin-bottom: 28px;
@@ -1618,22 +1628,58 @@
     if (!query) return;
 
     btn.disabled = true;
-    btn.textContent = '...';
+    btn.textContent = 'Suche...';
 
-    var url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&langRestrict=de&maxResults=8&printType=books';
+    var googleUrl = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&maxResults=10&printType=books';
+    var openLibUrl = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query) + '&limit=10&language=ger';
 
-    fetch(url)
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        btn.disabled = false;
-        btn.textContent = 'Suchen';
-        renderSearchResults(data.items || []);
-      })
-      .catch(function() {
-        btn.disabled = false;
-        btn.textContent = 'Suchen';
-        renderSearchResults([]);
+    var googlePromise = fetch(googleUrl).then(function(r) { return r.json(); }).then(function(data) {
+      return (data.items || []).map(function(item) {
+        var info = item.volumeInfo || {};
+        var cover = '';
+        if (info.imageLinks) {
+          cover = (info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || '').replace('http://', 'https://');
+        }
+        if (!cover) cover = 'https://books.google.com/books/content?id=' + (item.id || '') + '&printsec=frontcover&img=1&zoom=1';
+        return {
+          title: info.title || 'Unbekannt',
+          author: (info.authors || ['Unbekannt']).join(', '),
+          year: (info.publishedDate || '').substring(0, 4),
+          coverUrl: cover,
+          source: 'Google'
+        };
       });
+    }).catch(function() { return []; });
+
+    var openLibPromise = fetch(openLibUrl).then(function(r) { return r.json(); }).then(function(data) {
+      return (data.docs || []).map(function(doc) {
+        var coverId = doc.cover_i;
+        var cover = coverId ? ('https://covers.openlibrary.org/b/id/' + coverId + '-M.jpg') : '';
+        return {
+          title: doc.title || 'Unbekannt',
+          author: (doc.author_name || ['Unbekannt']).join(', '),
+          year: doc.first_publish_year ? String(doc.first_publish_year) : '',
+          coverUrl: cover,
+          source: 'Open Library'
+        };
+      });
+    }).catch(function() { return []; });
+
+    Promise.all([googlePromise, openLibPromise]).then(function(results) {
+      btn.disabled = false;
+      btn.textContent = 'Suchen';
+      var all = results[0].concat(results[1]);
+      var seen = {};
+      var unique = [];
+      all.forEach(function(book) {
+        var key = slugify(book.title);
+        if (!seen[key]) {
+          seen[key] = true;
+          unique.push(book);
+        }
+      });
+      renderSearchResults(unique);
+    });
   }
 
   function renderSearchResults(items) {
@@ -1641,45 +1687,35 @@
     container.classList.add('active');
 
     if (items.length === 0) {
-      container.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div><button class="search-close" onclick="closeSearch()">Schlie\u00DFen</button>';
+      container.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div><div class="search-manual-hint">Buch nicht dabei? <button onclick="closeSearch();toggleManualForm()">Manuell hinzuf\u00FCgen</button></div>';
       return;
     }
 
-    var html = '<div class="search-results-label">Ergebnisse (' + items.length + ')</div>';
+    var html = '<div class="search-results-label">Ergebnisse (' + items.length + ') &mdash; Google Books + Open Library</div>';
 
-    items.forEach(function(item) {
-      var info = item.volumeInfo || {};
-      var title = info.title || 'Unbekannt';
-      var authors = (info.authors || ['Unbekannt']).join(', ');
-      var year = (info.publishedDate || '').substring(0, 4);
-      var cover = '';
-      if (info.imageLinks) {
-        cover = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || '';
-        cover = cover.replace('http://', 'https://');
-      }
-      var googleId = item.id || '';
-      var bookSlug = slugify(title);
-      var coverUrl = cover || ('https://books.google.com/books/content?id=' + googleId + '&printsec=frontcover&img=1&zoom=1');
-
-      var escapedTitle = escapeHtml(title);
-      var escapedAuthor = escapeHtml(authors);
-      var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '"';
+    items.forEach(function(book) {
+      var bookSlug = slugify(book.title);
+      var escapedTitle = escapeHtml(book.title);
+      var escapedAuthor = escapeHtml(book.author);
+      var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(book.coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '"';
 
       html += '<div class="search-result-item">';
-      html += '<div class="search-result-cover"><img src="' + coverUrl + '" alt="" onerror="this.style.display=\'none\'"></div>';
+      html += '<div class="search-result-cover"><img src="' + book.coverUrl + '" alt="" onerror="this.style.display=\'none\'"></div>';
       html += '<div class="search-result-info">';
       html += '<div class="search-result-title">' + escapedTitle + '</div>';
       html += '<div class="search-result-author">' + escapedAuthor + '</div>';
-      if (year) html += '<div class="search-result-year">' + year + '</div>';
+      if (book.year) html += '<div class="search-result-year">' + book.year + ' &middot; ' + book.source + '</div>';
+      else html += '<div class="search-result-year">' + book.source + '</div>';
       html += '</div>';
       html += '<div class="search-result-actions">';
-      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'merkliste\')" title="M\u00F6chte ich lesen">&#9733;</button>';
-      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'lese-ich\')" title="Lese ich">&#9656;</button>';
-      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'gelesen\')" title="Gelesen">&#10003;</button>';
+      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'merkliste\')" title="M\u00F6chte ich lesen">&#9203;</button>';
+      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'lese-ich\')" title="Lese ich">&#128214;</button>';
+      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'gelesen\')" title="Gelesen">&#9733;</button>';
       html += '</div>';
       html += '</div>';
     });
 
+    html += '<div class="search-manual-hint">Nicht das Richtige dabei? <button onclick="closeSearch();toggleManualForm()">Manuell hinzuf\u00FCgen</button></div>';
     html += '<button class="search-close" onclick="closeSearch()">Ergebnisse schlie\u00DFen</button>';
     container.innerHTML = html;
   }
