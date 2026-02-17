@@ -686,7 +686,8 @@
 
   .cat-book-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
 
-  .cat-book-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .cat-book-actions-wrap { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+  .cat-book-actions { display: flex; gap: 8px; align-items: center; }
 
   .status-select {
     background: var(--card); border: 1px solid var(--card-border);
@@ -703,6 +704,19 @@
   }
 
   .remove-btn:hover { color: var(--accent); }
+
+  .read-date-row {
+    display: flex; align-items: center; gap: 6px; margin-top: 4px;
+  }
+  .read-date-row label {
+    font-size: 0.65rem; color: var(--text-muted); white-space: nowrap;
+  }
+  .read-date-select {
+    background: var(--card); border: 1px solid var(--card-border);
+    color: var(--text-soft); font-family: var(--sans);
+    font-size: 0.65rem; padding: 2px 4px; border-radius: 2px;
+    cursor: pointer;
+  }
 
   .category-empty {
     color: var(--text-muted); font-size: 0.78rem;
@@ -1183,6 +1197,7 @@
           html += '<div class="cat-book-title">' + escapeHtml(book.title) + '</div>';
           html += '<div class="cat-book-author">' + escapeHtml(book.author) + '</div>';
           html += '</div>';
+          html += '<div class="cat-book-actions-wrap">';
           html += '<div class="cat-book-actions">';
           html += '<select class="status-select" onchange="changeStatus(\'' + book.id + '\',this.value)">';
           html += '<option value="lese-ich"' + (book.status === 'lese-ich' ? ' selected' : '') + '>Lese ich</option>';
@@ -1190,6 +1205,28 @@
           html += '<option value="gelesen"' + (book.status === 'gelesen' ? ' selected' : '') + '>Gelesen</option>';
           html += '</select>';
           html += '<button class="remove-btn" onclick="removeBook(\'' + book.id + '\')" title="Entfernen">&times;</button>';
+          html += '</div>';
+          if (book.status === 'gelesen') {
+            var months = ['','Jan','Feb','M\u00E4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+            var selMonth = book.readMonth || 0;
+            var selYear = book.readYear || 0;
+            var curYear = new Date().getFullYear();
+            html += '<div class="read-date-row">';
+            html += '<label>Gelesen:</label>';
+            html += '<select class="read-date-select" onchange="updateReadDate(\'' + book.id + '\',\'month\',this.value)">';
+            html += '<option value="0">Monat</option>';
+            for (var m = 1; m <= 12; m++) {
+              html += '<option value="' + m + '"' + (selMonth == m ? ' selected' : '') + '>' + months[m] + '</option>';
+            }
+            html += '</select>';
+            html += '<select class="read-date-select" onchange="updateReadDate(\'' + book.id + '\',\'year\',this.value)">';
+            html += '<option value="0">Jahr</option>';
+            for (var y = curYear; y >= curYear - 10; y--) {
+              html += '<option value="' + y + '"' + (selYear == y ? ' selected' : '') + '>' + y + '</option>';
+            }
+            html += '</select>';
+            html += '</div>';
+          }
           html += '</div>';
           html += '</div>';
         });
@@ -1205,6 +1242,13 @@
     if (!currentUser) return;
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update({ status: newStatus });
     setTimeout(loadUserBooks, 300);
+  }
+
+  function updateReadDate(bookId, field, value) {
+    if (!currentUser) return;
+    var update = {};
+    update[field === 'month' ? 'readMonth' : 'readYear'] = parseInt(value);
+    db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(update);
   }
 
   function removeBook(bookId) {
@@ -1304,7 +1348,11 @@
       var allBtns = row.querySelectorAll('.search-add-btn');
       allBtns.forEach(function(b) { b.classList.remove('added'); });
       btn.classList.add('added');
-      setTimeout(loadUserBooks, 500);
+      setTimeout(function() {
+        closeSearch();
+        document.getElementById('dashSearchInput').value = '';
+        loadUserBooks();
+      }, 600);
     });
   }
 
