@@ -65,6 +65,83 @@
 
   .auth-btn:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
 
+  /* ─── Login Modal ─── */
+  .login-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 1000;
+    justify-content: center; align-items: center;
+  }
+  .login-overlay.active { display: flex; }
+  .login-modal {
+    background: var(--card); border-radius: 8px; padding: 32px;
+    width: 380px; max-width: 90vw; position: relative;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  }
+  .login-modal-close {
+    position: absolute; top: 12px; right: 16px;
+    background: none; border: none; color: var(--text-muted);
+    font-size: 1.3rem; cursor: pointer;
+  }
+  .login-modal-close:hover { color: var(--text); }
+  .login-modal-title {
+    font-family: var(--serif); font-size: 1.1rem; font-weight: 700;
+    color: var(--text); margin-bottom: 20px; text-align: center;
+  }
+  .login-google-btn {
+    width: 100%; padding: 10px; border: 1px solid var(--card-border);
+    border-radius: var(--radius); background: var(--card);
+    color: var(--text); font-family: var(--sans); font-size: 0.8rem;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 8px; transition: border-color 0.2s;
+  }
+  .login-google-btn:hover { border-color: var(--accent); }
+  .login-google-btn svg { width: 18px; height: 18px; }
+  .login-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 18px 0; color: var(--text-muted); font-size: 0.7rem;
+  }
+  .login-divider::before, .login-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--divider);
+  }
+  .login-tabs {
+    display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--divider);
+  }
+  .login-tab {
+    flex: 1; background: none; border: none; border-bottom: 2px solid transparent;
+    padding: 8px 0; font-family: var(--sans); font-size: 0.72rem;
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+  }
+  .login-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .login-form-input {
+    width: 100%; background: var(--bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: var(--sans); font-size: 0.8rem; font-weight: 300;
+    padding: 10px 12px; outline: none; margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .login-form-input::placeholder { color: var(--text-muted); }
+  .login-form-input:focus { border-color: var(--accent); }
+  .login-submit-btn {
+    width: 100%; padding: 10px; border: none; border-radius: var(--radius);
+    background: var(--accent); color: #fff; font-family: var(--sans);
+    font-size: 0.78rem; font-weight: 500; cursor: pointer;
+    transition: opacity 0.2s; margin-top: 4px;
+  }
+  .login-submit-btn:hover { opacity: 0.85; }
+  .login-error {
+    color: #c0392b; font-size: 0.68rem; margin-bottom: 8px;
+    display: none; text-align: center;
+  }
+  .login-error.active { display: block; }
+  .login-toggle {
+    text-align: center; margin-top: 12px; font-size: 0.68rem; color: var(--text-muted);
+  }
+  .login-toggle button {
+    background: none; border: none; color: var(--accent);
+    font-family: var(--sans); font-size: 0.68rem; cursor: pointer;
+    text-decoration: underline;
+  }
+
   .user-info {
     display: none;
     align-items: center;
@@ -1191,6 +1268,29 @@
   </div>
 </div>
 
+<!-- Login Modal -->
+<div id="loginOverlay" class="login-overlay" onclick="if(event.target===this)closeLoginModal()">
+  <div class="login-modal">
+    <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
+    <div class="login-modal-title">Meine B&uuml;cher-Liste</div>
+    <button class="login-google-btn" onclick="handleGoogleLogin()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Mit Google anmelden
+    </button>
+    <div class="login-divider">oder</div>
+    <div id="loginError" class="login-error"></div>
+    <div id="emailLoginMode" data-mode="login">
+      <input type="email" id="loginEmail" class="login-form-input" placeholder="E-Mail-Adresse">
+      <input type="password" id="loginPassword" class="login-form-input" placeholder="Passwort (mind. 6 Zeichen)" onkeydown="if(event.key==='Enter')handleEmailAuth()">
+      <button class="login-submit-btn" id="emailSubmitBtn" onclick="handleEmailAuth()">Anmelden</button>
+      <div class="login-toggle">
+        <span id="toggleText">Noch kein Konto?</span>
+        <button onclick="toggleEmailMode()"><span id="toggleBtnText">Registrieren</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Suggestions Overlay -->
 <div id="suggestionsOverlay" class="suggestions-overlay" onclick="if(event.target===this)closeSuggestionsOverlay()">
   <div class="suggestions-overlay-inner">
@@ -1262,17 +1362,85 @@
   });
 
   function handleLogin() {
+    document.getElementById('loginOverlay').classList.add('active');
+  }
+
+  function closeLoginModal() {
+    document.getElementById('loginOverlay').classList.remove('active');
+    document.getElementById('loginError').classList.remove('active');
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+  }
+
+  function handleGoogleLogin() {
     var provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).then(function(result) {
-      console.log('Login erfolgreich:', result.user.displayName);
+      closeLoginModal();
     }).catch(function(error) {
-      console.error('Popup-Fehler:', error.code, error.message);
       if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
         auth.signInWithRedirect(provider);
       } else {
-        alert('Login-Fehler: ' + error.message);
+        showLoginError(error.message);
       }
     });
+  }
+
+  function handleEmailAuth() {
+    var email = document.getElementById('loginEmail').value.trim();
+    var password = document.getElementById('loginPassword').value;
+    var mode = document.getElementById('emailLoginMode').getAttribute('data-mode');
+
+    if (!email || !password) {
+      showLoginError('Bitte E-Mail und Passwort eingeben.');
+      return;
+    }
+    if (password.length < 6) {
+      showLoginError('Das Passwort muss mindestens 6 Zeichen lang sein.');
+      return;
+    }
+
+    document.getElementById('emailSubmitBtn').disabled = true;
+    document.getElementById('emailSubmitBtn').textContent = '...';
+
+    var authPromise;
+    if (mode === 'register') {
+      authPromise = auth.createUserWithEmailAndPassword(email, password);
+    } else {
+      authPromise = auth.signInWithEmailAndPassword(email, password);
+    }
+
+    authPromise.then(function() {
+      document.getElementById('emailSubmitBtn').disabled = false;
+      document.getElementById('emailSubmitBtn').textContent = mode === 'register' ? 'Registrieren' : 'Anmelden';
+      closeLoginModal();
+    }).catch(function(error) {
+      document.getElementById('emailSubmitBtn').disabled = false;
+      document.getElementById('emailSubmitBtn').textContent = mode === 'register' ? 'Registrieren' : 'Anmelden';
+      var msg = error.message;
+      if (error.code === 'auth/email-already-in-use') msg = 'Diese E-Mail ist bereits registriert.';
+      if (error.code === 'auth/invalid-email') msg = 'Ung\u00FCltige E-Mail-Adresse.';
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') msg = 'Falsches Passwort.';
+      if (error.code === 'auth/user-not-found') msg = 'Kein Konto mit dieser E-Mail gefunden.';
+      if (error.code === 'auth/weak-password') msg = 'Das Passwort ist zu schwach (mind. 6 Zeichen).';
+      showLoginError(msg);
+    });
+  }
+
+  function toggleEmailMode() {
+    var container = document.getElementById('emailLoginMode');
+    var mode = container.getAttribute('data-mode');
+    var newMode = mode === 'login' ? 'register' : 'login';
+    container.setAttribute('data-mode', newMode);
+    document.getElementById('emailSubmitBtn').textContent = newMode === 'register' ? 'Registrieren' : 'Anmelden';
+    document.getElementById('toggleText').textContent = newMode === 'register' ? 'Schon ein Konto?' : 'Noch kein Konto?';
+    document.getElementById('toggleBtnText').textContent = newMode === 'register' ? 'Anmelden' : 'Registrieren';
+    document.getElementById('loginError').classList.remove('active');
+  }
+
+  function showLoginError(msg) {
+    var el = document.getElementById('loginError');
+    el.textContent = msg;
+    el.classList.add('active');
   }
 
   function handleLogout() {
