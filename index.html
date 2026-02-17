@@ -2486,26 +2486,55 @@
         html += '<div class="book-detail-desc">' + escapeHtml(book.description) + '</div>';
         content.innerHTML = html;
       } else {
-        // Versuche Beschreibung von Google Books zu holen
+        // Versuche deutsche Beschreibung zu finden
         content.innerHTML = html + '<div class="book-detail-loading">Suche Inhaltsangabe\u2026</div>';
-        var q = encodeURIComponent(book.title + ' ' + book.author);
-        fetch('https://www.googleapis.com/books/v1/volumes?q=' + q + '&maxResults=1&printType=books&langRestrict=de')
-          .then(function(r) { return r.json(); })
-          .then(function(data) {
-            var desc = '';
-            if (data.items && data.items[0] && data.items[0].volumeInfo) {
-              desc = data.items[0].volumeInfo.description || '';
+        var q = book.title + ' ' + book.author;
+        var googleDe = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(q) + '&maxResults=3&printType=books&langRestrict=de';
+        var googleAll = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(q) + '&maxResults=3&printType=books';
+
+        function extractDesc(data) {
+          if (!data.items) return '';
+          for (var i = 0; i < data.items.length; i++) {
+            var d = (data.items[i].volumeInfo || {}).description || '';
+            if (d) return d;
+          }
+          return '';
+        }
+
+        function isGerman(text) {
+          var deWords = ['und','der','die','das','ein','eine','ist','mit','von','den','dem','sich','auf','nicht','als','auch','noch','nach','wird','bei','aus','wie','aber','kann','nur','wenn'];
+          var words = text.toLowerCase().split(/\s+/).slice(0, 40);
+          var hits = 0;
+          words.forEach(function(w) { if (deWords.indexOf(w) >= 0) hits++; });
+          return hits >= 3;
+        }
+
+        // Schritt 1: Deutsch-beschr\u00E4nkte Suche
+        fetch(googleDe).then(function(r) { return r.json(); }).then(function(data) {
+          var desc = extractDesc(data);
+          if (desc && isGerman(desc)) return desc;
+          // Schritt 2: Fallback ohne Sprachfilter, pr\u00FCfe auf Deutsch
+          return fetch(googleAll).then(function(r2) { return r2.json(); }).then(function(data2) {
+            // Bevorzuge deutsche Beschreibung
+            if (data2.items) {
+              for (var i = 0; i < data2.items.length; i++) {
+                var d = (data2.items[i].volumeInfo || {}).description || '';
+                if (d && isGerman(d)) return d;
+              }
             }
-            if (desc) {
-              // Speichere f\u00FCr sp\u00E4ter
-              db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update({ description: desc });
-              content.innerHTML = html + '<div class="book-detail-desc">' + escapeHtml(desc) + '</div>';
-            } else {
-              content.innerHTML = html + '<div class="book-detail-none">Keine Inhaltsangabe verf\u00FCgbar. Du kannst sie im Bearbeitungsmodus selbst erg\u00E4nzen.</div>';
-            }
-          }).catch(function() {
-            content.innerHTML = html + '<div class="book-detail-none">Inhaltsangabe konnte nicht geladen werden.</div>';
+            // Notfalls erste verf\u00FCgbare Beschreibung
+            return desc || extractDesc(data2);
           });
+        }).then(function(desc) {
+          if (desc) {
+            db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update({ description: desc });
+            content.innerHTML = html + '<div class="book-detail-desc">' + escapeHtml(desc) + '</div>';
+          } else {
+            content.innerHTML = html + '<div class="book-detail-none">Keine Inhaltsangabe verf\u00FCgbar. Du kannst sie im Bearbeitungsmodus selbst erg\u00E4nzen.</div>';
+          }
+        }).catch(function() {
+          content.innerHTML = html + '<div class="book-detail-none">Inhaltsangabe konnte nicht geladen werden.</div>';
+        });
       }
     });
   }
