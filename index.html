@@ -2307,7 +2307,7 @@
   }
 
   function fetchGoogleBooks(q) {
-    var url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(q) + '&maxResults=10&printType=books';
+    var url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(q) + '&maxResults=10&printType=books&langRestrict=de';
     return fetch(url).then(function(r) { return r.json(); }).then(function(data) {
       return (data.items || []).map(function(item) {
         var info = item.volumeInfo || {};
@@ -2489,7 +2489,7 @@
         // Versuche Beschreibung von Google Books zu holen
         content.innerHTML = html + '<div class="book-detail-loading">Suche Inhaltsangabe\u2026</div>';
         var q = encodeURIComponent(book.title + ' ' + book.author);
-        fetch('https://www.googleapis.com/books/v1/volumes?q=' + q + '&maxResults=1&printType=books')
+        fetch('https://www.googleapis.com/books/v1/volumes?q=' + q + '&maxResults=1&printType=books&langRestrict=de')
           .then(function(r) { return r.json(); })
           .then(function(data) {
             var desc = '';
