@@ -2148,11 +2148,39 @@
   }
 
   // ─── Book Search (Google Books API) ───
+  function grumbeerRain() {
+    var count = 60;
+    for (var i = 0; i < count; i++) {
+      (function(idx) {
+        setTimeout(function() {
+          var el = document.createElement('div');
+          el.textContent = '🥔';
+          el.style.cssText = 'position:fixed;top:-50px;font-size:' + (24 + Math.random() * 28) + 'px;z-index:9999;pointer-events:none;left:' + (Math.random() * 100) + 'vw;animation:grumbeer-fall ' + (2 + Math.random() * 3) + 's linear forwards;';
+          document.body.appendChild(el);
+          setTimeout(function() { el.remove(); }, 5500);
+        }, idx * 80);
+      })(i);
+    }
+  }
+
+  // Inject grumbeer animation
+  (function() {
+    var s = document.createElement('style');
+    s.textContent = '@keyframes grumbeer-fall { 0% { transform: translateY(0) rotate(0deg); opacity:1; } 80% { opacity:1; } 100% { transform: translateY(110vh) rotate(' + '720deg); opacity:0; } }';
+    document.head.appendChild(s);
+  })();
+
   function searchBooks() {
     var input = document.getElementById('dashSearchInput');
     var btn = document.getElementById('dashSearchBtn');
     var query = input.value.trim();
     if (!query) return;
+
+    if (query.toLowerCase() === 'grumbeer') {
+      grumbeerRain();
+      input.value = '';
+      return;
+    }
 
     btn.disabled = true;
     btn.textContent = 'Suche...';
