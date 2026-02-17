@@ -1863,9 +1863,13 @@
           html += '</div>';
 
           // ── Row 2: Details (indented under cover) ──
-          var hasLinks = book.bookLink || book.buyLink || book.infoLink;
+          var rawLink = book.bookLink || book.buyLink || book.infoLink || '';
+          var bookLink = rawLink;
+          if (bookLink && (bookLink.indexOf('books.google') >= 0 || bookLink.indexOf('googleapis.com') >= 0 || bookLink.indexOf('covers.openlibrary') >= 0 || bookLink.indexOf('openlibrary.org/b') >= 0)) {
+            bookLink = '';
+          }
           var quotes = book.quotes || [];
-          var hasDetails = hasLinks || book.fazit || quotes.length > 0;
+          var hasDetails = bookLink || book.fazit || quotes.length > 0;
 
           if (hasDetails) {
             html += '<div class="cat-book-details">';
@@ -1883,10 +1887,9 @@
               });
               html += '</div>';
             }
-            if (hasLinks) {
-              var linkUrl = book.bookLink || book.buyLink || book.infoLink;
+            if (bookLink) {
               html += '<div class="cat-book-links">';
-              html += '<a href="' + escapeHtml(linkUrl) + '" target="_blank" rel="noopener">&#128279; Link zum Buch</a>';
+              html += '<a href="' + escapeHtml(bookLink) + '" target="_blank" rel="noopener">&#128279; Link zum Buch</a>';
               html += '</div>';
             }
             html += '</div>';
