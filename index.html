@@ -935,8 +935,17 @@
 
   .cat-book-fazit {
     font-size: 0.7rem; color: var(--text-soft);
-    font-style: italic; line-height: 1.5;
-    max-width: 400px;
+    line-height: 1.5; max-width: 400px;
+    background: var(--accent-glow); border-radius: var(--radius);
+    padding: 8px 10px;
+  }
+  .cat-book-fazit-label {
+    font-size: 0.55rem; font-weight: 500; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+  .cat-book-fazit-text {
+    font-style: italic;
   }
 
   .edit-hearts-row {
@@ -980,10 +989,14 @@
   .cat-book-quotes {
     display: flex; flex-direction: column; gap: 4px;
   }
+  .cat-book-quotes-label {
+    font-size: 0.55rem; font-weight: 500; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
   .cat-book-quote {
     font-size: 0.65rem; color: var(--text-soft); font-style: italic;
     line-height: 1.4; padding-left: 10px;
-    border-left: 2px solid var(--accent-soft);
+    border-left: 2px solid var(--accent);
   }
 
   .edit-genre-row {
@@ -1850,26 +1863,30 @@
           html += '</div>';
 
           // ── Row 2: Details (indented under cover) ──
-          var hasLinks = book.buyLink || book.infoLink;
+          var hasLinks = book.bookLink || book.buyLink || book.infoLink;
           var quotes = book.quotes || [];
           var hasDetails = hasLinks || book.fazit || quotes.length > 0;
 
           if (hasDetails) {
             html += '<div class="cat-book-details">';
             if (book.fazit) {
-              html += '<div class="cat-book-fazit">&bdquo;' + escapeHtml(book.fazit) + '&ldquo;</div>';
+              html += '<div class="cat-book-fazit">';
+              html += '<div class="cat-book-fazit-label">Mein Fazit</div>';
+              html += '<div class="cat-book-fazit-text">&bdquo;' + escapeHtml(book.fazit) + '&ldquo;</div>';
+              html += '</div>';
             }
             if (quotes.length > 0) {
               html += '<div class="cat-book-quotes">';
+              html += '<div class="cat-book-quotes-label">Zitate</div>';
               quotes.forEach(function(q) {
                 html += '<div class="cat-book-quote">&bdquo;' + escapeHtml(q) + '&ldquo;</div>';
               });
               html += '</div>';
             }
             if (hasLinks) {
+              var linkUrl = book.bookLink || book.buyLink || book.infoLink;
               html += '<div class="cat-book-links">';
-              if (book.buyLink) html += '<a href="' + escapeHtml(book.buyLink) + '" target="_blank" rel="noopener">Kaufen</a>';
-              if (book.infoLink) html += '<a href="' + escapeHtml(book.infoLink) + '" target="_blank" rel="noopener">Mehr erfahren</a>';
+              html += '<a href="' + escapeHtml(linkUrl) + '" target="_blank" rel="noopener">&#128279; Link zum Buch</a>';
               html += '</div>';
             }
             html += '</div>';
@@ -1918,8 +1935,7 @@
           html += '<input class="edit-form-input full" id="editCover-' + book.id + '" placeholder="Cover-URL einf\u00FCgen (optional)" value="' + escapeHtml(book.coverUrl || '') + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
-          html += '<input class="edit-form-input" id="editBuyLink-' + book.id + '" placeholder="Link zum Kaufen (z.B. Amazon, Thalia)" value="' + escapeHtml(book.buyLink || '') + '">';
-          html += '<input class="edit-form-input" id="editInfoLink-' + book.id + '" placeholder="Link zum Inhalt (z.B. Goodreads)" value="' + escapeHtml(book.infoLink || '') + '">';
+          html += '<input class="edit-form-input full" id="editBookLink-' + book.id + '" placeholder="Link zum Buch (z.B. Amazon, Thalia, Goodreads)" value="' + escapeHtml(book.bookLink || book.buyLink || book.infoLink || '') + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
           html += '<input class="edit-form-input" id="editRecommended-' + book.id + '" placeholder="Empfohlen von (optional)" value="' + escapeHtml(book.recommendedBy || '') + '">';
@@ -1992,8 +2008,7 @@
     var title = document.getElementById('editTitle-' + bookId).value.trim();
     var author = document.getElementById('editAuthor-' + bookId).value.trim();
     var coverUrl = document.getElementById('editCover-' + bookId).value.trim();
-    var buyLink = document.getElementById('editBuyLink-' + bookId).value.trim();
-    var infoLink = document.getElementById('editInfoLink-' + bookId).value.trim();
+    var bookLink = document.getElementById('editBookLink-' + bookId).value.trim();
     var status = document.getElementById('editStatus-' + bookId).value;
     var readMonth = parseInt(document.getElementById('editReadMonth-' + bookId).value) || 0;
     var readYear = parseInt(document.getElementById('editReadYear-' + bookId).value) || 0;
@@ -2018,7 +2033,7 @@
 
     var baseUpdate = {
       title: title, author: author || 'Unbekannt', coverUrl: coverUrl,
-      buyLink: buyLink, infoLink: infoLink, status: status,
+      bookLink: bookLink, status: status,
       readMonth: readMonth, readYear: readYear,
       hearts: hearts, fazit: fazit,
       recommendedBy: recommendedBy, genres: genres, quotes: quotes
