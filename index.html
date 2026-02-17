@@ -256,6 +256,124 @@
     font-weight: 300;
   }
 
+  /* ─── History ─── */
+  .history {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px 12px;
+  }
+
+  .history details {
+    border-top: 1px solid var(--divider);
+  }
+
+  .history summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 0;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    list-style: none;
+    transition: color 0.2s ease;
+  }
+
+  .history summary:hover { color: var(--text-soft); }
+
+  .history summary::-webkit-details-marker { display: none; }
+  .history summary::marker { content: ''; }
+
+  .history summary .arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    font-size: 0.6rem;
+  }
+
+  .history details[open] summary .arrow {
+    transform: rotate(90deg);
+  }
+
+  .history-list {
+    padding-bottom: 20px;
+  }
+
+  .history-day {
+    padding: 14px 0;
+    border-top: 1px solid var(--divider);
+  }
+
+  .history-day:first-child {
+    border-top: none;
+  }
+
+  .history-date {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .history-books {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .history-cover {
+    width: 36px; height: 54px;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #1a1a1e;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+
+  .history-cover img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .history-meta {
+    min-width: 0;
+  }
+
+  .history-title {
+    font-family: var(--serif);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .history-author {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .history-rating {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .history-rating .lit { color: var(--text-soft); }
+
   /* ─── Footer ─── */
   .footer {
     text-align: center; padding: 10px 16px 36px;
@@ -300,6 +418,9 @@
   <p class="tagline">Drei handverlesene Empfehlungen</p>
   <div class="pill-row">
     <span class="pill">Thriller</span>
+    <span class="pill">Psychothriller</span>
+    <span class="pill">Nordic Noir</span>
+    <span class="pill">Mystery</span>
     <span class="pill">Sci-Fi</span>
     <span class="pill accent">4.0+</span>
   </div>
@@ -411,6 +532,87 @@
     </div>
   </article>
 
+</div>
+
+<div class="history">
+  <details>
+    <summary><span class="arrow">&#9654;</span> Archiv</summary>
+    <div class="history-list">
+
+      <div class="history-day">
+        <div class="history-date">16. Februar 2026</div>
+        <div class="history-books">
+          <div class="history-item">
+            <div class="history-cover">
+              <img src="https://books.google.com/books/content?id=F9vKDwAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Der Tausch">
+            </div>
+            <div class="history-meta">
+              <div class="history-title">Der Tausch</div>
+              <div class="history-author">Julie Clark</div>
+              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.0</div>
+            </div>
+          </div>
+          <div class="history-item">
+            <div class="history-cover">
+              <img src="https://books.google.com/books/content?id=VhOSDwAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die Erben der Zeit">
+            </div>
+            <div class="history-meta">
+              <div class="history-title">Die Erben der Zeit</div>
+              <div class="history-author">Adrian Tchaikovsky</div>
+              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.1</div>
+            </div>
+          </div>
+          <div class="history-item">
+            <div class="history-cover">
+              <img src="https://books.google.com/books/content?id=cGAGEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Portal der Welten">
+            </div>
+            <div class="history-meta">
+              <div class="history-title">Portal der Welten</div>
+              <div class="history-author">Adrian Tchaikovsky</div>
+              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-day">
+        <div class="history-date">15. Februar 2026</div>
+        <div class="history-books">
+          <div class="history-item">
+            <div class="history-cover">
+              <img src="https://books.google.com/books/content?id=6tAREQAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die wei&szlig;e Kr&auml;he">
+            </div>
+            <div class="history-meta">
+              <div class="history-title">Die wei&szlig;e Kr&auml;he</div>
+              <div class="history-author">Michael Robotham</div>
+              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.4</div>
+            </div>
+          </div>
+          <div class="history-item">
+            <div class="history-cover">
+              <img src="https://books.google.com/books/content?id=HPVFEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Der Plan">
+            </div>
+            <div class="history-meta">
+              <div class="history-title">Der Plan</div>
+              <div class="history-author">Julie Clark</div>
+              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.1</div>
+            </div>
+          </div>
+          <div class="history-item">
+            <div class="history-cover">
+              <img src="https://books.google.com/books/content?id=us2sDgAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die Kinder der Zeit">
+            </div>
+            <div class="history-meta">
+              <div class="history-title">Die Kinder der Zeit</div>
+              <div class="history-author">Adrian Tchaikovsky</div>
+              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </details>
 </div>
 
 <div class="footer">Nur B&uuml;cher mit 4.0+ auf Goodreads</div>
