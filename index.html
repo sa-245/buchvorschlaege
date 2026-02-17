@@ -37,10 +37,90 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ─── Top Bar ─── */
+  .top-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 12px 20px 0;
+    max-width: 1280px;
+    margin: 0 auto;
+    gap: 12px;
+  }
+
+  .auth-btn {
+    background: none;
+    border: 1px solid var(--text-muted);
+    border-radius: 2px;
+    color: var(--text-soft);
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .auth-btn:hover { border-color: var(--text-soft); color: var(--white); }
+
+  .user-info {
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-info.active { display: flex; }
+
+  .user-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem;
+    font-weight: 500;
+    color: var(--text-soft);
+    overflow: hidden;
+  }
+
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .my-books-btn {
+    background: none;
+    border: 1px solid var(--text-muted);
+    border-radius: 2px;
+    color: var(--text-soft);
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .my-books-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .my-books-btn.has-books { border-color: var(--accent); color: var(--accent); }
+
+  .logout-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    cursor: pointer;
+    font-family: var(--sans);
+    letter-spacing: 0.04em;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+
+  .logout-btn:hover { color: var(--text-soft); }
+
   /* ─── Hero ─── */
   .hero {
     text-align: center;
-    padding: 48px 24px 20px;
+    padding: 28px 24px 20px;
     border-bottom: 1px solid var(--divider);
   }
 
@@ -66,6 +146,7 @@
     justify-content: center;
     gap: 6px;
     margin-top: 18px;
+    flex-wrap: wrap;
   }
 
   .pill {
@@ -127,15 +208,9 @@
     transition: border-color 0.3s ease;
   }
 
-  .book-card:hover {
-    border-color: rgba(139,32,32,0.2);
-  }
+  .book-card:hover { border-color: rgba(139,32,32,0.2); }
 
-  /* Card Header */
-  .card-header {
-    display: flex;
-    gap: 16px;
-  }
+  .card-header { display: flex; gap: 16px; }
 
   .cover-wrap {
     flex-shrink: 0;
@@ -146,11 +221,7 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.5);
   }
 
-  .cover-wrap img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+  .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   .card-info {
     flex: 1; min-width: 0;
@@ -177,9 +248,7 @@
     color: var(--white);
   }
 
-  .author-line {
-    display: flex; align-items: center; gap: 8px; margin-top: 8px;
-  }
+  .author-line { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 
   .author-avatar {
     width: 22px; height: 22px;
@@ -187,21 +256,12 @@
     border: 1px solid rgba(255,255,255,0.08);
     background: #1a1a1e;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.48rem;
-    font-weight: 500;
-    color: var(--text-soft);
-    flex-shrink: 0;
+    font-size: 0.48rem; font-weight: 500; color: var(--text-soft); flex-shrink: 0;
   }
 
-  .author-name {
-    font-size: 0.88rem;
-    color: var(--text-soft);
-    font-weight: 400;
-  }
+  .author-name { font-size: 0.88rem; color: var(--text-soft); font-weight: 400; }
 
-  .rating-row {
-    display: flex; align-items: center; gap: 8px; margin-top: 10px;
-  }
+  .rating-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 
   .star-display { color: var(--text-muted); font-size: 0.7rem; letter-spacing: 1px; }
   .star-display .lit { color: var(--white); }
@@ -210,20 +270,12 @@
 
   .lang-tag {
     display: inline-block;
-    margin-top: 6px;
-    padding: 2px 0;
-    font-size: 0.65rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
+    margin-top: 6px; padding: 2px 0;
+    font-size: 0.65rem; font-weight: 400;
+    letter-spacing: 0.04em; color: var(--text-muted);
   }
 
-  /* Card Body */
-  .card-divider {
-    border: none;
-    border-top: 1px solid var(--divider);
-    margin: 18px 0;
-  }
+  .card-divider { border: none; border-top: 1px solid var(--divider); margin: 18px 0; }
 
   .section-label {
     font-size: 0.65rem; font-weight: 500;
@@ -232,11 +284,8 @@
   }
 
   .book-summary {
-    font-size: 0.92rem;
-    line-height: 1.75;
-    color: var(--text);
-    font-weight: 300;
-    flex: 1;
+    font-size: 0.92rem; line-height: 1.75;
+    color: var(--text); font-weight: 300; flex: 1;
   }
 
   .reason-box {
@@ -249,169 +298,320 @@
 
   .reason-box .section-label { color: var(--accent); margin-bottom: 5px; }
 
-  .reason-text {
-    font-size: 0.88rem;
-    line-height: 1.65;
-    color: var(--text);
-    font-weight: 300;
+  .reason-text { font-size: 0.88rem; line-height: 1.65; color: var(--text); font-weight: 300; }
+
+  /* ─── Tracking Buttons ─── */
+  .track-row {
+    display: flex;
+    gap: 1px;
+    margin-top: 14px;
+    border-radius: var(--radius);
+    overflow: hidden;
   }
 
-  /* ─── History ─── */
-  .history {
+  .track-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.02);
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .track-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-soft); }
+
+  .track-btn.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .track-btn .track-icon { display: block; font-size: 0.85rem; margin-bottom: 2px; }
+
+  .track-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* ─── My Books Panel ─── */
+  .my-books-panel {
+    display: none;
     max-width: 1280px;
     margin: 0 auto;
-    padding: 0 20px 12px;
+    padding: 0 20px 20px;
   }
 
-  .history details {
-    border-top: 1px solid var(--divider);
-  }
+  .my-books-panel.active { display: block; }
 
-  .history summary {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 16px 0;
-    cursor: pointer;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    list-style: none;
+  .my-books-panel details { border-top: 1px solid var(--divider); }
+
+  .my-books-panel summary {
+    display: flex; align-items: center; gap: 8px;
+    padding: 16px 0; cursor: pointer;
+    font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); list-style: none;
     transition: color 0.2s ease;
   }
 
-  .history summary:hover { color: var(--text-soft); }
+  .my-books-panel summary:hover { color: var(--white); }
+  .my-books-panel summary::-webkit-details-marker { display: none; }
+  .my-books-panel summary::marker { content: ''; }
+  .my-books-panel summary .arrow {
+    display: inline-block; transition: transform 0.2s ease; font-size: 0.6rem;
+  }
+  .my-books-panel details[open] summary .arrow { transform: rotate(90deg); }
 
-  .history summary::-webkit-details-marker { display: none; }
-  .history summary::marker { content: ''; }
+  .my-books-group { margin-bottom: 16px; }
 
-  .history summary .arrow {
-    display: inline-block;
-    transition: transform 0.2s ease;
-    font-size: 0.6rem;
+  .my-books-group-label {
+    font-size: 0.62rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 8px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--divider);
   }
 
-  .history details[open] summary .arrow {
-    transform: rotate(90deg);
+  .my-book-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--divider);
   }
 
-  .history-list {
-    padding-bottom: 20px;
-  }
-
-  .history-day {
-    padding: 14px 0;
-    border-top: 1px solid var(--divider);
-  }
-
-  .history-day:first-child {
-    border-top: none;
-  }
-
-  .history-date {
-    font-size: 0.68rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-
-  .history-books {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .history-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .history-cover {
-    width: 36px; height: 54px;
-    border-radius: 2px;
-    overflow: hidden;
-    background: #1a1a1e;
-    flex-shrink: 0;
+  .my-book-cover {
+    width: 36px; height: 54px; border-radius: 2px;
+    overflow: hidden; background: #1a1a1e; flex-shrink: 0;
     box-shadow: 0 1px 4px rgba(0,0,0,0.4);
   }
 
-  .history-cover img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
+  .my-book-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .my-book-info { flex: 1; min-width: 0; }
+
+  .my-book-title {
+    font-family: var(--serif); font-size: 0.82rem;
+    font-weight: 700; color: var(--text); line-height: 1.3;
   }
 
-  .history-meta {
-    min-width: 0;
+  .my-book-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+  .my-book-actions { display: flex; gap: 8px; align-items: center; }
+
+  .status-select {
+    background: var(--card); border: 1px solid var(--card-border);
+    color: var(--text-soft); font-family: var(--sans);
+    font-size: 0.68rem; padding: 3px 6px; border-radius: 2px;
+    cursor: pointer;
   }
 
-  .history-title {
+  .remove-btn {
+    background: none; border: none;
+    color: var(--text-muted); cursor: pointer;
+    font-size: 0.8rem; padding: 2px 4px;
+    transition: color 0.2s;
+  }
+
+  .remove-btn:hover { color: var(--accent); }
+
+  .my-books-empty {
+    color: var(--text-muted); font-size: 0.82rem;
+    font-style: italic; padding: 16px 0;
     font-family: var(--serif);
-    font-size: 0.82rem;
-    font-weight: 700;
+  }
+
+  /* ─── Book Search ─── */
+  .book-search-wrap {
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .book-search-row {
+    display: flex; gap: 8px;
+  }
+
+  .book-search-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
     color: var(--text);
-    line-height: 1.3;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 300;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
   }
 
-  .history-author {
+  .book-search-input::placeholder { color: var(--text-muted); }
+  .book-search-input:focus { border-color: var(--accent); }
+
+  .book-search-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: var(--white);
+    font-family: var(--sans);
     font-size: 0.72rem;
-    color: var(--text-muted);
-    margin-top: 2px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
   }
 
-  .history-rating {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    margin-top: 1px;
+  .book-search-btn:hover { opacity: 0.85; }
+  .book-search-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .search-results {
+    margin-top: 12px;
+    display: none;
   }
 
+  .search-results.active { display: block; }
+
+  .search-results-label {
+    font-size: 0.62rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+
+  .search-result-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .search-result-cover {
+    width: 48px; height: 72px; border-radius: 2px;
+    overflow: hidden; background: #1a1a1e; flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+
+  .search-result-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .search-result-info { flex: 1; min-width: 0; }
+
+  .search-result-title {
+    font-family: var(--serif); font-size: 0.88rem;
+    font-weight: 700; color: var(--text); line-height: 1.3;
+  }
+
+  .search-result-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+  .search-result-year { font-size: 0.65rem; color: var(--text-muted); margin-top: 1px; }
+
+  .search-result-actions { display: flex; gap: 4px; flex-shrink: 0; align-self: center; }
+
+  .search-add-btn {
+    background: none;
+    border: 1px solid var(--text-muted);
+    border-radius: 2px;
+    color: var(--text-soft);
+    font-family: var(--sans);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .search-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .search-add-btn.added {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    cursor: default;
+  }
+
+  .search-no-results {
+    color: var(--text-muted); font-size: 0.8rem;
+    font-style: italic; padding: 12px 0;
+    font-family: var(--serif);
+  }
+
+  .search-close {
+    background: none; border: none;
+    color: var(--text-muted); cursor: pointer;
+    font-size: 0.7rem; font-family: var(--sans);
+    letter-spacing: 0.04em; padding: 8px 0;
+    transition: color 0.2s; display: block;
+    margin-top: 4px;
+  }
+
+  .search-close:hover { color: var(--text-soft); }
+
+  /* ─── History ─── */
+  .history { max-width: 1280px; margin: 0 auto; padding: 0 20px 12px; }
+  .history details { border-top: 1px solid var(--divider); }
+  .history summary {
+    display: flex; align-items: center; gap: 8px; padding: 16px 0;
+    cursor: pointer; font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted); list-style: none; transition: color 0.2s ease;
+  }
+  .history summary:hover { color: var(--text-soft); }
+  .history summary::-webkit-details-marker { display: none; }
+  .history summary::marker { content: ''; }
+  .history summary .arrow { display: inline-block; transition: transform 0.2s ease; font-size: 0.6rem; }
+  .history details[open] summary .arrow { transform: rotate(90deg); }
+  .history-list { padding-bottom: 20px; }
+  .history-day { padding: 14px 0; border-top: 1px solid var(--divider); }
+  .history-day:first-child { border-top: none; }
+  .history-date {
+    font-size: 0.68rem; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
+  }
+  .history-books { display: flex; gap: 20px; flex-wrap: wrap; }
+  .history-item { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
+  .history-cover {
+    width: 36px; height: 54px; border-radius: 2px; overflow: hidden;
+    background: #1a1a1e; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+  .history-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .history-meta { min-width: 0; }
+  .history-title { font-family: var(--serif); font-size: 0.82rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .history-author { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+  .history-rating { font-size: 0.65rem; color: var(--text-muted); margin-top: 1px; }
   .history-rating .lit { color: var(--text-soft); }
 
   /* ─── Footer ─── */
   .footer {
     text-align: center; padding: 10px 16px 36px;
     font-size: 0.75rem; color: var(--text-muted);
-    font-family: var(--serif); font-style: italic;
-    letter-spacing: 0.04em;
+    font-family: var(--serif); font-style: italic; letter-spacing: 0.04em;
   }
 
-  /* ─── Tablet ─── */
+  /* ─── Responsive ─── */
   @media (max-width: 900px) {
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
-      max-width: 680px;
-    }
-    .grid .book-card:last-child {
-      grid-column: 1 / -1;
-      max-width: 50%;
-      justify-self: center;
-    }
+    .grid { grid-template-columns: repeat(2, 1fr); max-width: 680px; }
+    .grid .book-card:last-child { grid-column: 1 / -1; max-width: 50%; justify-self: center; }
   }
-
-  /* ─── Mobile ─── */
   @media (max-width: 540px) {
-    .grid {
-      grid-template-columns: 1fr;
-      max-width: 440px;
-      gap: 16px;
-    }
-    .grid .book-card:last-child {
-      grid-column: auto;
-      max-width: 100%;
-    }
+    .grid { grid-template-columns: 1fr; max-width: 440px; gap: 16px; }
+    .grid .book-card:last-child { grid-column: auto; max-width: 100%; }
     .hero h1 { font-size: 1.6rem; }
     .meta-info { flex-direction: column; gap: 4px; align-items: center; }
+    .pill-row { gap: 4px; }
+    .pill { font-size: 0.62rem; padding: 3px 8px; }
   }
 </style>
 </head>
 <body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Anmelden</button>
+  <div id="userInfo" class="user-info">
+    <div id="userAvatar" class="user-avatar"></div>
+    <button id="myBooksBtn" class="my-books-btn" onclick="toggleMyBooks()">Meine B&uuml;cher</button>
+    <button class="logout-btn" onclick="handleLogout()">Abmelden</button>
+  </div>
+</div>
 
 <div class="hero">
   <h1>Deine Buchvorschl&auml;ge</h1>
@@ -437,7 +637,7 @@
 <div class="grid">
 
   <!-- Buch 1 -->
-  <article class="book-card">
+  <article class="book-card" data-book-id="die-weisse-kraehe">
     <div class="card-header">
       <div class="cover-wrap">
         <img src="https://books.google.com/books/content?id=6tAREQAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die wei&szlig;e Kr&auml;he">
@@ -459,17 +659,20 @@
     </div>
     <hr class="card-divider">
     <div class="section-label">Zusammenfassung</div>
-    <p class="book-summary">
-      Philomena McCarthy hat es als junge Polizistin bei der Metropolitan Police weit gebracht &mdash; trotz einer Familie, die zu Londons ber&uuml;chtigtsten Gangsterfamilien geh&ouml;rt. Als sie ein blut&uuml;berstr&ouml;mtes Kind findet und gleichzeitig ein Juwelier eine Bombe um den Hals tr&auml;gt, kollidieren die Ereignisse und bedrohen ihre Karriere, ihre Ehe und ihr Leben.
-    </p>
+    <p class="book-summary">Philomena McCarthy hat es als junge Polizistin bei der Metropolitan Police weit gebracht &mdash; trotz einer Familie, die zu Londons ber&uuml;chtigtsten Gangsterfamilien geh&ouml;rt. Als sie ein blut&uuml;berstr&ouml;mtes Kind findet und gleichzeitig ein Juwelier eine Bombe um den Hals tr&auml;gt, kollidieren die Ereignisse und bedrohen ihre Karriere, ihre Ehe und ihr Leben.</p>
     <div class="reason-box">
       <div class="section-label">Warum lesenswert</div>
       <p class="reason-text">Kritiker bezeichnen diesen Roman als Robothams bisher bestes Werk. &Uuml;bersetzt von Kristian Lutze. Perfektes Zusammenspiel aus psychologischer Tiefe und atemloser Action.</p>
     </div>
+    <div class="track-row">
+      <button class="track-btn" onclick="trackBook(this,'merkliste')" data-status="merkliste" disabled><span class="track-icon">&#9733;</span>Merken</button>
+      <button class="track-btn" onclick="trackBook(this,'lese-ich')" data-status="lese-ich" disabled><span class="track-icon">&#9656;</span>Lese ich</button>
+      <button class="track-btn" onclick="trackBook(this,'gelesen')" data-status="gelesen" disabled><span class="track-icon">&#10003;</span>Gelesen</button>
+    </div>
   </article>
 
   <!-- Buch 2 -->
-  <article class="book-card">
+  <article class="book-card" data-book-id="der-plan">
     <div class="card-header">
       <div class="cover-wrap">
         <img src="https://books.google.com/books/content?id=HPVFEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Der Plan">
@@ -491,17 +694,20 @@
     </div>
     <hr class="card-divider">
     <div class="section-label">Zusammenfassung</div>
-    <p class="book-summary">
-      Meg ist eine Meisterin der T&auml;uschung mit einem Ziel: Gerechtigkeit. Sie infiltriert das Leben skrupelloser M&auml;nner, die sich auf Kosten von Frauen bereichern, und nimmt ihnen Verm&ouml;gen und Ruf. Doch jetzt plant sie ihren letzten Coup &mdash; gegen den Mann, mit dem alles begann. Was sie nicht ahnt: Jemand ist ihr bereits auf der Spur.
-    </p>
+    <p class="book-summary">Meg ist eine Meisterin der T&auml;uschung mit einem Ziel: Gerechtigkeit. Sie infiltriert das Leben skrupelloser M&auml;nner, die sich auf Kosten von Frauen bereichern, und nimmt ihnen Verm&ouml;gen und Ruf. Doch jetzt plant sie ihren letzten Coup &mdash; gegen den Mann, mit dem alles begann. Was sie nicht ahnt: Jemand ist ihr bereits auf der Spur.</p>
     <div class="reason-box">
       <div class="section-label">Warum lesenswert</div>
       <p class="reason-text">Nr.-1-SPIEGEL-Bestseller. &Uuml;bersetzt von Astrid Gravert &amp; Katja Hald. Ein raffinierter Psychothriller mit unerwarteten Wendungen &mdash; perfekt f&uuml;r Fans von Lucy Clarke.</p>
     </div>
+    <div class="track-row">
+      <button class="track-btn" onclick="trackBook(this,'merkliste')" data-status="merkliste" disabled><span class="track-icon">&#9733;</span>Merken</button>
+      <button class="track-btn" onclick="trackBook(this,'lese-ich')" data-status="lese-ich" disabled><span class="track-icon">&#9656;</span>Lese ich</button>
+      <button class="track-btn" onclick="trackBook(this,'gelesen')" data-status="gelesen" disabled><span class="track-icon">&#10003;</span>Gelesen</button>
+    </div>
   </article>
 
   <!-- Buch 3 -->
-  <article class="book-card">
+  <article class="book-card" data-book-id="die-kinder-der-zeit">
     <div class="card-header">
       <div class="cover-wrap">
         <img src="https://books.google.com/books/content?id=us2sDgAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die Kinder der Zeit">
@@ -523,99 +729,389 @@
     </div>
     <hr class="card-divider">
     <div class="section-label">Zusammenfassung</div>
-    <p class="book-summary">
-      Die letzte Hoffnung der Menschheit ruht auf einem weit entfernten Planeten, der f&uuml;r die Kolonisierung vorbereitet wurde. Doch dort hat ein fehlgeschlagenes Experiment eine Zivilisation hervorgebracht, die niemand erwartet hatte &mdash; eine Spezies, die rasend schnell evolviert und bereit ist, ihr Territorium zu verteidigen.
-    </p>
+    <p class="book-summary">Die letzte Hoffnung der Menschheit ruht auf einem weit entfernten Planeten, der f&uuml;r die Kolonisierung vorbereitet wurde. Doch dort hat ein fehlgeschlagenes Experiment eine Zivilisation hervorgebracht, die niemand erwartet hatte &mdash; eine Spezies, die rasend schnell evolviert und bereit ist, ihr Territorium zu verteidigen.</p>
     <div class="reason-box">
       <div class="section-label">Warum lesenswert</div>
       <p class="reason-text">Gewinner des Arthur C. Clarke Award und des Hugo Award f&uuml;r Beste Serie. &Uuml;bersetzt von Birgit Herden. Eines der besten Sci-Fi-B&uuml;cher des letzten Jahrzehnts.</p>
+    </div>
+    <div class="track-row">
+      <button class="track-btn" onclick="trackBook(this,'merkliste')" data-status="merkliste" disabled><span class="track-icon">&#9733;</span>Merken</button>
+      <button class="track-btn" onclick="trackBook(this,'lese-ich')" data-status="lese-ich" disabled><span class="track-icon">&#9656;</span>Lese ich</button>
+      <button class="track-btn" onclick="trackBook(this,'gelesen')" data-status="gelesen" disabled><span class="track-icon">&#10003;</span>Gelesen</button>
     </div>
   </article>
 
 </div>
 
+<!-- Meine Bücher Panel -->
+<div id="myBooksPanel" class="my-books-panel">
+  <details open>
+    <summary><span class="arrow">&#9654;</span> Meine B&uuml;cher</summary>
+    <div class="book-search-wrap">
+      <div class="book-search-row">
+        <input type="text" id="bookSearchInput" class="book-search-input" placeholder="Buch suchen &mdash; Titel oder Autor eingeben&hellip;" onkeydown="if(event.key==='Enter')searchBooks()">
+        <button class="book-search-btn" onclick="searchBooks()" id="searchBtn">Suchen</button>
+      </div>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <div id="myBooksList"></div>
+  </details>
+</div>
+
+<!-- Archiv -->
 <div class="history">
   <details>
     <summary><span class="arrow">&#9654;</span> Archiv</summary>
     <div class="history-list">
-
       <div class="history-day">
         <div class="history-date">16. Februar 2026</div>
         <div class="history-books">
           <div class="history-item">
-            <div class="history-cover">
-              <img src="https://books.google.com/books/content?id=F9vKDwAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Der Tausch">
-            </div>
-            <div class="history-meta">
-              <div class="history-title">Der Tausch</div>
-              <div class="history-author">Julie Clark</div>
-              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.0</div>
-            </div>
+            <div class="history-cover"><img src="https://books.google.com/books/content?id=F9vKDwAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Der Tausch"></div>
+            <div class="history-meta"><div class="history-title">Der Tausch</div><div class="history-author">Julie Clark</div><div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.0</div></div>
           </div>
           <div class="history-item">
-            <div class="history-cover">
-              <img src="https://books.google.com/books/content?id=VhOSDwAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die Erben der Zeit">
-            </div>
-            <div class="history-meta">
-              <div class="history-title">Die Erben der Zeit</div>
-              <div class="history-author">Adrian Tchaikovsky</div>
-              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.1</div>
-            </div>
+            <div class="history-cover"><img src="https://books.google.com/books/content?id=VhOSDwAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die Erben der Zeit"></div>
+            <div class="history-meta"><div class="history-title">Die Erben der Zeit</div><div class="history-author">Adrian Tchaikovsky</div><div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.1</div></div>
           </div>
           <div class="history-item">
-            <div class="history-cover">
-              <img src="https://books.google.com/books/content?id=cGAGEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Portal der Welten">
-            </div>
-            <div class="history-meta">
-              <div class="history-title">Portal der Welten</div>
-              <div class="history-author">Adrian Tchaikovsky</div>
-              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.0</div>
-            </div>
+            <div class="history-cover"><img src="https://books.google.com/books/content?id=cGAGEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Portal der Welten"></div>
+            <div class="history-meta"><div class="history-title">Portal der Welten</div><div class="history-author">Adrian Tchaikovsky</div><div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.0</div></div>
           </div>
         </div>
       </div>
-
       <div class="history-day">
         <div class="history-date">15. Februar 2026</div>
         <div class="history-books">
           <div class="history-item">
-            <div class="history-cover">
-              <img src="https://books.google.com/books/content?id=6tAREQAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die wei&szlig;e Kr&auml;he">
-            </div>
-            <div class="history-meta">
-              <div class="history-title">Die wei&szlig;e Kr&auml;he</div>
-              <div class="history-author">Michael Robotham</div>
-              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.4</div>
-            </div>
+            <div class="history-cover"><img src="https://books.google.com/books/content?id=6tAREQAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die wei&szlig;e Kr&auml;he"></div>
+            <div class="history-meta"><div class="history-title">Die wei&szlig;e Kr&auml;he</div><div class="history-author">Michael Robotham</div><div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.4</div></div>
           </div>
           <div class="history-item">
-            <div class="history-cover">
-              <img src="https://books.google.com/books/content?id=HPVFEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Der Plan">
-            </div>
-            <div class="history-meta">
-              <div class="history-title">Der Plan</div>
-              <div class="history-author">Julie Clark</div>
-              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.1</div>
-            </div>
+            <div class="history-cover"><img src="https://books.google.com/books/content?id=HPVFEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Der Plan"></div>
+            <div class="history-meta"><div class="history-title">Der Plan</div><div class="history-author">Julie Clark</div><div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.1</div></div>
           </div>
           <div class="history-item">
-            <div class="history-cover">
-              <img src="https://books.google.com/books/content?id=us2sDgAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die Kinder der Zeit">
-            </div>
-            <div class="history-meta">
-              <div class="history-title">Die Kinder der Zeit</div>
-              <div class="history-author">Adrian Tchaikovsky</div>
-              <div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.3</div>
-            </div>
+            <div class="history-cover"><img src="https://books.google.com/books/content?id=us2sDgAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Die Kinder der Zeit"></div>
+            <div class="history-meta"><div class="history-title">Die Kinder der Zeit</div><div class="history-author">Adrian Tchaikovsky</div><div class="history-rating"><span class="lit">&#9733;&#9733;&#9733;&#9733;</span>&#9733; 4.3</div></div>
           </div>
         </div>
       </div>
-
     </div>
   </details>
 </div>
 
 <div class="footer">Nur B&uuml;cher mit 4.0+ auf Goodreads</div>
 
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // ╔══════════════════════════════════════════════════════╗
+  // ║  FIREBASE CONFIG — Hier deine eigenen Werte eintragen  ║
+  // ╚══════════════════════════════════════════════════════╝
+  var firebaseConfig = {
+    apiKey: "AIzaSyAEUW1N1ZDyHWI8tvduoiUIsc8TpJ34pHk",
+    authDomain: "buchvorschlaege.firebaseapp.com",
+    projectId: "buchvorschlaege",
+    storageBucket: "buchvorschlaege.firebasestorage.app",
+    messagingSenderId: "586584496249",
+    appId: "1:586584496249:web:889a0cb7274b1e796bdca8"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  var auth = firebase.auth();
+  var db = firebase.firestore();
+  var currentUser = null;
+
+  // ─── Auth ───
+  auth.onAuthStateChanged(function(user) {
+    currentUser = user;
+    var loginBtn = document.getElementById('loginBtn');
+    var userInfo = document.getElementById('userInfo');
+    var avatar = document.getElementById('userAvatar');
+    var trackBtns = document.querySelectorAll('.track-btn');
+
+    if (user) {
+      loginBtn.style.display = 'none';
+      userInfo.classList.add('active');
+      if (user.photoURL) {
+        avatar.innerHTML = '<img src="' + user.photoURL + '" alt="">';
+      } else {
+        var initials = (user.displayName || user.email || '?').substring(0,2).toUpperCase();
+        avatar.textContent = initials;
+      }
+      trackBtns.forEach(function(btn) { btn.disabled = false; });
+      loadUserBooks();
+    } else {
+      loginBtn.style.display = '';
+      userInfo.classList.remove('active');
+      trackBtns.forEach(function(btn) { btn.disabled = true; btn.classList.remove('active'); });
+      document.getElementById('myBooksPanel').classList.remove('active');
+    }
+  });
+
+  function handleLogin() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  }
+
+  function handleLogout() {
+    auth.signOut();
+  }
+
+  // ─── Book Tracking ───
+  function getBookData(card) {
+    var title = card.querySelector('.book-title').textContent;
+    var author = card.querySelector('.author-name').textContent;
+    var coverImg = card.querySelector('.cover-wrap img');
+    var ratingNum = card.querySelector('.rating-num');
+    return {
+      title: title,
+      author: author,
+      coverUrl: coverImg ? coverImg.src : '',
+      rating: ratingNum ? parseFloat(ratingNum.textContent) : 0
+    };
+  }
+
+  function trackBook(btn, status) {
+    if (!currentUser) return;
+    var card = btn.closest('.book-card');
+    var bookId = card.getAttribute('data-book-id');
+    var bookData = getBookData(card);
+    var allBtns = card.querySelectorAll('.track-btn');
+    var isActive = btn.classList.contains('active');
+
+    if (isActive) {
+      // Remove from list
+      db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).delete();
+      allBtns.forEach(function(b) { b.classList.remove('active'); });
+    } else {
+      // Save to list
+      bookData.status = status;
+      bookData.addedAt = firebase.firestore.FieldValue.serverTimestamp();
+      db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).set(bookData);
+      allBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+    setTimeout(loadUserBooks, 500);
+  }
+
+  function loadUserBooks() {
+    if (!currentUser) return;
+    db.collection('users').doc(currentUser.uid).collection('books')
+      .orderBy('addedAt', 'desc')
+      .get()
+      .then(function(snapshot) {
+        var books = { merkliste: [], 'lese-ich': [], gelesen: [] };
+        snapshot.forEach(function(doc) {
+          var data = doc.data();
+          data.id = doc.id;
+          if (books[data.status]) books[data.status].push(data);
+        });
+
+        // Update card buttons
+        document.querySelectorAll('.book-card').forEach(function(card) {
+          var bookId = card.getAttribute('data-book-id');
+          var btns = card.querySelectorAll('.track-btn');
+          btns.forEach(function(b) { b.classList.remove('active'); });
+          snapshot.forEach(function(doc) {
+            if (doc.id === bookId) {
+              var st = doc.data().status;
+              btns.forEach(function(b) {
+                if (b.getAttribute('data-status') === st) b.classList.add('active');
+              });
+            }
+          });
+        });
+
+        // Update My Books panel
+        var total = books.merkliste.length + books['lese-ich'].length + books.gelesen.length;
+        var myBooksBtn = document.getElementById('myBooksBtn');
+        myBooksBtn.textContent = 'Meine B\u00FCcher (' + total + ')';
+        if (total > 0) {
+          myBooksBtn.classList.add('has-books');
+        } else {
+          myBooksBtn.classList.remove('has-books');
+        }
+
+        renderMyBooks(books);
+      });
+  }
+
+  function renderMyBooks(books) {
+    var container = document.getElementById('myBooksList');
+    var labels = { merkliste: 'Merkliste', 'lese-ich': 'Lese ich gerade', gelesen: 'Gelesen' };
+    var html = '';
+    var hasAny = false;
+
+    ['lese-ich', 'merkliste', 'gelesen'].forEach(function(status) {
+      if (books[status].length === 0) return;
+      hasAny = true;
+      html += '<div class="my-books-group"><div class="my-books-group-label">' + labels[status] + ' (' + books[status].length + ')</div>';
+      books[status].forEach(function(book) {
+        html += '<div class="my-book-item">';
+        html += '<div class="my-book-cover"><img src="' + book.coverUrl + '" alt=""></div>';
+        html += '<div class="my-book-info"><div class="my-book-title">' + book.title + '</div><div class="my-book-author">' + book.author + '</div></div>';
+        html += '<div class="my-book-actions">';
+        html += '<select class="status-select" onchange="changeStatus(\'' + book.id + '\',this.value)">';
+        html += '<option value="merkliste"' + (book.status === 'merkliste' ? ' selected' : '') + '>Merkliste</option>';
+        html += '<option value="lese-ich"' + (book.status === 'lese-ich' ? ' selected' : '') + '>Lese ich</option>';
+        html += '<option value="gelesen"' + (book.status === 'gelesen' ? ' selected' : '') + '>Gelesen</option>';
+        html += '</select>';
+        html += '<button class="remove-btn" onclick="removeBook(\'' + book.id + '\')" title="Entfernen">&times;</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+    });
+
+    if (!hasAny) {
+      html = '<div class="my-books-empty">Noch keine B&uuml;cher gespeichert. Klicke bei einem Buch auf Merken, Lese ich oder Gelesen.</div>';
+    }
+
+    container.innerHTML = html;
+  }
+
+  function changeStatus(bookId, newStatus) {
+    if (!currentUser) return;
+    db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update({ status: newStatus });
+    setTimeout(loadUserBooks, 300);
+  }
+
+  function removeBook(bookId) {
+    if (!currentUser) return;
+    db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).delete();
+    setTimeout(loadUserBooks, 300);
+  }
+
+  function toggleMyBooks() {
+    var panel = document.getElementById('myBooksPanel');
+    panel.classList.toggle('active');
+    if (panel.classList.contains('active')) {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // ─── Book Search (Google Books API) ───
+  function searchBooks() {
+    var query = document.getElementById('bookSearchInput').value.trim();
+    if (!query) return;
+
+    var btn = document.getElementById('searchBtn');
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    var url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&langRestrict=de&maxResults=8&printType=books';
+
+    fetch(url)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        btn.disabled = false;
+        btn.textContent = 'Suchen';
+        renderSearchResults(data.items || []);
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = 'Suchen';
+        renderSearchResults([]);
+      });
+  }
+
+  function renderSearchResults(items) {
+    var container = document.getElementById('searchResults');
+    container.classList.add('active');
+
+    if (items.length === 0) {
+      container.innerHTML = '<div class="search-no-results">Keine Ergebnisse gefunden.</div><button class="search-close" onclick="closeSearch()">Schlie&szlig;en</button>';
+      return;
+    }
+
+    var html = '<div class="search-results-label">Ergebnisse (' + items.length + ')</div>';
+
+    items.forEach(function(item) {
+      var info = item.volumeInfo || {};
+      var title = info.title || 'Unbekannt';
+      var authors = (info.authors || ['Unbekannt']).join(', ');
+      var year = (info.publishedDate || '').substring(0, 4);
+      var cover = '';
+      if (info.imageLinks) {
+        cover = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || '';
+        cover = cover.replace('http://', 'https://');
+      }
+      var googleId = item.id || '';
+      var bookSlug = slugify(title);
+
+      // Build cover from Google Books content API for consistency
+      var coverUrl = cover || ('https://books.google.com/books/content?id=' + googleId + '&printsec=frontcover&img=1&zoom=1');
+
+      var escapedTitle = escapeHtml(title);
+      var escapedAuthor = escapeHtml(authors);
+      var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '"';
+
+      html += '<div class="search-result-item">';
+      html += '<div class="search-result-cover"><img src="' + coverUrl + '" alt="" onerror="this.style.display=\'none\'"></div>';
+      html += '<div class="search-result-info">';
+      html += '<div class="search-result-title">' + escapedTitle + '</div>';
+      html += '<div class="search-result-author">' + escapedAuthor + '</div>';
+      if (year) html += '<div class="search-result-year">' + year + '</div>';
+      html += '</div>';
+      html += '<div class="search-result-actions">';
+      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'merkliste\')" title="Merkliste">&#9733;</button>';
+      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'lese-ich\')" title="Lese ich">&#9656;</button>';
+      html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'gelesen\')" title="Gelesen">&#10003;</button>';
+      html += '</div>';
+      html += '</div>';
+    });
+
+    html += '<button class="search-close" onclick="closeSearch()">Ergebnisse schlie&szlig;en</button>';
+    container.innerHTML = html;
+  }
+
+  function addSearchedBook(btn, status) {
+    if (!currentUser) return;
+    var title = btn.getAttribute('data-title');
+    var author = btn.getAttribute('data-author');
+    var coverUrl = btn.getAttribute('data-cover');
+    var slug = btn.getAttribute('data-slug');
+
+    var bookData = {
+      title: title,
+      author: author,
+      coverUrl: coverUrl,
+      rating: 0,
+      status: status,
+      addedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection('users').doc(currentUser.uid).collection('books').doc(slug).set(bookData).then(function() {
+      // Mark row as added
+      var row = btn.closest('.search-result-item');
+      var allBtns = row.querySelectorAll('.search-add-btn');
+      allBtns.forEach(function(b) { b.classList.remove('added'); b.innerHTML = b === btn ? (status === 'merkliste' ? '&#9733;' : status === 'lese-ich' ? '&#9656;' : '&#10003;') : b.innerHTML; });
+      btn.classList.add('added');
+      setTimeout(loadUserBooks, 500);
+    });
+  }
+
+  function closeSearch() {
+    var container = document.getElementById('searchResults');
+    container.classList.remove('active');
+    container.innerHTML = '';
+  }
+
+  function slugify(str) {
+    return str.toLowerCase()
+      .replace(/[äÄ]/g, 'ae').replace(/[öÖ]/g, 'oe').replace(/[üÜ]/g, 'ue').replace(/ß/g, 'ss')
+      .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 60);
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>
 </body>
 </html>
