@@ -379,6 +379,19 @@
   body.logged-in .footer { display: none; }
   body.logged-in #loginBtn { display: none; }
 
+  body.logged-in {
+    --bg: #0e100f;
+    --card: #161917;
+    --card-border: rgba(255,255,255,0.05);
+    --accent: #5a8a6a;
+    --accent-soft: rgba(90,138,106,0.15);
+    --accent-glow: rgba(90,138,106,0.08);
+    --text: #d6d8d2;
+    --text-soft: #919488;
+    --text-muted: #50534c;
+    --divider: rgba(255,255,255,0.05);
+  }
+
   body.logged-in .dashboard { display: block; }
 
   body.logged-in .top-bar {
@@ -544,6 +557,66 @@
 
   .dash-search-btn:hover { opacity: 0.85; }
   .dash-search-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .dash-manual-btn {
+    background: transparent;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    color: var(--text-soft);
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 400;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .dash-manual-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .manual-form {
+    display: none; margin-top: 12px;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 16px;
+  }
+  .manual-form.active { display: block; }
+  .manual-form-title {
+    font-size: 0.75rem; font-weight: 500; color: var(--text);
+    margin-bottom: 12px; letter-spacing: 0.04em;
+  }
+  .manual-form-row {
+    display: flex; gap: 8px; margin-bottom: 8px;
+  }
+  .manual-form-input {
+    flex: 1;
+    background: var(--bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: var(--sans); font-size: 0.8rem; font-weight: 300;
+    padding: 8px 12px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .manual-form-input::placeholder { color: var(--text-muted); }
+  .manual-form-input:focus { border-color: var(--accent); }
+  .manual-form-actions {
+    display: flex; gap: 8px; align-items: center; margin-top: 4px;
+  }
+  .manual-form-actions select {
+    background: var(--bg); border: 1px solid var(--card-border);
+    color: var(--text-soft); font-family: var(--sans);
+    font-size: 0.72rem; padding: 8px 10px; border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .manual-save-btn {
+    background: var(--accent); border: none; border-radius: var(--radius);
+    color: var(--white); font-family: var(--sans); font-size: 0.72rem;
+    font-weight: 500; letter-spacing: 0.06em;
+    padding: 8px 18px; cursor: pointer; transition: opacity 0.2s;
+  }
+  .manual-save-btn:hover { opacity: 0.85; }
+  .manual-cancel-btn {
+    background: none; border: none; color: var(--text-muted);
+    font-family: var(--sans); font-size: 0.72rem; cursor: pointer;
+  }
+  .manual-cancel-btn:hover { color: var(--text); }
 
   .dash-search-results {
     margin-top: 12px;
@@ -946,8 +1019,25 @@
         <div class="dash-search-row">
           <input type="text" id="dashSearchInput" class="dash-search-input" placeholder="Buch suchen &mdash; Titel oder Autor eingeben&hellip;" onkeydown="if(event.key==='Enter')searchBooks()">
           <button class="dash-search-btn" onclick="searchBooks()" id="dashSearchBtn">Suchen</button>
+          <button class="dash-manual-btn" onclick="toggleManualForm()">+ Manuell</button>
         </div>
         <div id="dashSearchResults" class="dash-search-results"></div>
+        <div id="manualForm" class="manual-form">
+          <div class="manual-form-title">Buch manuell hinzuf&uuml;gen</div>
+          <div class="manual-form-row">
+            <input type="text" id="manualTitle" class="manual-form-input" placeholder="Titel">
+            <input type="text" id="manualAuthor" class="manual-form-input" placeholder="Autor">
+          </div>
+          <div class="manual-form-actions">
+            <select id="manualStatus">
+              <option value="merkliste">M&ouml;chte ich lesen</option>
+              <option value="lese-ich">Lese ich aktuell</option>
+              <option value="gelesen">Habe ich gelesen</option>
+            </select>
+            <button class="manual-save-btn" onclick="saveManualBook()">Hinzuf&uuml;gen</button>
+            <button class="manual-cancel-btn" onclick="toggleManualForm()">Abbrechen</button>
+          </div>
+        </div>
       </div>
       <div id="dashCategories"></div>
     </div>
@@ -1255,6 +1345,41 @@
     if (!currentUser) return;
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).delete();
     setTimeout(loadUserBooks, 300);
+  }
+
+  // ─── Manual Book Entry ───
+  function toggleManualForm() {
+    var form = document.getElementById('manualForm');
+    form.classList.toggle('active');
+    if (form.classList.contains('active')) {
+      document.getElementById('manualTitle').focus();
+    }
+  }
+
+  function saveManualBook() {
+    if (!currentUser) return;
+    var title = document.getElementById('manualTitle').value.trim();
+    var author = document.getElementById('manualAuthor').value.trim();
+    var status = document.getElementById('manualStatus').value;
+    if (!title) { document.getElementById('manualTitle').focus(); return; }
+
+    var slug = slugify(title + '-' + (author || 'unbekannt'));
+    var bookData = {
+      title: title,
+      author: author || 'Unbekannt',
+      coverUrl: '',
+      rating: 0,
+      status: status,
+      addedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection('users').doc(currentUser.uid).collection('books').doc(slug).set(bookData).then(function() {
+      document.getElementById('manualTitle').value = '';
+      document.getElementById('manualAuthor').value = '';
+      document.getElementById('manualStatus').value = 'merkliste';
+      document.getElementById('manualForm').classList.remove('active');
+      loadUserBooks();
+    });
   }
 
   // ─── Book Search (Google Books API) ───
