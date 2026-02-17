@@ -1119,6 +1119,11 @@
   .edit-form-input::placeholder { color: var(--text-muted); }
   .edit-form-input:focus { border-color: var(--accent); }
   .edit-form-input.full { flex: 1 1 100%; }
+  .edit-form-input.readonly {
+    opacity: 0.4; cursor: default; background: var(--bg);
+    border-color: transparent; font-size: 0.62rem; color: var(--text-muted);
+  }
+  .edit-form-input.readonly:focus { border-color: transparent; }
   .edit-form-actions { display: flex; gap: 8px; margin-top: 4px; }
   .edit-save-btn {
     background: var(--accent); border: none; border-radius: var(--radius);
@@ -1972,7 +1977,7 @@
           html += '</select>';
           html += '</div>';
           html += '<div class="edit-form-row">';
-          html += '<input class="edit-form-input full" id="editCover-' + book.id + '" placeholder="Cover-URL einf\u00FCgen (optional)" value="' + escapeHtml(book.coverUrl || '') + '">';
+          html += '<input class="edit-form-input full readonly" id="editCover-' + book.id + '" placeholder="Cover-URL (automatisch)" value="' + escapeHtml(book.coverUrl || '') + '" readonly tabindex="-1">';
           html += '</div>';
           html += '<div class="edit-form-row">';
           html += '<input class="edit-form-input full" id="editBookLink-' + book.id + '" placeholder="Link zum Buch (z.B. Amazon, Thalia, Goodreads)" value="' + escapeHtml(book.bookLink || book.buyLink || book.infoLink || '') + '">';
