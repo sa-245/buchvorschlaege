@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buchvorschläge</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --card: #1a1a24;
+    --card-hover: #22222f;
+    --accent: #c9a84c;
+    --text: #e8e6e1;
+    --text-dim: #9a9890;
+    --thriller: #d44a4a;
+    --scifi: #4a8fd4;
+    --star: #f5c518;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .header {
+    text-align: center;
+    padding: 28px 20px 12px;
+  }
+
+  .header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), #e8d5a3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header .subtitle {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .badge {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .badge.thriller { background: rgba(212,74,74,0.15); color: var(--thriller); }
+  .badge.scifi { background: rgba(74,143,212,0.15); color: var(--scifi); }
+  .badge.star-badge { background: rgba(245,197,24,0.12); color: var(--star); }
+
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 16px 16px 60px;
+  }
+
+  /* Aufklappbare Karten ohne JS via <details> */
+  details.book-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 0;
+    margin-bottom: 16px;
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+    overflow: hidden;
+  }
+
+  details.book-card[open] {
+    border-color: rgba(201,168,76,0.25);
+    background: var(--card-hover);
+  }
+
+  details.book-card summary {
+    padding: 20px;
+    cursor: pointer;
+    list-style: none;
+    outline: none;
+  }
+
+  details.book-card summary::-webkit-details-marker { display: none; }
+  details.book-card summary::marker { display: none; content: ""; }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .genre-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .genre-tag.thriller { background: rgba(212,74,74,0.15); color: var(--thriller); }
+  .genre-tag.scifi { background: rgba(74,143,212,0.15); color: var(--scifi); }
+
+  .book-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 10px;
+  }
+
+  .book-author {
+    color: var(--accent);
+    font-size: 0.88rem;
+    margin-top: 2px;
+  }
+
+  .book-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .rating-num {
+    font-weight: 700;
+    color: var(--star);
+    font-size: 0.95rem;
+  }
+
+  .star-icons { color: var(--star); letter-spacing: 1px; font-size: 0.75rem; }
+  .star-icons .dim { color: #333; }
+
+  .expand-hint {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 10px;
+  }
+
+  details[open] .expand-hint { display: none; }
+
+  .card-body {
+    padding: 0 20px 20px;
+  }
+
+  .book-summary {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text-dim);
+  }
+
+  .book-reason {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(201,168,76,0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #222;
+    margin: 0;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 16px;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Deine Buchvorschläge</h1>
+  <p class="subtitle">3 handverlesene Empfehlungen</p>
+  <div class="badge-row">
+    <span class="badge thriller">Thriller</span>
+    <span class="badge scifi">Sci-Fi</span>
+    <span class="badge star-badge">&#9733; 4.0+</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Buch 1 -->
+  <details class="book-card">
+    <summary>
+      <div class="card-top">
+        <div>
+          <span class="genre-tag thriller">Thriller / Krimi</span>
+          <div class="book-title">The White Crow</div>
+          <div class="book-author">von Michael Robotham</div>
+        </div>
+        <span class="rating-num">4.4 &#9733;</span>
+      </div>
+      <div class="book-meta">
+        <span>2025</span>
+        <span>&middot;</span>
+        <span class="star-icons">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
+      </div>
+      <div class="expand-hint">&#9660; Tippen zum Aufklappen</div>
+    </summary>
+    <div class="card-body">
+      <p class="book-summary">
+        Philomena McCarthy hat es als junge Polizistin bei der Metropolitan Police weit gebracht &mdash; trotz einer Familie, die zu Londons berüchtigtsten Gangsterfamilien gehört. Als sie eines Nachts ein blutüberströmtes Kind auf der Straße findet und gleichzeitig drei Kilometer entfernt ein Juwelier eine Bombe um den Hals trägt, kollidieren die Ereignisse und bedrohen ihre Karriere, ihre Ehe und ihr Leben.
+      </p>
+      <div class="book-reason">
+        <strong>Warum lesenswert:</strong> Kritiker bezeichnen diesen Roman als Robothams bisher bestes und spannendstes Werk. Perfektes Zusammenspiel aus psychologischer Tiefe und atemloser Action.
+      </div>
+    </div>
+  </details>
+
+  <!-- Buch 2 -->
+  <details class="book-card">
+    <summary>
+      <div class="card-top">
+        <div>
+          <span class="genre-tag thriller">Southern Noir</span>
+          <div class="book-title">King of Ashes</div>
+          <div class="book-author">von S.A. Cosby</div>
+        </div>
+        <span class="rating-num">4.0 &#9733;</span>
+      </div>
+      <div class="book-meta">
+        <span>2025</span>
+        <span>&middot;</span>
+        <span class="star-icons">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
+      </div>
+      <div class="expand-hint">&#9660; Tippen zum Aufklappen</div>
+    </summary>
+    <div class="card-body">
+      <p class="book-summary">
+        Als Roman Carruthers nach dem schweren Autounfall seines Vaters nach Hause gerufen wird, findet er seine Familie im Chaos: Sein Bruder schuldet gefährlichen Kriminellen Geld, und seine Schwester hält das Familienunternehmen &mdash; ein Krematorium in Virginia &mdash; allein zusammen. Doch der Unfall war kein Unfall, und bald kämpfen die Carruthers um weit mehr als nur ihr Geschäft.
+      </p>
+      <div class="book-reason">
+        <strong>Warum lesenswert:</strong> Sofortiger New-York-Times-Bestseller und von der Washington Post als &bdquo;düster, fesselnd und meisterhaft&ldquo; gelobt. Cosbys epischstes Werk, inspiriert von Der Pate.
+      </div>
+    </div>
+  </details>
+
+  <!-- Buch 3 -->
+  <details class="book-card">
+    <summary>
+      <div class="card-top">
+        <div>
+          <span class="genre-tag scifi">Science Fiction / Satire</span>
+          <div class="book-title">Service Model</div>
+          <div class="book-author">von Adrian Tchaikovsky</div>
+        </div>
+        <span class="rating-num">4.0 &#9733;</span>
+      </div>
+      <div class="book-meta">
+        <span>2024</span>
+        <span>&middot;</span>
+        <span class="star-icons">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
+      </div>
+      <div class="expand-hint">&#9660; Tippen zum Aufklappen</div>
+    </summary>
+    <div class="card-body">
+      <p class="book-summary">
+        Charles ist ein Roboter-Kammerdiener, der seinem betagten Herrn treu dient &mdash; bis ein unerwartetes Ereignis sein geordnetes Dasein auf den Kopf stellt. Auf einer Odyssee durch eine postapokalyptische Welt trifft er auf defekte Maschinen, seltsame Hierarchien und die Überreste der Menschheit. Was als skurrile Roboter-Geschichte beginnt, wird zu einer klugen Reflexion über Gehorsam und Freiheit.
+      </p>
+      <div class="book-reason">
+        <strong>Warum lesenswert:</strong> Tchaikovsky (Arthur C. Clarke Award-Gewinner) liefert eine herzliche, absurde und tiefgründige Satire. Vierfach für große Science-Fiction-Preise nominiert.
+      </div>
+    </div>
+  </details>
+
+</div>
+
+<div class="footer">Nur Bücher mit &#9733; 4.0+ auf Goodreads</div>
+
+</body>
+</html>
