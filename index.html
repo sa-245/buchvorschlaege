@@ -952,23 +952,33 @@
     margin-top: 8px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
 
-  .cat-book-fazit {
-    font-size: 0.7rem; color: var(--text-soft);
-    line-height: 1.5; max-width: 400px;
-    background: var(--accent-glow); border-radius: var(--radius);
-    padding: 8px 10px;
+  .cat-book-cards-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
   }
-  .cat-book-fazit-label {
+
+  .cat-book-card-box {
+    flex: 1; min-width: 160px;
+    font-size: 0.7rem; color: var(--text-soft);
+    line-height: 1.5;
+    background: var(--accent-glow); border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+  .cat-book-card-label {
     font-size: 0.55rem; font-weight: 500; color: var(--accent);
     text-transform: uppercase; letter-spacing: 0.05em;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
   }
-  .cat-book-fazit-text {
+  .cat-book-card-text {
     font-style: italic;
   }
+  .cat-book-card-quote {
+    font-style: italic; margin-top: 4px;
+    padding-left: 8px; border-left: 2px solid var(--accent-soft);
+  }
+  .cat-book-card-quote + .cat-book-card-quote { margin-top: 6px; }
 
   .edit-hearts-row {
     display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
@@ -1008,18 +1018,6 @@
     font-family: var(--sans); font-weight: 400; line-height: 1.6;
   }
 
-  .cat-book-quotes {
-    display: flex; flex-direction: column; gap: 4px;
-  }
-  .cat-book-quotes-label {
-    font-size: 0.55rem; font-weight: 500; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.05em;
-  }
-  .cat-book-quote {
-    font-size: 0.65rem; color: var(--text-soft); font-style: italic;
-    line-height: 1.4; padding-left: 10px;
-    border-left: 2px solid var(--accent);
-  }
 
   .edit-genre-row {
     display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;
@@ -1908,18 +1906,22 @@
 
           if (hasDetails) {
             html += '<div class="cat-book-details">';
-            if (book.fazit) {
-              html += '<div class="cat-book-fazit">';
-              html += '<div class="cat-book-fazit-label">Mein Fazit</div>';
-              html += '<div class="cat-book-fazit-text">&bdquo;' + escapeHtml(book.fazit) + '&ldquo;</div>';
-              html += '</div>';
-            }
-            if (quotes.length > 0) {
-              html += '<div class="cat-book-quotes">';
-              html += '<div class="cat-book-quotes-label">Zitate</div>';
-              quotes.forEach(function(q) {
-                html += '<div class="cat-book-quote">&bdquo;' + escapeHtml(q) + '&ldquo;</div>';
-              });
+            if (book.fazit || quotes.length > 0) {
+              html += '<div class="cat-book-cards-row">';
+              if (book.fazit) {
+                html += '<div class="cat-book-card-box">';
+                html += '<div class="cat-book-card-label">Mein Fazit</div>';
+                html += '<div class="cat-book-card-text">&bdquo;' + escapeHtml(book.fazit) + '&ldquo;</div>';
+                html += '</div>';
+              }
+              if (quotes.length > 0) {
+                html += '<div class="cat-book-card-box">';
+                html += '<div class="cat-book-card-label">Zitate</div>';
+                quotes.forEach(function(q) {
+                  html += '<div class="cat-book-card-quote">&bdquo;' + escapeHtml(q) + '&ldquo;</div>';
+                });
+                html += '</div>';
+              }
               html += '</div>';
             }
             if (bookLink) {
