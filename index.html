@@ -827,6 +827,16 @@
   var db = firebase.firestore();
   var currentUser = null;
 
+  // ─── Redirect-Ergebnis abfangen ───
+  auth.getRedirectResult().then(function(result) {
+    if (result.user) {
+      console.log('Login via Redirect erfolgreich:', result.user.displayName);
+    }
+  }).catch(function(error) {
+    console.error('Redirect-Login Fehler:', error.code, error.message);
+    alert('Login-Fehler: ' + error.message);
+  });
+
   // ─── Auth ───
   auth.onAuthStateChanged(function(user) {
     currentUser = user;
@@ -856,7 +866,17 @@
 
   function handleLogin() {
     var provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
+    auth.signInWithPopup(provider).then(function(result) {
+      console.log('Login erfolgreich:', result.user.displayName);
+    }).catch(function(error) {
+      console.error('Popup-Fehler:', error.code, error.message);
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        // Fallback: Redirect statt Popup
+        auth.signInWithRedirect(provider);
+      } else {
+        alert('Login-Fehler: ' + error.message);
+      }
+    });
   }
 
   function handleLogout() {
