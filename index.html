@@ -1095,11 +1095,13 @@
   .cat-book-actions-wrap { flex-shrink: 0; }
 
   .edit-btn {
-    background: none; border: none; color: var(--text-muted);
-    cursor: pointer; font-size: 0.75rem; padding: 2px 4px;
-    transition: color 0.2s;
+    background: none; border: 1px solid var(--card-border); color: var(--text-muted);
+    cursor: pointer; font-size: 0.62rem; padding: 4px 10px;
+    border-radius: var(--radius); display: inline-flex;
+    align-items: center; gap: 4px; font-family: var(--sans);
+    transition: all 0.2s;
   }
-  .edit-btn:hover { color: var(--accent); }
+  .edit-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-glow); }
 
   .edit-form {
     display: none; width: 100%; padding: 12px 0 4px 0;
@@ -1946,7 +1948,7 @@
             html += '</div>';
           }
           html += '<div class="cat-book-actions-wrap">';
-          html += '<button class="edit-btn" onclick="toggleEditForm(\'' + book.id + '\')" title="Bearbeiten">&#9998;</button>';
+          html += '<button class="edit-btn" onclick="toggleEditForm(\'' + book.id + '\')">&#9998; Bearbeiten</button>';
           html += '</div>';
           html += '</div>';
           html += '<div class="edit-form" id="edit-' + book.id + '">';
