@@ -401,7 +401,29 @@
 
   .track-btn .track-icon { display: block; font-size: 0.85rem; margin-bottom: 2px; }
 
-  .track-btn:disabled { opacity: 0.3; cursor: default; }
+  .track-btn.needs-login { opacity: 0.45; cursor: pointer; }
+  .track-btn.needs-login:hover { opacity: 0.65; background: rgba(0,0,0,0.03); }
+
+  /* ─── Login-Hinweis Toast ─── */
+  .login-toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--card); color: var(--text);
+    font-family: var(--sans); font-size: 0.78rem; font-weight: 400;
+    padding: 14px 22px; border-radius: 10px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.12), 0 0 0 1px var(--card-border);
+    display: flex; align-items: center; gap: 12px;
+    z-index: 2000; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .login-toast.visible { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+  .login-toast-text { line-height: 1.3; }
+  .login-toast-btn {
+    background: var(--accent); color: #fff; border: none; border-radius: var(--radius);
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
+    padding: 7px 16px; cursor: pointer; white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .login-toast-btn:hover { background: #4a7a5a; }
 
   /* ─── History ─── */
   .history { max-width: 1280px; margin: 0 auto; padding: 0 20px 12px; }
@@ -1232,9 +1254,9 @@
       <p class="reason-text">Kritiker bezeichnen diesen Roman als Robothams bisher bestes Werk. &Uuml;bersetzt von Kristian Lutze. Perfektes Zusammenspiel aus psychologischer Tiefe und atemloser Action.</p>
     </div>
     <div class="track-row">
-      <button class="track-btn" onclick="trackBook(this,'merkliste')" data-status="merkliste" disabled><span class="track-icon">&#9203;</span>Merken</button>
-      <button class="track-btn" onclick="trackBook(this,'lese-ich')" data-status="lese-ich" disabled><span class="track-icon">&#128214;</span>Lese ich</button>
-      <button class="track-btn" onclick="trackBook(this,'gelesen')" data-status="gelesen" disabled><span class="track-icon">&#9733;</span>Gelesen</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'merkliste')" data-status="merkliste"><span class="track-icon">&#9203;</span>Merken</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'lese-ich')" data-status="lese-ich"><span class="track-icon">&#128214;</span>Lese ich</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'gelesen')" data-status="gelesen"><span class="track-icon">&#9733;</span>Gelesen</button>
     </div>
   </article>
 
@@ -1267,9 +1289,9 @@
       <p class="reason-text">Nr.-1-SPIEGEL-Bestseller. &Uuml;bersetzt von Astrid Gravert &amp; Katja Hald. Ein raffinierter Psychothriller mit unerwarteten Wendungen &mdash; perfekt f&uuml;r Fans von Lucy Clarke.</p>
     </div>
     <div class="track-row">
-      <button class="track-btn" onclick="trackBook(this,'merkliste')" data-status="merkliste" disabled><span class="track-icon">&#9203;</span>Merken</button>
-      <button class="track-btn" onclick="trackBook(this,'lese-ich')" data-status="lese-ich" disabled><span class="track-icon">&#128214;</span>Lese ich</button>
-      <button class="track-btn" onclick="trackBook(this,'gelesen')" data-status="gelesen" disabled><span class="track-icon">&#9733;</span>Gelesen</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'merkliste')" data-status="merkliste"><span class="track-icon">&#9203;</span>Merken</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'lese-ich')" data-status="lese-ich"><span class="track-icon">&#128214;</span>Lese ich</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'gelesen')" data-status="gelesen"><span class="track-icon">&#9733;</span>Gelesen</button>
     </div>
   </article>
 
@@ -1302,9 +1324,9 @@
       <p class="reason-text">Gewinner des Arthur C. Clarke Award und des Hugo Award f&uuml;r Beste Serie. &Uuml;bersetzt von Birgit Herden. Eines der besten Sci-Fi-B&uuml;cher des letzten Jahrzehnts.</p>
     </div>
     <div class="track-row">
-      <button class="track-btn" onclick="trackBook(this,'merkliste')" data-status="merkliste" disabled><span class="track-icon">&#9203;</span>Merken</button>
-      <button class="track-btn" onclick="trackBook(this,'lese-ich')" data-status="lese-ich" disabled><span class="track-icon">&#128214;</span>Lese ich</button>
-      <button class="track-btn" onclick="trackBook(this,'gelesen')" data-status="gelesen" disabled><span class="track-icon">&#9733;</span>Gelesen</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'merkliste')" data-status="merkliste"><span class="track-icon">&#9203;</span>Merken</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'lese-ich')" data-status="lese-ich"><span class="track-icon">&#128214;</span>Lese ich</button>
+      <button class="track-btn needs-login" onclick="trackBook(this,'gelesen')" data-status="gelesen"><span class="track-icon">&#9733;</span>Gelesen</button>
     </div>
   </article>
 </div>
@@ -1429,6 +1451,11 @@
 </div>
 
 <!-- Firebase SDKs -->
+<div class="login-toast" id="loginToast">
+  <span class="login-toast-text">Melde dich an, um B&uuml;cher zu speichern</span>
+  <button class="login-toast-btn" onclick="handleLogin()">Anmelden</button>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -1478,14 +1505,14 @@
       }
       userName.textContent = user.displayName || user.email || '';
 
-      trackBtns.forEach(function(btn) { btn.disabled = false; });
+      trackBtns.forEach(function(btn) { btn.classList.remove('needs-login'); });
       buildSidebar();
       loadUserBooks();
     } else {
       document.body.classList.remove('logged-in');
       loginBtn.style.display = '';
       userInfo.classList.remove('active');
-      trackBtns.forEach(function(btn) { btn.disabled = true; btn.classList.remove('active'); });
+      trackBtns.forEach(function(btn) { btn.classList.add('needs-login'); btn.classList.remove('active'); });
     }
   });
 
@@ -1644,8 +1671,16 @@
     };
   }
 
+  var _loginToastTimer = null;
+  function showLoginToast() {
+    var toast = document.getElementById('loginToast');
+    toast.classList.add('visible');
+    if (_loginToastTimer) clearTimeout(_loginToastTimer);
+    _loginToastTimer = setTimeout(function() { toast.classList.remove('visible'); }, 4000);
+  }
+
   function trackBook(btn, status) {
-    if (!currentUser) return;
+    if (!currentUser) { showLoginToast(); return; }
     var card = btn.closest('.book-card');
     var bookId = card.getAttribute('data-book-id');
     var bookData = getBookData(card);
