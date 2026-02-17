@@ -3,290 +3,355 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Buchvorschläge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f0f13;
-    --card: #1a1a24;
-    --card-hover: #22222f;
-    --accent: #c9a84c;
-    --text: #e8e6e1;
-    --text-dim: #9a9890;
-    --thriller: #d44a4a;
-    --scifi: #4a8fd4;
+    --bg: #0c0b10;
+    --card: #1c1b26;
+    --card-open: #201f2b;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --gold-dim: rgba(201,168,76,0.12);
+    --text: #eae8e3;
+    --text-soft: #a8a5a0;
+    --text-muted: #6b6966;
+    --thriller: #c94545;
+    --thriller-bg: rgba(201,69,69,0.1);
+    --scifi: #4a90d9;
+    --scifi-bg: rgba(74,144,217,0.1);
     --star: #f5c518;
-    --radius: 16px;
+    --radius: 20px;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: var(--sans);
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
 
-  .header {
+  .hero {
     text-align: center;
-    padding: 28px 20px 12px;
+    padding: 40px 24px 20px;
+    background: linear-gradient(180deg, rgba(201,168,76,0.06) 0%, transparent 100%);
   }
 
-  .header h1 {
-    font-size: 1.6rem;
+  .hero-icon { font-size: 2rem; margin-bottom: 8px; }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 1.75rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent), #e8d5a3);
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .header .subtitle {
-    color: var(--text-dim);
-    font-size: 0.85rem;
-    margin-top: 4px;
+  .hero .tagline {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-style: italic;
+    font-family: var(--serif);
   }
 
-  .badge-row {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 14px;
-  }
+  .pill-row { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
 
-  .badge {
+  .pill {
     padding: 5px 14px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
-  }
-
-  .badge.thriller { background: rgba(212,74,74,0.15); color: var(--thriller); }
-  .badge.scifi { background: rgba(74,143,212,0.15); color: var(--scifi); }
-  .badge.star-badge { background: rgba(245,197,24,0.12); color: var(--star); }
-
-  .container {
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 16px 16px 60px;
-  }
-
-  /* Aufklappbare Karten ohne JS via <details> */
-  details.book-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 0;
-    margin-bottom: 16px;
-    border: 1px solid transparent;
-    transition: border-color 0.3s;
-    overflow: hidden;
-  }
-
-  details.book-card[open] {
-    border-color: rgba(201,168,76,0.25);
-    background: var(--card-hover);
-  }
-
-  details.book-card summary {
-    padding: 20px;
-    cursor: pointer;
-    list-style: none;
-    outline: none;
-  }
-
-  details.book-card summary::-webkit-details-marker { display: none; }
-  details.book-card summary::marker { display: none; content: ""; }
-
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .genre-tag {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 10px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
   }
 
-  .genre-tag.thriller { background: rgba(212,74,74,0.15); color: var(--thriller); }
-  .genre-tag.scifi { background: rgba(74,143,212,0.15); color: var(--scifi); }
+  .pill.thriller { background: var(--thriller-bg); color: var(--thriller); }
+  .pill.scifi { background: var(--scifi-bg); color: var(--scifi); }
+  .pill.star { background: var(--gold-dim); color: var(--gold); }
+
+  .divider-line {
+    width: 48px; height: 1px;
+    background: var(--gold); opacity: 0.3;
+    margin: 20px auto 0;
+  }
+
+  .container { max-width: 540px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  details.book {
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.04);
+    overflow: hidden;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  details.book[open] {
+    background: var(--card-open);
+    border-color: rgba(201,168,76,0.15);
+  }
+
+  details.book summary {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    cursor: pointer;
+    list-style: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  details.book summary::-webkit-details-marker,
+  details.book summary::marker { display: none; content: ""; }
+
+  .cover-wrap {
+    flex-shrink: 0;
+    width: 90px; height: 135px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #2a2a35;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  .cover-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-info {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .genre-label {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 8px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    width: fit-content;
+  }
+
+  .genre-label.thriller { background: var(--thriller-bg); color: var(--thriller); }
+  .genre-label.scifi { background: var(--scifi-bg); color: var(--scifi); }
 
   .book-title {
+    font-family: var(--serif);
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.3;
-    margin-top: 10px;
+    margin-top: 6px;
   }
 
-  .book-author {
-    color: var(--accent);
-    font-size: 0.88rem;
-    margin-top: 2px;
+  .book-author-line {
+    display: flex; align-items: center; gap: 8px; margin-top: 6px;
   }
 
-  .book-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-    font-size: 0.78rem;
-    color: var(--text-dim);
+  .author-avatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: #2a2a35;
   }
 
-  .rating-num {
-    font-weight: 700;
-    color: var(--star);
-    font-size: 0.95rem;
-  }
-
-  .star-icons { color: var(--star); letter-spacing: 1px; font-size: 0.75rem; }
-  .star-icons .dim { color: #333; }
-
-  .expand-hint {
-    text-align: center;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    margin-top: 10px;
-  }
-
-  details[open] .expand-hint { display: none; }
-
-  .card-body {
-    padding: 0 20px 20px;
-  }
-
-  .book-summary {
-    font-size: 0.88rem;
-    line-height: 1.65;
-    color: var(--text-dim);
-  }
-
-  .book-reason {
-    margin-top: 12px;
-    padding: 10px 14px;
-    background: rgba(201,168,76,0.08);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 8px 8px 0;
+  .author-name {
     font-size: 0.82rem;
-    line-height: 1.55;
+    color: var(--gold);
+    font-weight: 500;
   }
 
-  .divider {
-    border: none;
-    border-top: 1px solid #222;
-    margin: 0;
+  .rating-row {
+    display: flex; align-items: center; gap: 6px; margin-top: 8px;
   }
+
+  .star-display { color: var(--star); font-size: 0.7rem; letter-spacing: 1px; }
+  .star-display .dim { color: #2a2a2a; }
+
+  .rating-num { font-size: 0.78rem; font-weight: 700; color: var(--star); }
+
+  .year-tag { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
+
+  .tap-hint {
+    font-size: 0.65rem; color: var(--text-muted);
+    text-align: center; margin-top: 6px; padding-bottom: 2px;
+  }
+
+  details.book[open] .tap-hint { display: none; }
+
+  .book-body { padding: 0 16px 20px; }
+
+  .body-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 16px;
+  }
+
+  .section-label {
+    font-size: 0.65rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); margin-bottom: 6px;
+  }
+
+  .book-summary { font-size: 0.88rem; line-height: 1.7; color: var(--text-soft); }
+
+  .reason-box {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--gold-dim);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .reason-box .section-label { color: var(--gold); margin-bottom: 4px; }
+
+  .reason-text { font-size: 0.84rem; line-height: 1.6; color: var(--text); }
 
   .footer {
-    text-align: center;
-    padding: 16px;
-    color: var(--text-dim);
-    font-size: 0.72rem;
+    text-align: center; padding: 10px 16px 32px;
+    font-size: 0.7rem; color: var(--text-muted);
+    font-family: var(--serif); font-style: italic;
+  }
+
+  @media (max-width: 380px) {
+    .cover-wrap { width: 75px; height: 113px; }
+    .book-title { font-size: 1.02rem; }
+    .hero h1 { font-size: 1.5rem; }
+    details.book summary { padding: 12px; gap: 12px; }
   }
 </style>
 </head>
 <body>
 
-<div class="header">
+<div class="hero">
+  <div class="hero-icon">&#128218;</div>
   <h1>Deine Buchvorschläge</h1>
-  <p class="subtitle">3 handverlesene Empfehlungen</p>
-  <div class="badge-row">
-    <span class="badge thriller">Thriller</span>
-    <span class="badge scifi">Sci-Fi</span>
-    <span class="badge star-badge">&#9733; 4.0+</span>
+  <p class="tagline">Drei handverlesene Empfehlungen</p>
+  <div class="pill-row">
+    <span class="pill thriller">Thriller</span>
+    <span class="pill scifi">Sci-Fi</span>
+    <span class="pill star">&#9733; 4.0+</span>
   </div>
+  <div class="divider-line"></div>
 </div>
 
 <div class="container">
 
   <!-- Buch 1 -->
-  <details class="book-card">
+  <details class="book">
     <summary>
-      <div class="card-top">
-        <div>
-          <span class="genre-tag thriller">Thriller / Krimi</span>
-          <div class="book-title">The White Crow</div>
-          <div class="book-author">von Michael Robotham</div>
+      <div class="cover-wrap">
+        <img src="https://books.google.com/books/content?id=6tAREQAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="The White Crow Cover">
+      </div>
+      <div class="card-info">
+        <span class="genre-label thriller">Thriller / Krimi</span>
+        <div class="book-title">The White Crow</div>
+        <div class="book-author-line">
+          <img class="author-avatar" src="https://images.gr-assets.com/authors/1588563709p2/33975.jpg" alt="Michael Robotham">
+          <span class="author-name">Michael Robotham</span>
         </div>
-        <span class="rating-num">4.4 &#9733;</span>
+        <div class="rating-row">
+          <span class="star-display">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
+          <span class="rating-num">4.4</span>
+          <span class="year-tag">2025</span>
+        </div>
       </div>
-      <div class="book-meta">
-        <span>2025</span>
-        <span>&middot;</span>
-        <span class="star-icons">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
-      </div>
-      <div class="expand-hint">&#9660; Tippen zum Aufklappen</div>
     </summary>
-    <div class="card-body">
+    <div class="book-body">
+      <hr class="body-divider">
+      <div class="section-label">Zusammenfassung</div>
       <p class="book-summary">
         Philomena McCarthy hat es als junge Polizistin bei der Metropolitan Police weit gebracht &mdash; trotz einer Familie, die zu Londons berüchtigtsten Gangsterfamilien gehört. Als sie eines Nachts ein blutüberströmtes Kind auf der Straße findet und gleichzeitig drei Kilometer entfernt ein Juwelier eine Bombe um den Hals trägt, kollidieren die Ereignisse und bedrohen ihre Karriere, ihre Ehe und ihr Leben.
       </p>
-      <div class="book-reason">
-        <strong>Warum lesenswert:</strong> Kritiker bezeichnen diesen Roman als Robothams bisher bestes und spannendstes Werk. Perfektes Zusammenspiel aus psychologischer Tiefe und atemloser Action.
+      <div class="reason-box">
+        <div class="section-label">Warum lesenswert</div>
+        <p class="reason-text">Kritiker bezeichnen diesen Roman als Robothams bisher bestes und spannendstes Werk. Perfektes Zusammenspiel aus psychologischer Tiefe und atemloser Action.</p>
       </div>
     </div>
+    <div class="tap-hint">Tippen f&uuml;r Details &#9662;</div>
   </details>
 
   <!-- Buch 2 -->
-  <details class="book-card">
+  <details class="book">
     <summary>
-      <div class="card-top">
-        <div>
-          <span class="genre-tag thriller">Southern Noir</span>
-          <div class="book-title">King of Ashes</div>
-          <div class="book-author">von S.A. Cosby</div>
+      <div class="cover-wrap">
+        <img src="https://books.google.com/books/content?id=9rYnEQAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="King of Ashes Cover">
+      </div>
+      <div class="card-info">
+        <span class="genre-label thriller">Southern Noir</span>
+        <div class="book-title">King of Ashes</div>
+        <div class="book-author-line">
+          <img class="author-avatar" src="https://images.gr-assets.com/authors/1610385535p2/18079804.jpg" alt="S.A. Cosby">
+          <span class="author-name">S.A. Cosby</span>
         </div>
-        <span class="rating-num">4.0 &#9733;</span>
+        <div class="rating-row">
+          <span class="star-display">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
+          <span class="rating-num">4.0</span>
+          <span class="year-tag">2025</span>
+        </div>
       </div>
-      <div class="book-meta">
-        <span>2025</span>
-        <span>&middot;</span>
-        <span class="star-icons">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
-      </div>
-      <div class="expand-hint">&#9660; Tippen zum Aufklappen</div>
     </summary>
-    <div class="card-body">
+    <div class="book-body">
+      <hr class="body-divider">
+      <div class="section-label">Zusammenfassung</div>
       <p class="book-summary">
         Als Roman Carruthers nach dem schweren Autounfall seines Vaters nach Hause gerufen wird, findet er seine Familie im Chaos: Sein Bruder schuldet gefährlichen Kriminellen Geld, und seine Schwester hält das Familienunternehmen &mdash; ein Krematorium in Virginia &mdash; allein zusammen. Doch der Unfall war kein Unfall, und bald kämpfen die Carruthers um weit mehr als nur ihr Geschäft.
       </p>
-      <div class="book-reason">
-        <strong>Warum lesenswert:</strong> Sofortiger New-York-Times-Bestseller und von der Washington Post als &bdquo;düster, fesselnd und meisterhaft&ldquo; gelobt. Cosbys epischstes Werk, inspiriert von Der Pate.
+      <div class="reason-box">
+        <div class="section-label">Warum lesenswert</div>
+        <p class="reason-text">Sofortiger New-York-Times-Bestseller und von der Washington Post als &bdquo;düster, fesselnd und meisterhaft&ldquo; gelobt. Cosbys epischstes Werk, inspiriert von Der Pate.</p>
       </div>
     </div>
+    <div class="tap-hint">Tippen f&uuml;r Details &#9662;</div>
   </details>
 
   <!-- Buch 3 -->
-  <details class="book-card">
+  <details class="book">
     <summary>
-      <div class="card-top">
-        <div>
-          <span class="genre-tag scifi">Science Fiction / Satire</span>
-          <div class="book-title">Service Model</div>
-          <div class="book-author">von Adrian Tchaikovsky</div>
+      <div class="cover-wrap">
+        <img src="https://books.google.com/books/content?id=bGPPEAAAQBAJ&printsec=frontcover&img=1&zoom=1" alt="Service Model Cover">
+      </div>
+      <div class="card-info">
+        <span class="genre-label scifi">Science Fiction / Satire</span>
+        <div class="book-title">Service Model</div>
+        <div class="book-author-line">
+          <img class="author-avatar" src="https://images.gr-assets.com/authors/1455553710p2/3174873.jpg" alt="Adrian Tchaikovsky">
+          <span class="author-name">Adrian Tchaikovsky</span>
         </div>
-        <span class="rating-num">4.0 &#9733;</span>
+        <div class="rating-row">
+          <span class="star-display">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
+          <span class="rating-num">4.0</span>
+          <span class="year-tag">2024</span>
+        </div>
       </div>
-      <div class="book-meta">
-        <span>2024</span>
-        <span>&middot;</span>
-        <span class="star-icons">&#9733;&#9733;&#9733;&#9733;<span class="dim">&#9733;</span></span>
-      </div>
-      <div class="expand-hint">&#9660; Tippen zum Aufklappen</div>
     </summary>
-    <div class="card-body">
+    <div class="book-body">
+      <hr class="body-divider">
+      <div class="section-label">Zusammenfassung</div>
       <p class="book-summary">
         Charles ist ein Roboter-Kammerdiener, der seinem betagten Herrn treu dient &mdash; bis ein unerwartetes Ereignis sein geordnetes Dasein auf den Kopf stellt. Auf einer Odyssee durch eine postapokalyptische Welt trifft er auf defekte Maschinen, seltsame Hierarchien und die Überreste der Menschheit. Was als skurrile Roboter-Geschichte beginnt, wird zu einer klugen Reflexion über Gehorsam und Freiheit.
       </p>
-      <div class="book-reason">
-        <strong>Warum lesenswert:</strong> Tchaikovsky (Arthur C. Clarke Award-Gewinner) liefert eine herzliche, absurde und tiefgründige Satire. Vierfach für große Science-Fiction-Preise nominiert.
+      <div class="reason-box">
+        <div class="section-label">Warum lesenswert</div>
+        <p class="reason-text">Tchaikovsky (Arthur C. Clarke Award-Gewinner) liefert eine herzliche, absurde und tiefgründige Satire. Vierfach für große Science-Fiction-Preise nominiert.</p>
       </div>
     </div>
+    <div class="tap-hint">Tippen f&uuml;r Details &#9662;</div>
   </details>
 
 </div>
