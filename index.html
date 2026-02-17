@@ -49,20 +49,21 @@
   }
 
   .auth-btn {
-    background: none;
-    border: 1px solid var(--text-muted);
-    border-radius: 2px;
-    color: var(--text-soft);
+    background: #2563eb;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
     font-family: var(--sans);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 500;
-    letter-spacing: 0.06em;
-    padding: 5px 14px;
+    letter-spacing: 0.04em;
+    padding: 8px 20px;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.3);
   }
 
-  .auth-btn:hover { border-color: var(--text-soft); color: var(--white); }
+  .auth-btn:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
 
   .user-info {
     display: none;
@@ -605,7 +606,7 @@
 
 <!-- Top Bar -->
 <div class="top-bar">
-  <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Anmelden</button>
+  <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Meine B&uuml;cher-Liste</button>
   <div id="userInfo" class="user-info">
     <div id="userAvatar" class="user-avatar"></div>
     <button id="myBooksBtn" class="my-books-btn" onclick="toggleMyBooks()">Meine B&uuml;cher</button>
