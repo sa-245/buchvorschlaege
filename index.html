@@ -13,9 +13,9 @@
     --bg: #f5f0e8;
     --card: #ffffff;
     --card-border: rgba(0,0,0,0.08);
-    --accent: #8b2020;
-    --accent-soft: rgba(139,32,32,0.1);
-    --accent-glow: rgba(139,32,32,0.05);
+    --accent: #5a8a6a;
+    --accent-soft: rgba(90,138,106,0.1);
+    --accent-glow: rgba(90,138,106,0.06);
     --text: #2c2a26;
     --text-soft: #6b6860;
     --text-muted: #a09d95;
@@ -381,15 +381,6 @@
 
   body.logged-in {
     --bg: #f2f0ea;
-    --card: #ffffff;
-    --card-border: rgba(0,0,0,0.08);
-    --accent: #5a8a6a;
-    --accent-soft: rgba(90,138,106,0.1);
-    --accent-glow: rgba(90,138,106,0.06);
-    --text: #2c2a26;
-    --text-soft: #6b6860;
-    --text-muted: #a09d95;
-    --divider: rgba(0,0,0,0.07);
   }
 
   body.logged-in .dashboard { display: block; }
@@ -774,6 +765,15 @@
     margin-left: auto;
   }
 
+  .sort-btn {
+    background: none; border: 1px solid var(--card-border);
+    border-radius: var(--radius); color: var(--text-muted);
+    font-family: var(--sans); font-size: 0.6rem;
+    padding: 3px 8px; cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .sort-btn:hover { color: var(--accent); border-color: var(--accent); }
+
   .category-books { }
 
   .cat-book-item {
@@ -783,6 +783,7 @@
     padding: 10px 0;
     border-bottom: 1px solid var(--divider);
     transition: background 0.2s;
+    flex-wrap: wrap;
   }
 
   .cat-book-item:hover { background: rgba(0,0,0,0.02); }
@@ -806,6 +807,45 @@
 
   .cat-book-actions-wrap { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
   .cat-book-actions { display: flex; gap: 8px; align-items: center; }
+
+  .edit-btn {
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 0.75rem; padding: 2px 4px;
+    transition: color 0.2s;
+  }
+  .edit-btn:hover { color: var(--accent); }
+
+  .edit-form {
+    display: none; width: 100%; padding: 12px 0 4px 0;
+  }
+  .edit-form.active { display: block; }
+  .edit-form-row {
+    display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .edit-form-input {
+    flex: 1; min-width: 120px;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: var(--sans); font-size: 0.75rem; font-weight: 300;
+    padding: 6px 10px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .edit-form-input::placeholder { color: var(--text-muted); }
+  .edit-form-input:focus { border-color: var(--accent); }
+  .edit-form-input.full { flex: 1 1 100%; }
+  .edit-form-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .edit-save-btn {
+    background: var(--accent); border: none; border-radius: var(--radius);
+    color: #fff; font-family: var(--sans); font-size: 0.65rem;
+    font-weight: 500; padding: 5px 14px; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .edit-save-btn:hover { opacity: 0.85; }
+  .edit-cancel-btn {
+    background: none; border: none; color: var(--text-muted);
+    font-family: var(--sans); font-size: 0.65rem; cursor: pointer;
+  }
+  .edit-cancel-btn:hover { color: var(--text); }
 
   .status-select {
     background: var(--card); border: 1px solid var(--card-border);
@@ -1324,11 +1364,23 @@
     var html = '';
     categories.forEach(function(cat) {
       var list = books[cat.key] || [];
+      if (cat.key === 'gelesen' && list.length > 1) {
+        var dir = window._gelesenSortDir || 'newest';
+        list.sort(function(a, b) {
+          var aVal = (a.readYear || 0) * 100 + (a.readMonth || 0);
+          var bVal = (b.readYear || 0) * 100 + (b.readMonth || 0);
+          return dir === 'newest' ? bVal - aVal : aVal - bVal;
+        });
+      }
       html += '<div class="book-category">';
       html += '<div class="category-header">';
       html += '<span class="category-icon">' + cat.icon + '</span>';
       html += '<span class="category-title">' + cat.label + '</span>';
       html += '<span class="category-count">' + list.length + '</span>';
+      if (cat.key === 'gelesen' && list.length > 1) {
+        var sortLabel = (window._gelesenSortDir || 'newest') === 'newest' ? 'Neueste zuerst' : '\u00C4lteste zuerst';
+        html += '<button class="sort-btn" onclick="toggleGelesenSort()">' + sortLabel + '</button>';
+      }
       html += '</div>';
       html += '<div class="category-books">';
 
@@ -1349,6 +1401,7 @@
           html += '<option value="merkliste"' + (book.status === 'merkliste' ? ' selected' : '') + '>M\u00F6chte ich lesen</option>';
           html += '<option value="gelesen"' + (book.status === 'gelesen' ? ' selected' : '') + '>Gelesen</option>';
           html += '</select>';
+          html += '<button class="edit-btn" onclick="toggleEditForm(\'' + book.id + '\')" title="Bearbeiten">&#9998;</button>';
           html += '<button class="remove-btn" onclick="removeBook(\'' + book.id + '\')" title="Entfernen">&times;</button>';
           html += '</div>';
           if (book.status === 'gelesen') {
@@ -1373,6 +1426,19 @@
             html += '</div>';
           }
           html += '</div>';
+          html += '<div class="edit-form" id="edit-' + book.id + '">';
+          html += '<div class="edit-form-row">';
+          html += '<input class="edit-form-input" id="editTitle-' + book.id + '" placeholder="Titel" value="' + escapeHtml(book.title) + '">';
+          html += '<input class="edit-form-input" id="editAuthor-' + book.id + '" placeholder="Autor" value="' + escapeHtml(book.author) + '">';
+          html += '</div>';
+          html += '<div class="edit-form-row">';
+          html += '<input class="edit-form-input full" id="editCover-' + book.id + '" placeholder="Cover-URL (Bild-Link einf\u00FCgen)" value="' + escapeHtml(book.coverUrl || '') + '">';
+          html += '</div>';
+          html += '<div class="edit-form-actions">';
+          html += '<button class="edit-save-btn" onclick="saveEdit(\'' + book.id + '\')">Speichern</button>';
+          html += '<button class="edit-cancel-btn" onclick="toggleEditForm(\'' + book.id + '\')">Abbrechen</button>';
+          html += '</div>';
+          html += '</div>';
           html += '</div>';
         });
       }
@@ -1387,6 +1453,28 @@
     if (!currentUser) return;
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update({ status: newStatus });
     setTimeout(loadUserBooks, 300);
+  }
+
+  function toggleEditForm(bookId) {
+    var form = document.getElementById('edit-' + bookId);
+    if (form) form.classList.toggle('active');
+  }
+
+  function saveEdit(bookId) {
+    if (!currentUser) return;
+    var title = document.getElementById('editTitle-' + bookId).value.trim();
+    var author = document.getElementById('editAuthor-' + bookId).value.trim();
+    var coverUrl = document.getElementById('editCover-' + bookId).value.trim();
+    if (!title) return;
+    var update = { title: title, author: author || 'Unbekannt', coverUrl: coverUrl };
+    db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(update).then(function() {
+      loadUserBooks();
+    });
+  }
+
+  function toggleGelesenSort() {
+    window._gelesenSortDir = (window._gelesenSortDir || 'newest') === 'newest' ? 'oldest' : 'newest';
+    loadUserBooks();
   }
 
   function updateReadDate(bookId, field, value) {
