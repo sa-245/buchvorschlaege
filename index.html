@@ -291,6 +291,16 @@
 
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+  .cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(145deg, var(--accent-soft), rgba(61,122,80,0.06));
+    color: var(--accent); font-family: var(--serif);
+    font-weight: 700; font-size: 1.1rem; letter-spacing: 0.02em;
+    text-align: center; padding: 6px;
+    line-height: 1.2; word-break: break-word;
+  }
+
   .card-info {
     flex: 1; min-width: 0;
     display: flex; flex-direction: column; justify-content: center;
@@ -845,6 +855,8 @@
 
   .search-result-author { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
   .search-result-year { font-size: 0.62rem; color: var(--text-muted); margin-top: 1px; }
+  .search-result-genres { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+  .search-genre-pill { font-size: 0.52rem; padding: 1px 7px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0.01em; }
 
   .search-result-actions { display: flex; gap: 4px; flex-shrink: 0; align-self: center; }
 
@@ -1795,7 +1807,7 @@
       var rating = card.getAttribute('data-rating');
 
       html += '<div class="sidebar-card">';
-      html += '<div class="sidebar-cover sidebar-clickable" role="button" tabindex="0" aria-label="' + title + ' &mdash; Details anzeigen" onclick="showSuggestionsOverlay()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showSuggestionsOverlay()}"><img src="' + cover + '" alt="' + escapeHtml(title) + '"></div>';
+      html += '<div class="sidebar-cover sidebar-clickable" role="button" tabindex="0" aria-label="' + title + ' &mdash; Details anzeigen" onclick="showSuggestionsOverlay()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showSuggestionsOverlay()}"><img src="' + cover + '" alt="' + escapeHtml(title) + '" data-title="' + escapeHtml(title) + '" onload="checkCoverOnLoad(this)" onerror="handleCoverError(this,this.dataset.title)"></div>';
       html += '<div class="sidebar-info">';
       html += '<div class="sidebar-book-title sidebar-clickable" role="button" tabindex="0" onclick="showSuggestionsOverlay()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showSuggestionsOverlay()}">' + title + '</div>';
       html += '<div class="sidebar-author">' + author + '</div>';
@@ -2071,7 +2083,7 @@
           // ── Row 1: Cover + Title/Author/Hearts ──
           html += '<div class="cat-book-header">';
           html += '<div class="cat-book-cover sidebar-clickable" role="button" tabindex="0" aria-label="' + escapeHtml(book.title) + ' &mdash; Details anzeigen" onclick="showBookDetail(\'' + book.id + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showBookDetail(\'' + book.id + '\')}">';
-          html += '<img src="' + (book.coverUrl || '') + '" alt="Cover: ' + escapeHtml(book.title) + '" onerror="this.style.display=\'none\'"></div>';
+          html += '<img src="' + (book.coverUrl || '') + '" alt="Cover: ' + escapeHtml(book.title) + '" data-title="' + escapeHtml(book.title) + '" onload="checkCoverOnLoad(this)" onerror="handleCoverError(this,this.dataset.title)"></div>';
           html += '<div class="cat-book-info">';
           var bookGenres = book.genres || [];
           html += '<div class="cat-book-title-row">';
@@ -2525,6 +2537,7 @@
           coverUrl: cover,
           description: info.description || '',
           lang: (info.language || '').toLowerCase(),
+          categories: info.categories || [],
           source: 'Google'
         };
       });
@@ -2546,10 +2559,40 @@
           coverUrl: cover,
           description: '',
           lang: hasGer ? 'de' : (langs[0] || ''),
+          categories: (doc.subject || []).slice(0, 10),
           source: 'Open Library'
         };
       });
     }).catch(function() { return []; });
+  }
+
+  function mapCategoriesToGenres(categories) {
+    var map = {
+      'Thriller': ['thriller','suspense','spionage','spy','espionage'],
+      'Krimi': ['crime','krimi','detective','true crime','criminal','murder','whodunit','police'],
+      'Psychothriller': ['psychological','psychothriller','psychological thriller','psychological fiction'],
+      'Nordic Noir': ['nordic noir','scandinavian','skandinavischer krimi'],
+      'Mystery': ['mystery','mysteries','cozy mystery','mystery fiction'],
+      'Science Fiction': ['science fiction','sci-fi','scifi','dystopia','dystopian','cyberpunk','space'],
+      'Fantasy': ['fantasy','urban fantasy','epic fantasy','dark fantasy','magic','dragons'],
+      'Liebesroman': ['romance','love','liebesroman','romantic','love stories','chick lit'],
+      'Sachbuch': ['nonfiction','non-fiction','sachbuch','self-help','business','psychology','philosophy','science','education','politics'],
+      'Biografie': ['biography','autobiography','biografie','memoir','memoirs'],
+      'Historisch': ['historical','history','historisch','historical fiction','medieval','world war'],
+      'Horror': ['horror','ghost','supernatural','gothic','dark','vampires','zombies'],
+      'Humor': ['humor','comedy','humour','satire','funny','comic'],
+      'Klassiker': ['classic','classics','klassiker','literary fiction','literature','literary']
+    };
+    var joined = categories.map(function(c) { return c.toLowerCase(); }).join(' | ');
+    var matched = [];
+    Object.keys(map).forEach(function(genre) {
+      map[genre].forEach(function(keyword) {
+        if (matched.indexOf(genre) < 0 && joined.indexOf(keyword) >= 0) {
+          matched.push(genre);
+        }
+      });
+    });
+    return matched;
   }
 
   function sortGermanFirst(books) {
@@ -2624,21 +2667,28 @@
     }
 
     var html = '<div class="search-results-label">Ergebnisse (' + items.length + ') &mdash; <span lang="en">Google Books + Open Library</span></div>';
+    html += '<button class="search-close" onclick="closeSearch()">Ergebnisse schlie\u00DFen</button>';
 
     items.forEach(function(book) {
       var bookSlug = slugify(book.title);
       var escapedTitle = escapeHtml(book.title);
       var escapedAuthor = escapeHtml(book.author);
       var escapedDesc = escapeHtml(book.description || '');
-      var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(book.coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '" data-desc="' + escapedDesc + '"';
+      var autoGenres = mapCategoriesToGenres(book.categories || []);
+      var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(book.coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '" data-desc="' + escapedDesc + '" data-genres="' + escapeHtml(JSON.stringify(autoGenres)) + '"';
 
       html += '<div class="search-result-item">';
-      html += '<div class="search-result-cover"><img src="' + book.coverUrl + '" alt="Cover: ' + escapedTitle + '" onerror="this.style.display=\'none\'"></div>';
+      html += '<div class="search-result-cover"><img src="' + book.coverUrl + '" alt="Cover: ' + escapedTitle + '" data-title="' + escapedTitle + '" onload="checkCoverOnLoad(this)" onerror="handleCoverError(this,this.dataset.title)"></div>';
       html += '<div class="search-result-info">';
       html += '<div class="search-result-title">' + escapedTitle + '</div>';
       html += '<div class="search-result-author">' + escapedAuthor + '</div>';
       if (book.year) html += '<div class="search-result-year">' + book.year + ' &middot; ' + book.source + '</div>';
       else html += '<div class="search-result-year">' + book.source + '</div>';
+      if (autoGenres.length > 0) {
+        html += '<div class="search-result-genres">';
+        autoGenres.forEach(function(g) { html += '<span class="search-genre-pill">' + escapeHtml(g) + '</span>'; });
+        html += '</div>';
+      }
       html += '</div>';
       html += '<div class="search-result-actions">';
       html += '<button class="search-add-btn" ' + dataAttr + ' onclick="addSearchedBook(this,\'merkliste\')" title="M\u00F6chte ich lesen">&#9203;</button>';
@@ -2655,11 +2705,14 @@
 
   function addSearchedBook(btn, status) {
     if (!currentUser) return;
+    var autoGenres = [];
+    try { autoGenres = JSON.parse(btn.getAttribute('data-genres') || '[]'); } catch(e) {}
     var bookData = {
       title: btn.getAttribute('data-title'),
       author: btn.getAttribute('data-author'),
       coverUrl: btn.getAttribute('data-cover'),
       description: btn.getAttribute('data-desc') || '',
+      genres: autoGenres,
       rating: 0,
       status: status,
       addedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -2708,7 +2761,7 @@
       if (!doc.exists) { content.innerHTML = '<div class="book-detail-none">Buch nicht gefunden.</div>'; return; }
       var book = doc.data();
       var html = '<div class="book-detail-header">';
-      html += '<div class="book-detail-cover"><img src="' + (book.coverUrl || '') + '" alt="Cover: ' + escapeHtml(book.title) + '" onerror="this.style.display=\'none\'"></div>';
+      html += '<div class="book-detail-cover"><img src="' + (book.coverUrl || '') + '" alt="Cover: ' + escapeHtml(book.title) + '" data-title="' + escapeHtml(book.title) + '" onload="checkCoverOnLoad(this)" onerror="handleCoverError(this,this.dataset.title)"></div>';
       html += '<div>';
       html += '<div class="book-detail-title">' + escapeHtml(book.title) + '</div>';
       html += '<div class="book-detail-author">' + escapeHtml(book.author) + '</div>';
@@ -2791,6 +2844,48 @@
     var div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  function handleCoverError(img, title) {
+    if (img.dataset.fallbackTried) { showCoverPlaceholder(img, title); return; }
+    img.dataset.fallbackTried = '1';
+    tryOpenLibraryCover(img, title);
+  }
+
+  function checkCoverOnLoad(img) {
+    // Google Books "not available" Platzhalter sind oft winzig (1x1 oder sehr klein)
+    if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+      handleCoverError(img, img.dataset.title || '');
+    }
+  }
+
+  function tryOpenLibraryCover(img, title) {
+    var q = encodeURIComponent(title || '');
+    fetch('https://openlibrary.org/search.json?q=' + q + '&limit=3&fields=cover_i,title')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var coverId = null;
+        (data.docs || []).forEach(function(doc) {
+          if (!coverId && doc.cover_i) coverId = doc.cover_i;
+        });
+        if (coverId) {
+          img.onerror = function() { showCoverPlaceholder(img, title); };
+          img.onload = null;
+          img.src = 'https://covers.openlibrary.org/b/id/' + coverId + '-M.jpg';
+        } else {
+          showCoverPlaceholder(img, title);
+        }
+      })
+      .catch(function() { showCoverPlaceholder(img, title); });
+  }
+
+  function showCoverPlaceholder(img, title) {
+    var initials = (title || '?').split(/\s+/).slice(0, 2).map(function(w) { return w.charAt(0).toUpperCase(); }).join('');
+    var placeholder = document.createElement('div');
+    placeholder.className = 'cover-placeholder';
+    placeholder.setAttribute('aria-hidden', 'true');
+    placeholder.textContent = initials;
+    if (img.parentElement) img.parentElement.replaceChild(placeholder, img);
   }
 
   // ─── Barrierefreiheit: Escape-Taste & Fokus-Trap ───
