@@ -891,14 +891,15 @@
   }
 
   .search-close {
-    background: none; border: none;
-    color: var(--text-muted); cursor: pointer;
-    font-size: 0.7rem; font-family: var(--sans);
-    letter-spacing: 0.04em; padding: 8px 0;
-    transition: color 0.2s; display: block;
+    background: var(--accent-soft); border: 1px solid var(--accent-glow);
+    color: var(--accent); cursor: pointer;
+    font-size: 0.65rem; font-family: var(--sans);
+    letter-spacing: 0.04em; padding: 6px 16px;
+    border-radius: 14px; transition: all 0.2s;
+    display: inline-block; margin: 6px 0;
   }
 
-  .search-close:hover { color: var(--text-soft); }
+  .search-close:hover { background: var(--accent); color: var(--card); }
 
   .search-manual-hint {
     text-align: center; padding: 12px 0; font-size: 0.72rem; color: var(--text-muted);
@@ -2568,19 +2569,19 @@
 
   function mapCategoriesToGenres(categories) {
     var map = {
-      'Thriller': ['thriller','suspense','spionage','spy','espionage'],
-      'Krimi': ['crime','krimi','detective','true crime','criminal','murder','whodunit','police'],
+      'Thriller': ['thriller','suspense','spionage','spy','espionage','action & adventure'],
+      'Krimi': ['crime','krimi','detective','true crime','criminal','murder','whodunit','police','mystery & detective'],
       'Psychothriller': ['psychological','psychothriller','psychological thriller','psychological fiction'],
       'Nordic Noir': ['nordic noir','scandinavian','skandinavischer krimi'],
       'Mystery': ['mystery','mysteries','cozy mystery','mystery fiction'],
-      'Science Fiction': ['science fiction','sci-fi','scifi','dystopia','dystopian','cyberpunk','space'],
-      'Fantasy': ['fantasy','urban fantasy','epic fantasy','dark fantasy','magic','dragons'],
-      'Liebesroman': ['romance','love','liebesroman','romantic','love stories','chick lit'],
-      'Sachbuch': ['nonfiction','non-fiction','sachbuch','self-help','business','psychology','philosophy','science','education','politics'],
-      'Biografie': ['biography','autobiography','biografie','memoir','memoirs'],
-      'Historisch': ['historical','history','historisch','historical fiction','medieval','world war'],
-      'Horror': ['horror','ghost','supernatural','gothic','dark','vampires','zombies'],
-      'Humor': ['humor','comedy','humour','satire','funny','comic'],
+      'Science Fiction': ['science fiction','sci-fi','scifi','dystopia','dystopian','cyberpunk','space','speculative'],
+      'Fantasy': ['fantasy','urban fantasy','epic fantasy','dark fantasy','magic','dragons','paranormal'],
+      'Liebesroman': ['romance','love','liebesroman','romantic','love stories','chick lit','women\'s fiction','contemporary women','contemporary romance','new adult','roman','fiction / romance','fiction / contemporary','friendship','beziehung','liebe','summer','sommer','beach','lake','cottage','small town','reunions','second chance'],
+      'Sachbuch': ['nonfiction','non-fiction','sachbuch','self-help','business','psychology','philosophy','science','education','politics','economics','health','fitness','cooking','travel','nature','true accounts','ratgeber'],
+      'Biografie': ['biography','autobiography','biografie','memoir','memoirs','personal memoirs','personal narratives'],
+      'Historisch': ['historical','history','historisch','historical fiction','medieval','world war','ancient','century','war','military'],
+      'Horror': ['horror','ghost','supernatural','gothic','vampires','zombies','occult'],
+      'Humor': ['humor','comedy','humour','satire','funny','comic','witzig'],
       'Klassiker': ['classic','classics','klassiker','literary fiction','literature','literary']
     };
     var joined = categories.map(function(c) { return c.toLowerCase(); }).join(' | ');
@@ -2592,6 +2593,10 @@
         }
       });
     });
+    // Wenn nur "Fiction" als Kategorie da ist und sonst nichts erkannt, Liebesroman als Fallback prüfen
+    if (matched.length === 0 && joined.indexOf('fiction') >= 0) {
+      matched.push('Klassiker');
+    }
     return matched;
   }
 
@@ -2608,7 +2613,20 @@
     var unique = [];
     all.forEach(function(book) {
       var key = slugify(book.title);
-      if (!seen[key]) { seen[key] = true; unique.push(book); }
+      if (!seen[key]) {
+        seen[key] = true;
+        unique.push(book);
+      } else {
+        // Kategorien von Duplikaten zusammenführen
+        var existing = unique.find(function(b) { return slugify(b.title) === key; });
+        if (existing && book.categories && book.categories.length > 0) {
+          var cats = existing.categories || [];
+          book.categories.forEach(function(c) {
+            if (cats.indexOf(c) < 0) cats.push(c);
+          });
+          existing.categories = cats;
+        }
+      }
     });
     return unique;
   }
