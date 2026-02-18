@@ -774,6 +774,48 @@
   }
   .dash-manual-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+  .dash-import-btn {
+    background: transparent;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    color: var(--text-soft);
+    white-space: nowrap;
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 400;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .dash-import-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .import-hint {
+    font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4;
+  }
+  .import-hint em { color: var(--text-soft); font-style: normal; }
+
+  .import-textarea {
+    width: 100%; box-sizing: border-box;
+    font-family: var(--sans); font-size: 0.72rem;
+    padding: 10px 12px; border: 1px solid var(--card-border);
+    border-radius: var(--radius); background: var(--bg);
+    color: var(--text); resize: vertical; margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .import-textarea:focus { outline: none; border-color: var(--accent); }
+
+  .import-progress {
+    margin-top: 10px; font-size: 0.65rem; color: var(--text-muted); line-height: 1.6;
+  }
+  .import-progress .import-line { padding: 3px 0; display: flex; align-items: center; gap: 6px; }
+  .import-progress .import-line.success { color: var(--accent); }
+  .import-progress .import-line.fail { color: #a3281c; }
+  .import-progress .import-line.loading { color: var(--text-muted); }
+  .import-progress .import-summary {
+    margin-top: 8px; padding: 8px 12px; background: var(--accent-soft);
+    border-radius: var(--radius); color: var(--accent); font-weight: 500;
+  }
+
   .manual-form {
     display: none; margin-top: 12px;
     background: var(--card); border: 1px solid var(--card-border);
@@ -1570,8 +1612,26 @@
           <input type="text" id="dashSearchInput" class="dash-search-input" placeholder="Buch suchen &mdash; Titel oder Autor eingeben&hellip;" onkeydown="if(event.key==='Enter')searchBooks()">
           <button class="dash-search-btn" onclick="searchBooks()" id="dashSearchBtn">Suchen</button>
           <button class="dash-manual-btn" onclick="toggleManualForm()" aria-expanded="false" aria-controls="manualForm">+ Manuell</button>
+          <button class="dash-import-btn" onclick="toggleImportForm()" aria-expanded="false" aria-controls="importForm">&#128203; Liste importieren</button>
         </div>
         <div id="dashSearchResults" class="dash-search-results" role="region" aria-live="polite" aria-label="Suchergebnisse"></div>
+        <div id="importForm" class="manual-form" role="region" aria-label="B&uuml;cherliste importieren">
+          <div class="manual-form-title">B&uuml;cherliste importieren</div>
+          <div class="import-hint">Ein Buch pro Zeile &mdash; Format: <em>Titel (Autor)</em></div>
+          <label for="importTextarea" class="sr-only">B&uuml;cherliste</label>
+          <textarea id="importTextarea" class="import-textarea" rows="8" placeholder="Der Insasse (Sebastian Fitzek)&#10;Blutmond (Jo Nesb&oslash;)&#10;Der Schwarm (Frank Sch&auml;tzing)"></textarea>
+          <div class="manual-form-actions">
+            <label for="importStatus" class="sr-only">Lesestatus f&uuml;r importierte B&uuml;cher</label>
+            <select id="importStatus">
+              <option value="merkliste">M&ouml;chte ich lesen</option>
+              <option value="lese-ich">Lese ich aktuell</option>
+              <option value="gelesen">Habe ich gelesen</option>
+            </select>
+            <button class="manual-save-btn" id="importStartBtn" onclick="startBulkImport()">Importieren</button>
+            <button class="manual-cancel-btn" onclick="toggleImportForm()">Abbrechen</button>
+          </div>
+          <div id="importProgress" class="import-progress"></div>
+        </div>
         <div id="manualForm" class="manual-form" role="region" aria-label="Buch manuell hinzuf&uuml;gen">
           <div class="manual-form-title">Buch manuell hinzuf&uuml;gen</div>
           <div class="manual-form-row">
@@ -2449,8 +2509,125 @@
     var form = document.getElementById('manualForm');
     form.classList.toggle('active');
     if (form.classList.contains('active')) {
+      document.getElementById('importForm').classList.remove('active');
       document.getElementById('manualTitle').focus();
     }
+  }
+
+  function toggleImportForm() {
+    var form = document.getElementById('importForm');
+    form.classList.toggle('active');
+    if (form.classList.contains('active')) {
+      document.getElementById('manualForm').classList.remove('active');
+      document.getElementById('importTextarea').focus();
+    }
+  }
+
+  function parseBulkList(text) {
+    return text.split('\n').map(function(line) {
+      line = line.replace(/^\d+[\.\)]\s*/, '').trim(); // "1. " oder "1) " entfernen
+      if (!line) return null;
+      // Format: Titel (Autor)
+      var m = line.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+      if (m) return { title: m[1].trim(), author: m[2].trim() };
+      // Format: Titel - Autor
+      var d = line.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+      if (d) return { title: d[1].trim(), author: d[2].trim() };
+      // Nur Titel
+      return { title: line, author: '' };
+    }).filter(Boolean);
+  }
+
+  function startBulkImport() {
+    if (!currentUser) return;
+    var textarea = document.getElementById('importTextarea');
+    var status = document.getElementById('importStatus').value;
+    var progressEl = document.getElementById('importProgress');
+    var btn = document.getElementById('importStartBtn');
+    var books = parseBulkList(textarea.value);
+
+    if (books.length === 0) {
+      progressEl.innerHTML = '<div class="import-line fail">Keine B\u00FCcher erkannt. Bitte ein Buch pro Zeile eingeben.</div>';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Importiere...';
+    progressEl.innerHTML = '';
+    var success = 0, fail = 0, total = books.length;
+
+    function processNext(i) {
+      if (i >= books.length) {
+        btn.disabled = false;
+        btn.textContent = 'Importieren';
+        progressEl.innerHTML += '<div class="import-summary">' + success + ' von ' + total + ' B\u00FCchern erfolgreich importiert.</div>';
+        if (success > 0) {
+          announceToSR(success + ' B\u00FCcher importiert.');
+          setTimeout(loadUserBooks, 500);
+        }
+        return;
+      }
+
+      var book = books[i];
+      var query = book.title + (book.author ? ' ' + book.author : '');
+      progressEl.innerHTML += '<div class="import-line loading" id="importLine' + i + '">\u23F3 Suche: ' + escapeHtml(book.title) + (book.author ? ' \u2013 ' + escapeHtml(book.author) : '') + '</div>';
+
+      searchAndAddBook(query, book, status, function(found) {
+        var lineEl = document.getElementById('importLine' + i);
+        if (found) {
+          success++;
+          lineEl.className = 'import-line success';
+          lineEl.innerHTML = '\u2713 ' + escapeHtml(found.title) + ' \u2013 ' + escapeHtml(found.author);
+        } else {
+          fail++;
+          lineEl.className = 'import-line fail';
+          lineEl.innerHTML = '\u2717 Nicht gefunden: ' + escapeHtml(book.title);
+        }
+        // Kurze Pause um API nicht zu \u00FCberlasten
+        setTimeout(function() { processNext(i + 1); }, 400);
+      });
+    }
+
+    processNext(0);
+  }
+
+  function searchAndAddBook(query, bookHint, status, callback) {
+    fetchGoogleBooks(query).then(function(results) {
+      if (results.length === 0) {
+        return fetchOpenLibrary(query);
+      }
+      // Bestes Match finden
+      var best = results[0];
+      for (var i = 0; i < results.length; i++) {
+        if (results[i].lang === 'de') { best = results[i]; break; }
+      }
+      return [best];
+    }).then(function(results) {
+      if (!results || results.length === 0) {
+        callback(null);
+        return;
+      }
+      var book = results[0];
+      var slug = slugify(book.title);
+      var autoGenres = mapCategoriesToGenres(book.categories || []);
+      var bookData = {
+        title: book.title,
+        author: book.author,
+        coverUrl: book.coverUrl,
+        description: book.description || '',
+        genres: autoGenres,
+        rating: 0,
+        status: status,
+        addedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      db.collection('users').doc(currentUser.uid).collection('books').doc(slug).set(bookData).then(function() {
+        callback({ title: book.title, author: book.author });
+      }).catch(function() {
+        callback(null);
+      });
+    }).catch(function() {
+      callback(null);
+    });
   }
 
   function saveManualBook() {
