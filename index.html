@@ -1104,6 +1104,45 @@
   .edit-location-custom::placeholder { color: var(--text-muted); }
   .edit-location-custom:focus { border-color: var(--accent); }
 
+  .edit-format-row {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;
+  }
+  .edit-format-label {
+    font-size: 0.6rem; color: var(--text-muted); margin-right: 2px;
+  }
+  .edit-format-chip {
+    font-size: 0.6rem; padding: 4px 12px; border-radius: 12px;
+    border: 1px solid var(--card-border); background: var(--card);
+    color: var(--text-muted); cursor: pointer;
+    transition: all 0.15s; min-height: 26px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .edit-format-chip.selected { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .edit-format-chip .format-icon { font-size: 0.7rem; }
+
+  .cat-book-format {
+    font-size: 0.62rem; color: var(--text-muted);
+    display: inline-flex; align-items: center; gap: 3px;
+    background: var(--accent-glow); padding: 1px 8px; border-radius: 10px;
+  }
+  .cat-book-format-icon { font-size: 0.65rem; }
+
+  .stats-format-row {
+    display: flex; gap: 10px; margin-top: 12px;
+  }
+  .stats-format-card {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; background: var(--bg); border-radius: var(--radius);
+  }
+  .stats-format-icon { font-size: 1.1rem; }
+  .stats-format-number {
+    font-family: var(--serif); font-size: 1.2rem; font-weight: 700;
+    color: var(--accent); line-height: 1;
+  }
+  .stats-format-label {
+    font-size: 0.6rem; color: var(--text-muted); line-height: 1.3;
+  }
+
   .edit-genre-row {
     display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;
   }
@@ -1970,6 +2009,18 @@
         });
         html += '</div>';
       }
+      // Format-Statistik (Physisch vs. Digital)
+      var physCount = 0; var digiCount = 0;
+      allBooks.forEach(function(b) {
+        if (b.readFormat === 'physisch') physCount++;
+        else if (b.readFormat === 'digital') digiCount++;
+      });
+      if (physCount > 0 || digiCount > 0) {
+        html += '<div class="stats-format-row">';
+        html += '<div class="stats-format-card"><span class="stats-format-icon" aria-hidden="true">&#128214;</span><div><div class="stats-format-number">' + physCount + '</div><div class="stats-format-label">Physisch</div></div></div>';
+        html += '<div class="stats-format-card"><span class="stats-format-icon" aria-hidden="true">&#128241;</span><div><div class="stats-format-number">' + digiCount + '</div><div class="stats-format-label">Digital / Kindle</div></div></div>';
+        html += '</div>';
+      }
       html += '</div>';
     }
 
@@ -2114,6 +2165,11 @@
           if (locs.length > 0) {
             html += '<div class="cat-book-location"><span class="cat-book-location-icon">&#128205;</span>' + locs.map(function(l) { return escapeHtml(l); }).join(', ') + '</div>';
           }
+          if (book.readFormat) {
+            var fmtIcon = book.readFormat === 'physisch' ? '&#128214;' : '&#128241;';
+            var fmtLabel = book.readFormat === 'physisch' ? 'Physisch' : 'Digital';
+            html += '<div class="cat-book-format"><span class="cat-book-format-icon" aria-hidden="true">' + fmtIcon + '</span>' + fmtLabel + '</div>';
+          }
           if (book.status === 'gelesen' && (book.readMonth || book.readYear)) {
             html += '<div class="cat-book-date">';
             html += (book.readMonth ? months[book.readMonth] + ' ' : '') + (book.readYear || '');
@@ -2165,6 +2221,12 @@
           });
           html += '<label for="editLocationCustom-' + book.id + '" class="sr-only">Anderer Leseort</label>';
           html += '<input class="edit-location-custom" id="editLocationCustom-' + book.id + '" placeholder="Anderer Ort\u2026" value="' + escapeHtml(customLocs.join(', ')) + '">';
+          html += '</div>';
+          var curFormat = book.readFormat || '';
+          html += '<div class="edit-format-row" id="editFormat-' + book.id + '" role="radiogroup" aria-label="Leseformat">';
+          html += '<span class="edit-format-label">Format:</span>';
+          html += '<span class="edit-format-chip' + (curFormat === 'physisch' ? ' selected' : '') + '" role="radio" aria-checked="' + (curFormat === 'physisch') + '" tabindex="0" data-format="physisch" onclick="toggleFormatChip(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleFormatChip(this)}"><span class="format-icon" aria-hidden="true">&#128214;</span> Physisch</span>';
+          html += '<span class="edit-format-chip' + (curFormat === 'digital' ? ' selected' : '') + '" role="radio" aria-checked="' + (curFormat === 'digital') + '" tabindex="0" data-format="digital" onclick="toggleFormatChip(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleFormatChip(this)}"><span class="format-icon" aria-hidden="true">&#128241;</span> Digital / Kindle</span>';
           html += '</div>';
           html += '<div class="edit-form-row edit-cover-row">';
           html += '<input class="edit-form-input full readonly" id="editCover-' + book.id + '" placeholder="Cover-URL (automatisch)" value="' + escapeHtml(book.coverUrl || '') + '" readonly tabindex="-1">';
@@ -2293,6 +2355,20 @@
     el.setAttribute('aria-checked', el.classList.contains('selected') ? 'true' : 'false');
   }
 
+  function toggleFormatChip(el) {
+    var row = el.parentElement;
+    var wasSelected = el.classList.contains('selected');
+    // Radio-Verhalten: Nur einer aktiv
+    row.querySelectorAll('.edit-format-chip').forEach(function(c) {
+      c.classList.remove('selected');
+      c.setAttribute('aria-checked', 'false');
+    });
+    if (!wasSelected) {
+      el.classList.add('selected');
+      el.setAttribute('aria-checked', 'true');
+    }
+  }
+
   function saveEdit(bookId) {
     if (!currentUser) return;
     var title = document.getElementById('editTitle-' + bookId).value.trim();
@@ -2328,13 +2404,18 @@
     var customLoc = document.getElementById('editLocationCustom-' + bookId).value.trim();
     if (customLoc) readLocations.push(customLoc);
 
+    var readFormat = '';
+    var selectedFormat = document.querySelector('#editFormat-' + bookId + ' .edit-format-chip.selected');
+    if (selectedFormat) readFormat = selectedFormat.getAttribute('data-format');
+
     var baseUpdate = {
       title: title, author: author || 'Unbekannt', coverUrl: coverUrl,
       bookLink: bookLink, status: status,
       readMonth: readMonth, readYear: readYear,
       hearts: hearts, fazit: fazit,
       recommendedBy: recommendedBy, genres: genres, quotes: quotes,
-      readLocations: readLocations
+      readLocations: readLocations,
+      readFormat: readFormat
     };
 
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
