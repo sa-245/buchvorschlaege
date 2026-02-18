@@ -965,7 +965,21 @@
     padding-bottom: 10px;
     border-bottom: 1px solid var(--divider);
     margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
   }
+  .category-header:hover .category-title { color: var(--accent); }
+
+  .category-toggle {
+    font-size: 0.55rem; color: var(--text-muted);
+    transition: transform 0.25s ease;
+    display: inline-block; margin-right: -4px;
+  }
+  .book-category.collapsed .category-toggle { transform: rotate(-90deg); }
+  .book-category.collapsed .category-books { display: none; }
+  .book-category.collapsed .filter-row { display: none; }
+  .book-category.collapsed .category-header { margin-bottom: 0; border-bottom-color: transparent; }
 
   .category-icon {
     font-size: 0.9rem;
@@ -2112,8 +2126,9 @@
         });
       }
 
-      html += '<div class="book-category">';
-      html += '<div class="category-header">';
+      html += '<div class="book-category" id="cat-' + cat.key + '">';
+      html += '<div class="category-header" onclick="toggleCategory(\'' + cat.key + '\')" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleCategory(\'' + cat.key + '\')}">';
+      html += '<span class="category-toggle" aria-hidden="true">&#9660;</span>';
       html += '<span class="category-icon" aria-hidden="true">' + cat.icon + '</span>';
       html += '<h2 class="category-title">' + cat.label + ' <span class="category-count">(' + displayCount + (cat.key === 'gelesen' && filterYear !== 'all' ? ' / ' + list.length : '') + ')</span></h2>';
       if (cat.key === 'gelesen' && list.length > 0) {
@@ -2520,6 +2535,19 @@
     if (form.classList.contains('active')) {
       document.getElementById('manualForm').classList.remove('active');
       document.getElementById('importTextarea').focus();
+    } else {
+      // Reset beim Schließen
+      document.getElementById('importProgress').innerHTML = '';
+    }
+  }
+
+  function toggleCategory(key) {
+    var el = document.getElementById('cat-' + key);
+    if (!el) return;
+    el.classList.toggle('collapsed');
+    var header = el.querySelector('.category-header');
+    if (header) {
+      header.setAttribute('aria-expanded', el.classList.contains('collapsed') ? 'false' : 'true');
     }
   }
 
@@ -2561,6 +2589,7 @@
         btn.disabled = false;
         btn.textContent = 'Importieren';
         progressEl.innerHTML += '<div class="import-summary">' + success + ' von ' + total + ' B\u00FCchern erfolgreich importiert.</div>';
+        progressEl.innerHTML += '<button class="search-close" onclick="toggleImportForm()" style="margin-top:8px">Schlie\u00DFen</button>';
         if (success > 0) {
           announceToSR(success + ' B\u00FCcher importiert.');
           setTimeout(loadUserBooks, 500);
