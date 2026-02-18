@@ -129,7 +129,7 @@
   }
   .login-submit-btn:hover { opacity: 0.85; }
   .login-error {
-    color: #c0392b; font-size: 0.68rem; margin-bottom: 8px;
+    color: #a3281c; font-size: 0.68rem; margin-bottom: 8px;
     display: none; text-align: center;
   }
   .login-error.active { display: block; }
@@ -916,12 +916,13 @@
     font-size: 0.9rem;
   }
 
-  .category-title {
+  h2.category-title, .category-title {
     font-size: 0.72rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-soft);
+    margin: 0;
   }
 
   .category-count {
@@ -938,7 +939,7 @@
     background: none; border: 1px solid var(--card-border);
     border-radius: var(--radius); color: var(--text-muted);
     font-family: var(--sans); font-size: 0.6rem;
-    padding: 3px 8px; cursor: pointer;
+    padding: 5px 10px; cursor: pointer; min-height: 26px;
     transition: color 0.2s, border-color 0.2s;
   }
   .filter-btn:hover { color: var(--accent); border-color: var(--accent); }
@@ -999,9 +1000,9 @@
     display: flex; gap: 2px;
   }
   .cat-book-hearts span {
-    font-size: 0.72rem; color: var(--text-muted); opacity: 0.3;
+    font-size: 0.72rem; color: var(--text-muted); opacity: 0.4;
   }
-  .cat-book-hearts span.filled { color: #e25555; opacity: 1; }
+  .cat-book-hearts span.filled { color: #c94040; opacity: 1; }
 
   .cat-book-details {
     padding-left: 64px;
@@ -1044,10 +1045,11 @@
   }
   .edit-heart-btn {
     background: none; border: none; font-size: 1rem; cursor: pointer;
-    color: var(--text-muted); opacity: 0.3; transition: opacity 0.15s, color 0.15s;
+    color: var(--text-muted); opacity: 0.4; transition: opacity 0.15s, color 0.15s;
+    min-width: 28px; min-height: 28px;
     padding: 0 1px;
   }
-  .edit-heart-btn.filled { color: #e25555; opacity: 1; }
+  .edit-heart-btn.filled { color: #c94040; opacity: 1; }
   .edit-heart-btn:hover { opacity: 0.7; }
 
   .edit-fazit-input {
@@ -1084,12 +1086,14 @@
     display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;
   }
   .edit-location-chip {
-    font-size: 0.6rem; padding: 3px 8px; border-radius: 12px;
+    font-size: 0.6rem; padding: 4px 10px; border-radius: 12px;
     border: 1px solid var(--card-border); background: var(--card);
     color: var(--text-muted); cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.15s; min-height: 26px;
+    display: inline-flex; align-items: center;
   }
   .edit-location-chip.selected { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .edit-location-chip.selected::before { content: '\2713 '; font-size: 0.55rem; margin-right: 2px; }
   .edit-location-custom {
     flex: 1; min-width: 100px; max-width: 180px;
     font-size: 0.62rem; padding: 3px 8px; border-radius: 12px;
@@ -1104,12 +1108,14 @@
     display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;
   }
   .edit-genre-chip {
-    font-size: 0.6rem; padding: 3px 8px; border-radius: 12px;
+    font-size: 0.6rem; padding: 4px 10px; border-radius: 12px;
     border: 1px solid var(--card-border); background: var(--card);
     color: var(--text-muted); cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.15s; min-height: 26px;
+    display: inline-flex; align-items: center;
   }
   .edit-genre-chip.selected { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .edit-genre-chip.selected::before { content: '\2713 '; font-size: 0.55rem; margin-right: 2px; }
 
   .edit-quotes-area {
     width: 100%;
@@ -1129,9 +1135,9 @@
     background: var(--card); border: 1px solid var(--card-border);
     border-radius: var(--radius);
   }
-  .stats-title {
+  h2.stats-title, .stats-title {
     font-family: var(--serif); font-size: 0.9rem; font-weight: 700;
-    color: var(--text); margin-bottom: 18px;
+    color: var(--text); margin: 0 0 18px 0;
   }
   .stats-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -1378,7 +1384,7 @@
         <span class="genre-label">Psychothriller</span>
         <div class="book-title">Der Insasse</div>
         <div class="author-line">
-          <span class="author-avatar">SF</span>
+          <span class="author-avatar" aria-hidden="true">SF</span>
           <span class="author-name">Sebastian Fitzek</span>
         </div>
         <div class="rating-row">
@@ -1413,7 +1419,7 @@
         <span class="genre-label">Nordic Noir / Krimi</span>
         <div class="book-title">Blutmond</div>
         <div class="author-line">
-          <span class="author-avatar">JN</span>
+          <span class="author-avatar" aria-hidden="true">JN</span>
           <span class="author-name">Jo Nesb&oslash;</span>
         </div>
         <div class="rating-row">
@@ -1448,7 +1454,7 @@
         <span class="genre-label">Science Fiction / Thriller</span>
         <div class="book-title">Der Schwarm</div>
         <div class="author-line">
-          <span class="author-avatar">FS</span>
+          <span class="author-avatar" aria-hidden="true">FS</span>
           <span class="author-name">Frank Sch&auml;tzing</span>
         </div>
         <div class="rating-row">
@@ -1590,6 +1596,9 @@
     <div class="suggestions-overlay-grid" id="suggestionsOverlayGrid"></div>
   </div>
 </div>
+
+<!-- Screenreader-Feedback f&uuml;r Aktionen -->
+<div id="srAnnounce" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <!-- Login-Hinweis Toast -->
 <div class="login-toast" id="loginToast" role="alert" aria-live="polite">
@@ -1812,13 +1821,32 @@
     };
   }
 
+  function announceToSR(msg) {
+    var el = document.getElementById('srAnnounce');
+    el.textContent = '';
+    setTimeout(function() { el.textContent = msg; }, 100);
+  }
+
   var _loginToastTimer = null;
+  var _toastPaused = false;
   function showLoginToast() {
     var toast = document.getElementById('loginToast');
     toast.classList.add('visible');
+    _toastPaused = false;
     if (_loginToastTimer) clearTimeout(_loginToastTimer);
-    _loginToastTimer = setTimeout(function() { toast.classList.remove('visible'); }, 4000);
+    _loginToastTimer = setTimeout(function hideToast() {
+      if (_toastPaused) { _loginToastTimer = setTimeout(hideToast, 1000); return; }
+      toast.classList.remove('visible');
+    }, 8000);
   }
+  // Pause toast on hover/focus
+  (function() {
+    var toast = document.getElementById('loginToast');
+    toast.addEventListener('mouseenter', function() { _toastPaused = true; });
+    toast.addEventListener('mouseleave', function() { _toastPaused = false; });
+    toast.addEventListener('focusin', function() { _toastPaused = true; });
+    toast.addEventListener('focusout', function() { _toastPaused = false; });
+  })();
 
   function trackBook(btn, status) {
     if (!currentUser) { showLoginToast(); return; }
@@ -1831,12 +1859,15 @@
     if (isActive) {
       db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).delete();
       allBtns.forEach(function(b) { b.classList.remove('active'); });
+      announceToSR(bookData.title + ' wurde entfernt.');
     } else {
       bookData.status = status;
       bookData.addedAt = firebase.firestore.FieldValue.serverTimestamp();
       db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).set(bookData);
       allBtns.forEach(function(b) { b.classList.remove('active'); });
       btn.classList.add('active');
+      var statusLabels = {'merkliste':'Merkliste','lese-ich':'Lese ich','gelesen':'Gelesen'};
+      announceToSR(bookData.title + ' wurde zu ' + (statusLabels[status] || status) + ' hinzugefügt.');
     }
     setTimeout(loadUserBooks, 500);
   }
@@ -1923,7 +1954,7 @@
 
     if (totalBooks > 0) {
       html += '<div class="stats-section">';
-      html += '<div class="stats-title">Lesestatistiken</div>';
+      html += '<h2 class="stats-title">Lesestatistiken</h2>';
       html += '<div class="stats-grid">';
       html += '<div class="stat-card"><div class="stat-number">' + totalBooks + '</div><div class="stat-label">Bücher gesamt</div></div>';
       html += '<div class="stat-card"><div class="stat-number">' + readBooks + '</div><div class="stat-label">Gelesen</div></div>';
@@ -1975,8 +2006,8 @@
 
       html += '<div class="book-category">';
       html += '<div class="category-header">';
-      html += '<span class="category-icon">' + cat.icon + '</span>';
-      html += '<span class="category-title">' + cat.label + '</span>';
+      html += '<span class="category-icon" aria-hidden="true">' + cat.icon + '</span>';
+      html += '<h2 class="category-title">' + cat.label + '</h2>';
       html += '<span class="category-count">' + displayCount + (cat.key === 'gelesen' && filterYear !== 'all' ? ' / ' + list.length + ' gesamt' : '') + '</span>';
       if (cat.key === 'gelesen' && list.length > 0) {
         html += '<div class="filter-row">';
@@ -2094,10 +2125,13 @@
           html += '</div>';
           html += '<div class="edit-form" id="edit-' + book.id + '">';
           html += '<div class="edit-form-row">';
+          html += '<label for="editTitle-' + book.id + '" class="sr-only">Titel</label>';
           html += '<input class="edit-form-input" id="editTitle-' + book.id + '" placeholder="Titel" value="' + escapeHtml(book.title) + '">';
+          html += '<label for="editAuthor-' + book.id + '" class="sr-only">Autor</label>';
           html += '<input class="edit-form-input" id="editAuthor-' + book.id + '" placeholder="Autor" value="' + escapeHtml(book.author) + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
+          html += '<label for="editStatus-' + book.id + '" class="sr-only">Status</label>';
           html += '<select class="status-select" id="editStatus-' + book.id + '">';
           html += '<option value="lese-ich"' + (book.status === 'lese-ich' ? ' selected' : '') + '>Lese ich</option>';
           html += '<option value="merkliste"' + (book.status === 'merkliste' ? ' selected' : '') + '>M\u00F6chte ich lesen</option>';
@@ -2106,12 +2140,14 @@
           var selMonth = book.readMonth || 0;
           var selYear = book.readYear || 0;
           var curYear = new Date().getFullYear();
+          html += '<label for="editReadMonth-' + book.id + '" class="sr-only">Lesemonat</label>';
           html += '<select class="read-date-select" id="editReadMonth-' + book.id + '">';
           html += '<option value="0">Monat</option>';
           for (var m = 1; m <= 12; m++) {
             html += '<option value="' + m + '"' + (selMonth == m ? ' selected' : '') + '>' + months[m] + '</option>';
           }
           html += '</select>';
+          html += '<label for="editReadYear-' + book.id + '" class="sr-only">Lesejahr</label>';
           html += '<select class="read-date-select" id="editReadYear-' + book.id + '">';
           html += '<option value="0">Jahr</option>';
           for (var y = curYear; y >= curYear - 10; y--) {
@@ -2124,9 +2160,10 @@
           var customLocs = curLocs.filter(function(l) { return locationPresets.indexOf(l) < 0; });
           html += '<div class="edit-location-row" id="editLocation-' + book.id + '">';
           locationPresets.forEach(function(loc) {
-            var sel = curLocs.indexOf(loc) >= 0 ? ' selected' : '';
-            html += '<span class="edit-location-chip' + sel + '" onclick="toggleLocationChip(this)" data-loc="' + loc + '">' + loc + '</span>';
+            var isSel = curLocs.indexOf(loc) >= 0;
+            html += '<span class="edit-location-chip' + (isSel ? ' selected' : '') + '" role="checkbox" aria-checked="' + isSel + '" tabindex="0" onclick="toggleLocationChip(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleLocationChip(this)}" data-loc="' + loc + '">' + loc + '</span>';
           });
+          html += '<label for="editLocationCustom-' + book.id + '" class="sr-only">Anderer Leseort</label>';
           html += '<input class="edit-location-custom" id="editLocationCustom-' + book.id + '" placeholder="Anderer Ort\u2026" value="' + escapeHtml(customLocs.join(', ')) + '">';
           html += '</div>';
           html += '<div class="edit-form-row edit-cover-row">';
@@ -2136,20 +2173,23 @@
           html += '&#128247; Bild hochladen</label>';
           html += '</div>';
           html += '<div class="edit-form-row">';
+          html += '<label for="editBookLink-' + book.id + '" class="sr-only">Link zum Buch</label>';
           html += '<input class="edit-form-input full" id="editBookLink-' + book.id + '" placeholder="Link zum Buch (z.B. Amazon, Thalia, Goodreads)" value="' + escapeHtml(book.bookLink || book.buyLink || book.infoLink || '') + '">';
           html += '</div>';
           html += '<div class="edit-form-row">';
+          html += '<label for="editRecommended-' + book.id + '" class="sr-only">Empfohlen von</label>';
           html += '<input class="edit-form-input" id="editRecommended-' + book.id + '" placeholder="Empfohlen von" value="' + escapeHtml(book.recommendedBy || '') + '">';
           html += '</div>';
           var allGenres = ['Thriller','Krimi','Psychothriller','Nordic Noir','Mystery','Science Fiction','Fantasy','Liebesroman','Sachbuch','Biografie','Historisch','Horror','Humor','Klassiker'];
           var bookGenres = book.genres || [];
           html += '<div class="edit-genre-row" id="editGenres-' + book.id + '">';
           allGenres.forEach(function(g) {
-            var sel = bookGenres.indexOf(g) >= 0 ? ' selected' : '';
-            html += '<span class="edit-genre-chip' + sel + '" onclick="toggleGenreChip(this)" data-genre="' + g + '">' + g + '</span>';
+            var isSel = bookGenres.indexOf(g) >= 0;
+            html += '<span class="edit-genre-chip' + (isSel ? ' selected' : '') + '" role="checkbox" aria-checked="' + isSel + '" tabindex="0" onclick="toggleGenreChip(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleGenreChip(this)}" data-genre="' + g + '">' + g + '</span>';
           });
           html += '</div>';
           html += '<div class="edit-form-row">';
+          html += '<label for="editQuotes-' + book.id + '" class="sr-only">Lieblingszitate</label>';
           html += '<textarea class="edit-quotes-area" id="editQuotes-' + book.id + '" placeholder="Lieblingszitate (ein Zitat pro Zeile)">' + escapeHtml((book.quotes || []).join('\n')) + '</textarea>';
           html += '</div>';
           html += '<div class="edit-hearts-row">';
@@ -2159,6 +2199,7 @@
           }
           html += '</div>';
           html += '<div class="edit-form-row">';
+          html += '<label for="editFazit-' + book.id + '" class="sr-only">Persönliche Notizen</label>';
           html += '<textarea class="edit-fazit-input" id="editFazit-' + book.id + '" placeholder="Pers\u00F6nliche Notizen zum Buch">' + escapeHtml(book.fazit || '') + '</textarea>';
           html += '</div>';
           html += '<div class="edit-form-actions">';
@@ -2244,10 +2285,12 @@
 
   function toggleGenreChip(el) {
     el.classList.toggle('selected');
+    el.setAttribute('aria-checked', el.classList.contains('selected') ? 'true' : 'false');
   }
 
   function toggleLocationChip(el) {
     el.classList.toggle('selected');
+    el.setAttribute('aria-checked', el.classList.contains('selected') ? 'true' : 'false');
   }
 
   function saveEdit(bookId) {
@@ -2295,6 +2338,7 @@
     };
 
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
+      announceToSR(title + ' wurde gespeichert.');
       loadUserBooks();
     });
   }
@@ -2319,6 +2363,7 @@
   function removeBook(bookId) {
     if (!currentUser) return;
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).delete();
+    announceToSR('Buch wurde entfernt.');
     setTimeout(loadUserBooks, 300);
   }
 
@@ -2514,7 +2559,7 @@
       return;
     }
 
-    var html = '<div class="search-results-label">Ergebnisse (' + items.length + ') &mdash; Google Books + Open Library</div>';
+    var html = '<div class="search-results-label">Ergebnisse (' + items.length + ') &mdash; <span lang="en">Google Books + Open Library</span></div>';
 
     items.forEach(function(book) {
       var bookSlug = slugify(book.title);
@@ -2524,7 +2569,7 @@
       var dataAttr = 'data-title="' + escapedTitle + '" data-author="' + escapedAuthor + '" data-cover="' + escapeHtml(book.coverUrl) + '" data-slug="' + escapeHtml(bookSlug) + '" data-desc="' + escapedDesc + '"';
 
       html += '<div class="search-result-item">';
-      html += '<div class="search-result-cover"><img src="' + book.coverUrl + '" alt="" onerror="this.style.display=\'none\'"></div>';
+      html += '<div class="search-result-cover"><img src="' + book.coverUrl + '" alt="Cover: ' + escapedTitle + '" onerror="this.style.display=\'none\'"></div>';
       html += '<div class="search-result-info">';
       html += '<div class="search-result-title">' + escapedTitle + '</div>';
       html += '<div class="search-result-author">' + escapedAuthor + '</div>';
@@ -2563,6 +2608,8 @@
       allBtns.forEach(function(b) { b.classList.remove('added'); });
       btn.classList.add('added');
       row.style.opacity = '0.5';
+      var statusLabels = {'merkliste':'Merkliste','lese-ich':'Lese ich','gelesen':'Gelesen'};
+      announceToSR(bookData.title + ' wurde zu ' + (statusLabels[status] || status) + ' hinzugefügt.');
       loadUserBooks();
     });
   }
@@ -2597,7 +2644,7 @@
       if (!doc.exists) { content.innerHTML = '<div class="book-detail-none">Buch nicht gefunden.</div>'; return; }
       var book = doc.data();
       var html = '<div class="book-detail-header">';
-      html += '<div class="book-detail-cover"><img src="' + (book.coverUrl || '') + '" alt="" onerror="this.style.display=\'none\'"></div>';
+      html += '<div class="book-detail-cover"><img src="' + (book.coverUrl || '') + '" alt="Cover: ' + escapeHtml(book.title) + '" onerror="this.style.display=\'none\'"></div>';
       html += '<div>';
       html += '<div class="book-detail-title">' + escapeHtml(book.title) + '</div>';
       html += '<div class="book-detail-author">' + escapeHtml(book.author) + '</div>';
