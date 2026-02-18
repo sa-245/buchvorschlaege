@@ -1207,6 +1207,17 @@
     border-color: transparent; font-size: 0.62rem; color: var(--text-muted);
   }
   .edit-form-input.readonly:focus { border-color: transparent; }
+  .edit-cover-row { display: flex; gap: 8px; align-items: center; }
+  .edit-cover-row .edit-form-input { flex: 1; }
+  .edit-cover-upload-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--card); border: 1px solid var(--accent);
+    border-radius: var(--radius); color: var(--accent);
+    font-family: var(--sans); font-size: 0.65rem; font-weight: 500;
+    padding: 6px 12px; cursor: pointer; white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+  }
+  .edit-cover-upload-btn:hover { background: var(--accent); color: #fff; }
   .edit-form-actions { display: flex; gap: 8px; margin-top: 4px; }
   .edit-save-btn {
     background: var(--accent); border: none; border-radius: var(--radius);
@@ -2118,8 +2129,11 @@
           });
           html += '<input class="edit-location-custom" id="editLocationCustom-' + book.id + '" placeholder="Anderer Ort\u2026" value="' + escapeHtml(customLocs.join(', ')) + '">';
           html += '</div>';
-          html += '<div class="edit-form-row">';
+          html += '<div class="edit-form-row edit-cover-row">';
           html += '<input class="edit-form-input full readonly" id="editCover-' + book.id + '" placeholder="Cover-URL (automatisch)" value="' + escapeHtml(book.coverUrl || '') + '" readonly tabindex="-1">';
+          html += '<label class="edit-cover-upload-btn" aria-label="Cover-Bild hochladen">';
+          html += '<input type="file" accept="image/jpeg,image/png,image/webp" class="sr-only" onchange="handleCoverUpload(this, \'' + book.id + '\')">';
+          html += '&#128247; Bild hochladen</label>';
           html += '</div>';
           html += '<div class="edit-form-row">';
           html += '<input class="edit-form-input full" id="editBookLink-' + book.id + '" placeholder="Link zum Buch (z.B. Amazon, Thalia, Goodreads)" value="' + escapeHtml(book.bookLink || book.buyLink || book.infoLink || '') + '">';
@@ -2179,6 +2193,48 @@
       else b.classList.remove('filled');
     });
     row.setAttribute('data-selected', val);
+  }
+
+  function handleCoverUpload(input, bookId) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Bild zu gro\u00DF (max. 5 MB)');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        // Resize to max 300px height, maintain aspect ratio
+        var maxH = 300;
+        var maxW = 200;
+        var w = img.width;
+        var h = img.height;
+        if (h > maxH) { w = w * (maxH / h); h = maxH; }
+        if (w > maxW) { h = h * (maxW / w); w = maxW; }
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(w);
+        canvas.height = Math.round(h);
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        // Update the cover URL field
+        var coverInput = document.getElementById('editCover-' + bookId);
+        if (coverInput) coverInput.value = dataUrl;
+        // Show preview: update the cover image in the book card
+        var coverImgs = document.querySelectorAll('[data-book-edit-id="' + bookId + '"] img, #edit-' + bookId + ' img');
+        // Also find the book card's cover
+        var bookCards = document.querySelectorAll('.cat-book-cover img');
+        // Visual feedback
+        var btn = input.parentElement;
+        var origText = btn.innerHTML;
+        btn.innerHTML = '&#10003; Hochgeladen';
+        setTimeout(function() { btn.innerHTML = origText; }, 2000);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   function toggleEditForm(bookId) {
