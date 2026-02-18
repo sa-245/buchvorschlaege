@@ -1546,10 +1546,6 @@
     alert('Login-Fehler: ' + error.message);
   });
 
-  // ─── Tägliche Vorschläge rendern ───
-  renderDailyBooks();
-  renderArchive();
-
   // ─── Auth State ───
   auth.onAuthStateChanged(function(user) {
     currentUser = user;
@@ -3064,6 +3060,10 @@
       btn.setAttribute('aria-expanded', form.classList.contains('active') ? 'true' : 'false');
     }
   };
+
+  // ─── Tägliche Vorschläge rendern (muss am Ende stehen, nach bookPool) ───
+  renderDailyBooks();
+  renderArchive();
 </script>
 </body>
 </html>
