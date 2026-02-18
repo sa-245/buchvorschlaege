@@ -13,12 +13,12 @@
     --bg: #f5f0e8;
     --card: #ffffff;
     --card-border: rgba(0,0,0,0.08);
-    --accent: #5a8a6a;
-    --accent-soft: rgba(90,138,106,0.1);
-    --accent-glow: rgba(90,138,106,0.06);
+    --accent: #3d7a50;
+    --accent-soft: rgba(61,122,80,0.12);
+    --accent-glow: rgba(61,122,80,0.06);
     --text: #2c2a26;
-    --text-soft: #6b6860;
-    --text-muted: #a09d95;
+    --text-soft: #56534c;
+    --text-muted: #6e6a62;
     --white: #2c2a26;
     --divider: rgba(0,0,0,0.07);
     --radius: 4px;
@@ -60,10 +60,10 @@
     padding: 8px 20px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(90,138,106,0.3);
+    box-shadow: 0 2px 8px rgba(61,122,80,0.3);
   }
 
-  .auth-btn:hover { background: #4a7a5a; box-shadow: 0 4px 12px rgba(90,138,106,0.4); }
+  .auth-btn:hover { background: #2d6a40; box-shadow: 0 4px 12px rgba(61,122,80,0.4); }
 
   /* ─── Login Modal ─── */
   .login-overlay {
@@ -423,7 +423,7 @@
     padding: 7px 16px; cursor: pointer; white-space: nowrap;
     transition: background 0.2s;
   }
-  .login-toast-btn:hover { background: #4a7a5a; }
+  .login-toast-btn:hover { background: #2d6a40; }
 
   /* ─── History ─── */
   .history { max-width: 1280px; margin: 0 auto; padding: 0 20px 12px; }
@@ -472,10 +472,7 @@
 
   .dashboard { display: none; }
 
-  body.logged-in .hero { display: none; }
-  body.logged-in .grid { display: none; }
-  body.logged-in .history { display: none; }
-  body.logged-in .footer { display: none; }
+  body.logged-in #mainContent { display: none; }
   body.logged-in #loginBtn { display: none; }
 
   body.logged-in {
@@ -1275,23 +1272,69 @@
     .pill { font-size: 0.62rem; padding: 3px 8px; }
     .dash-layout { padding: 16px 12px; }
   }
+
+  /* ─── Barrierefreiheit / WCAG 2.2 ─── */
+
+  /* Sichtbare Fokus-Indikatoren */
+  *:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex="0"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Visually hidden – f&uuml;r Screenreader sichtbar, visuell versteckt */
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* Skip-Link */
+  .skip-link {
+    position: absolute; top: -100%; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff; padding: 10px 24px;
+    font-family: var(--sans); font-size: 0.85rem; font-weight: 500;
+    border-radius: 0 0 var(--radius) var(--radius);
+    z-index: 9999; text-decoration: none;
+    transition: top 0.2s;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 </style>
 </head>
 <body>
 
+<a href="#mainContent" class="skip-link">Zum Inhalt springen</a>
+
 <!-- Top Bar -->
-<div class="top-bar">
-  <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Meine B&uuml;cher-Liste</button>
-  <div id="userInfo" class="user-info">
-    <div id="userAvatar" class="user-avatar"></div>
-    <span id="userName" class="user-name"></span>
-    <button class="logout-btn" onclick="handleLogout()">Abmelden</button>
-  </div>
-</div>
+<header class="top-bar" role="banner">
+  <nav aria-label="Benutzernavigation">
+    <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Meine B&uuml;cher-Liste</button>
+    <div id="userInfo" class="user-info">
+      <div id="userAvatar" class="user-avatar" aria-hidden="true"></div>
+      <span id="userName" class="user-name"></span>
+      <button class="logout-btn" onclick="handleLogout()">Abmelden</button>
+    </div>
+  </nav>
+</header>
 
 <!-- ═══ AUSGELOGGTE ANSICHT ═══ -->
 
-<div class="hero">
+<main id="mainContent" role="main">
+
+<section class="hero" aria-label="Tages&uuml;bersicht">
   <h1>Deine Buchvorschl&auml;ge</h1>
   <p class="tagline">Drei handverlesene Empfehlungen</p>
   <div class="pill-row">
@@ -1310,9 +1353,9 @@
     <span class="meta-sep">|</span>
     <span>N&auml;chste: 19. Februar 2026</span>
   </div>
-</div>
+</section>
 
-<div class="grid">
+<section class="grid" aria-label="Buchvorschl&auml;ge">
   <!-- Buch 1 -->
   <article class="book-card" data-book-id="der-insasse" data-cover="https://books.google.com/books/content?id=NPRYDwAAQBAJ&printsec=frontcover&img=1&zoom=1" data-title="Der Insasse" data-author="Sebastian Fitzek" data-rating="4.2">
     <div class="card-header">
@@ -1417,10 +1460,10 @@
       <button class="track-btn needs-login" onclick="trackBook(this,'gelesen')" data-status="gelesen"><span class="track-icon">&#9733;</span>Gelesen</button>
     </div>
   </article>
-</div>
+</section>
 
 <!-- Archiv -->
-<div class="history">
+<section class="history" aria-label="Archiv der Buchvorschl&auml;ge">
   <details>
     <summary><span class="arrow">&#9654;</span> Archiv</summary>
     <div class="history-list">
@@ -1443,36 +1486,42 @@
       </div>
     </div>
   </details>
-</div>
+</section>
 
-<div class="footer">Nur B&uuml;cher mit 4.0+ auf Goodreads</div>
+<footer class="footer" role="contentinfo">Nur B&uuml;cher mit 4.0+ auf Goodreads</footer>
+
+</main>
 
 <!-- ═══ EINGELOGGTE ANSICHT (Dashboard) ═══ -->
 
-<div class="dashboard">
+<main class="dashboard" role="main" aria-label="Meine B&uuml;cher">
   <div class="dash-layout">
-    <div class="sidebar">
-      <div class="sidebar-title">Heutige Vorschl&auml;ge</div>
+    <aside class="sidebar" aria-label="Heutige Vorschl&auml;ge">
+      <h2 class="sidebar-title">Heutige Vorschl&auml;ge</h2>
       <div id="sidebarBooks"></div>
-    </div>
-    <div class="main-content">
+    </aside>
+    <section class="main-content" aria-label="B&uuml;cherverwaltung">
       <div class="dash-header">
-        <div class="dash-title">Meine B&uuml;cher</div>
+        <h1 class="dash-title">Meine B&uuml;cher</h1>
       </div>
       <div class="dash-search">
         <div class="dash-search-row">
+          <label for="dashSearchInput" class="sr-only">Buch suchen</label>
           <input type="text" id="dashSearchInput" class="dash-search-input" placeholder="Buch suchen &mdash; Titel oder Autor eingeben&hellip;" onkeydown="if(event.key==='Enter')searchBooks()">
           <button class="dash-search-btn" onclick="searchBooks()" id="dashSearchBtn">Suchen</button>
-          <button class="dash-manual-btn" onclick="toggleManualForm()">+ Manuell</button>
+          <button class="dash-manual-btn" onclick="toggleManualForm()" aria-expanded="false" aria-controls="manualForm">+ Manuell</button>
         </div>
-        <div id="dashSearchResults" class="dash-search-results"></div>
-        <div id="manualForm" class="manual-form">
+        <div id="dashSearchResults" class="dash-search-results" role="region" aria-live="polite" aria-label="Suchergebnisse"></div>
+        <div id="manualForm" class="manual-form" role="region" aria-label="Buch manuell hinzuf&uuml;gen">
           <div class="manual-form-title">Buch manuell hinzuf&uuml;gen</div>
           <div class="manual-form-row">
+            <label for="manualTitle" class="sr-only">Buchtitel</label>
             <input type="text" id="manualTitle" class="manual-form-input" placeholder="Titel">
+            <label for="manualAuthor" class="sr-only">Autor</label>
             <input type="text" id="manualAuthor" class="manual-form-input" placeholder="Autor">
           </div>
           <div class="manual-form-actions">
+            <label for="manualStatus" class="sr-only">Lesestatus</label>
             <select id="manualStatus">
               <option value="merkliste">M&ouml;chte ich lesen</option>
               <option value="lese-ich">Lese ich aktuell</option>
@@ -1484,32 +1533,34 @@
         </div>
       </div>
       <div id="dashCategories"></div>
-    </div>
+    </section>
   </div>
-</div>
+</main>
 
 <!-- Book Detail Overlay -->
-<div id="bookDetailOverlay" class="book-detail-overlay" onclick="if(event.target===this)closeBookDetail()">
+<div id="bookDetailOverlay" class="book-detail-overlay" role="dialog" aria-modal="true" aria-label="Buchdetails" onclick="if(event.target===this)closeBookDetail()">
   <div class="book-detail-inner">
-    <button class="book-detail-close" onclick="closeBookDetail()">&times;</button>
+    <button class="book-detail-close" onclick="closeBookDetail()" aria-label="Schlie&szlig;en">&times;</button>
     <div id="bookDetailContent"></div>
   </div>
 </div>
 
 <!-- Login Modal -->
-<div id="loginOverlay" class="login-overlay" onclick="if(event.target===this)closeLoginModal()">
+<div id="loginOverlay" class="login-overlay" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle" onclick="if(event.target===this)closeLoginModal()">
   <div class="login-modal">
-    <button class="login-modal-close" onclick="closeLoginModal()">&times;</button>
-    <div class="login-modal-title">Meine B&uuml;cher-Liste</div>
+    <button class="login-modal-close" onclick="closeLoginModal()" aria-label="Schlie&szlig;en">&times;</button>
+    <h2 class="login-modal-title" id="loginModalTitle">Meine B&uuml;cher-Liste</h2>
     <button class="login-google-btn" onclick="handleGoogleLogin()">
-      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Mit Google anmelden
     </button>
-    <div class="login-divider">oder</div>
-    <div id="loginError" class="login-error"></div>
+    <div class="login-divider" aria-hidden="true">oder</div>
+    <div id="loginError" class="login-error" role="alert" aria-live="assertive"></div>
     <div id="emailLoginMode" data-mode="login">
-      <input type="email" id="loginEmail" class="login-form-input" placeholder="E-Mail-Adresse">
-      <input type="password" id="loginPassword" class="login-form-input" placeholder="Passwort (mind. 6 Zeichen)" onkeydown="if(event.key==='Enter')handleEmailAuth()">
+      <label for="loginEmail" class="sr-only">E-Mail-Adresse</label>
+      <input type="email" id="loginEmail" class="login-form-input" placeholder="E-Mail-Adresse" autocomplete="email">
+      <label for="loginPassword" class="sr-only">Passwort</label>
+      <input type="password" id="loginPassword" class="login-form-input" placeholder="Passwort (mind. 6 Zeichen)" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleEmailAuth()">
       <button class="login-submit-btn" id="emailSubmitBtn" onclick="handleEmailAuth()">Anmelden</button>
       <div class="login-toggle">
         <span id="toggleText">Noch kein Konto?</span>
@@ -1520,16 +1571,16 @@
 </div>
 
 <!-- Suggestions Overlay -->
-<div id="suggestionsOverlay" class="suggestions-overlay" onclick="if(event.target===this)closeSuggestionsOverlay()">
+<div id="suggestionsOverlay" class="suggestions-overlay" role="dialog" aria-modal="true" aria-labelledby="suggestionsTitle" onclick="if(event.target===this)closeSuggestionsOverlay()">
   <div class="suggestions-overlay-inner">
-    <button class="suggestions-overlay-close" onclick="closeSuggestionsOverlay()">&times;</button>
-    <div class="suggestions-overlay-title">Buchvorschl&auml;ge des Tages</div>
+    <button class="suggestions-overlay-close" onclick="closeSuggestionsOverlay()" aria-label="Schlie&szlig;en">&times;</button>
+    <h2 class="suggestions-overlay-title" id="suggestionsTitle">Buchvorschl&auml;ge des Tages</h2>
     <div class="suggestions-overlay-grid" id="suggestionsOverlayGrid"></div>
   </div>
 </div>
 
-<!-- Firebase SDKs -->
-<div class="login-toast" id="loginToast">
+<!-- Login-Hinweis Toast -->
+<div class="login-toast" id="loginToast" role="alert" aria-live="polite">
   <span class="login-toast-text">Melde dich an, um B&uuml;cher zu speichern</span>
   <button class="login-toast-btn" onclick="handleLogin()">Anmelden</button>
 </div>
@@ -1694,15 +1745,15 @@
       var rating = card.getAttribute('data-rating');
 
       html += '<div class="sidebar-card">';
-      html += '<div class="sidebar-cover sidebar-clickable" onclick="showSuggestionsOverlay()"><img src="' + cover + '" alt=""></div>';
+      html += '<div class="sidebar-cover sidebar-clickable" role="button" tabindex="0" aria-label="' + title + ' &mdash; Details anzeigen" onclick="showSuggestionsOverlay()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showSuggestionsOverlay()}"><img src="' + cover + '" alt="' + escapeHtml(title) + '"></div>';
       html += '<div class="sidebar-info">';
-      html += '<div class="sidebar-book-title sidebar-clickable" onclick="showSuggestionsOverlay()">' + title + '</div>';
+      html += '<div class="sidebar-book-title sidebar-clickable" role="button" tabindex="0" onclick="showSuggestionsOverlay()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showSuggestionsOverlay()}">' + title + '</div>';
       html += '<div class="sidebar-author">' + author + '</div>';
       html += '<div class="sidebar-rating"><span class="lit">&#9733;</span> ' + rating + '</div>';
       html += '<div class="sidebar-track-row">';
-      html += '<button class="sidebar-track-btn" data-book-id="' + bookId + '" data-status="merkliste" onclick="trackFromSidebar(this)">&#9203;</button>';
-      html += '<button class="sidebar-track-btn" data-book-id="' + bookId + '" data-status="lese-ich" onclick="trackFromSidebar(this)">&#128214;</button>';
-      html += '<button class="sidebar-track-btn" data-book-id="' + bookId + '" data-status="gelesen" onclick="trackFromSidebar(this)">&#9733;</button>';
+      html += '<button class="sidebar-track-btn" data-book-id="' + bookId + '" data-status="merkliste" onclick="trackFromSidebar(this)" aria-label="' + title + ' merken">&#9203;</button>';
+      html += '<button class="sidebar-track-btn" data-book-id="' + bookId + '" data-status="lese-ich" onclick="trackFromSidebar(this)" aria-label="' + title + ' lese ich">&#128214;</button>';
+      html += '<button class="sidebar-track-btn" data-book-id="' + bookId + '" data-status="gelesen" onclick="trackFromSidebar(this)" aria-label="' + title + ' gelesen">&#9733;</button>';
       html += '</div>';
       html += '</div>';
       html += '</div>';
@@ -1942,11 +1993,12 @@
 
           // ── Row 1: Cover + Title/Author/Hearts ──
           html += '<div class="cat-book-header">';
-          html += '<div class="cat-book-cover sidebar-clickable" onclick="showBookDetail(\'' + book.id + '\')"><img src="' + (book.coverUrl || '') + '" alt="" onerror="this.style.display=\'none\'"></div>';
+          html += '<div class="cat-book-cover sidebar-clickable" role="button" tabindex="0" aria-label="' + escapeHtml(book.title) + ' &mdash; Details anzeigen" onclick="showBookDetail(\'' + book.id + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showBookDetail(\'' + book.id + '\')}">';
+          html += '<img src="' + (book.coverUrl || '') + '" alt="Cover: ' + escapeHtml(book.title) + '" onerror="this.style.display=\'none\'"></div>';
           html += '<div class="cat-book-info">';
           var bookGenres = book.genres || [];
           html += '<div class="cat-book-title-row">';
-          html += '<span class="cat-book-title sidebar-clickable" onclick="showBookDetail(\'' + book.id + '\')">' + escapeHtml(book.title) + '</span>';
+          html += '<span class="cat-book-title sidebar-clickable" role="button" tabindex="0" onclick="showBookDetail(\'' + book.id + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showBookDetail(\'' + book.id + '\')}">' + escapeHtml(book.title) + '</span>';
           if (bookGenres.length > 0) {
             html += '<span class="cat-book-genres">';
             bookGenres.forEach(function(g) { html += '<span class="genre-pill">' + escapeHtml(g) + '</span>'; });
@@ -2572,6 +2624,98 @@
     div.textContent = str;
     return div.innerHTML;
   }
+
+  // ─── Barrierefreiheit: Escape-Taste & Fokus-Trap ───
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var loginOverlay = document.getElementById('loginOverlay');
+      var bookDetail = document.getElementById('bookDetailOverlay');
+      var suggestions = document.getElementById('suggestionsOverlay');
+      if (loginOverlay.classList.contains('active')) { closeLoginModal(); }
+      else if (bookDetail.classList.contains('active')) { closeBookDetail(); }
+      else if (suggestions.classList.contains('active')) { closeSuggestionsOverlay(); }
+    }
+  });
+
+  function trapFocus(container) {
+    var focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    container._focusTrapHandler = function(e) {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    container.addEventListener('keydown', container._focusTrapHandler);
+    first.focus();
+  }
+
+  function releaseFocus(container) {
+    if (container._focusTrapHandler) {
+      container.removeEventListener('keydown', container._focusTrapHandler);
+      delete container._focusTrapHandler;
+    }
+  }
+
+  // Erweiterte Modal-Funktionen mit Fokus-Trap
+  var _origHandleLogin = handleLogin;
+  handleLogin = function() {
+    _origHandleLogin();
+    setTimeout(function() {
+      trapFocus(document.querySelector('.login-modal'));
+    }, 100);
+  };
+
+  var _origCloseLogin = closeLoginModal;
+  closeLoginModal = function() {
+    releaseFocus(document.querySelector('.login-modal'));
+    _origCloseLogin();
+  };
+
+  var _origShowBookDetail = showBookDetail;
+  showBookDetail = function(bookId) {
+    _origShowBookDetail(bookId);
+    setTimeout(function() {
+      var inner = document.querySelector('.book-detail-inner');
+      if (inner) trapFocus(inner);
+    }, 200);
+  };
+
+  var _origCloseBookDetail = closeBookDetail;
+  closeBookDetail = function() {
+    releaseFocus(document.querySelector('.book-detail-inner'));
+    _origCloseBookDetail();
+  };
+
+  var _origShowSuggestions = showSuggestionsOverlay;
+  showSuggestionsOverlay = function() {
+    _origShowSuggestions();
+    setTimeout(function() {
+      trapFocus(document.querySelector('.suggestions-overlay-inner'));
+    }, 100);
+  };
+
+  var _origCloseSuggestions = closeSuggestionsOverlay;
+  closeSuggestionsOverlay = function() {
+    releaseFocus(document.querySelector('.suggestions-overlay-inner'));
+    _origCloseSuggestions();
+  };
+
+  // Manuell-Button aria-expanded toggle
+  var _origToggleManual = toggleManualForm;
+  toggleManualForm = function() {
+    _origToggleManual();
+    var btn = document.querySelector('.dash-manual-btn');
+    var form = document.getElementById('manualForm');
+    if (btn && form) {
+      btn.setAttribute('aria-expanded', form.classList.contains('active') ? 'true' : 'false');
+    }
+  };
 </script>
 </body>
 </html>
