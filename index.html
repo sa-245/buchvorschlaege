@@ -928,7 +928,7 @@
   .category-count {
     font-size: 0.65rem;
     color: var(--text-muted);
-    margin-left: auto;
+    font-weight: 400;
   }
 
   .filter-row {
@@ -2042,8 +2042,7 @@
       html += '<div class="book-category">';
       html += '<div class="category-header">';
       html += '<span class="category-icon" aria-hidden="true">' + cat.icon + '</span>';
-      html += '<h2 class="category-title">' + cat.label + '</h2>';
-      html += '<span class="category-count">' + displayCount + (cat.key === 'gelesen' && filterYear !== 'all' ? ' / ' + list.length + ' gesamt' : '') + '</span>';
+      html += '<h2 class="category-title">' + cat.label + ' <span class="category-count">(' + displayCount + (cat.key === 'gelesen' && filterYear !== 'all' ? ' / ' + list.length : '') + ')</span></h2>';
       if (cat.key === 'gelesen' && list.length > 0) {
         html += '<div class="filter-row">';
         html += '<select class="filter-year-select active" onchange="setGelesenSort(this.value)">';
