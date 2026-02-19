@@ -1420,6 +1420,85 @@
   }
   .skip-link:focus { top: 0; }
 
+  /* ─── Social / Friends ─── */
+  .notification-bell { background: none; border: none; font-size: 1.1rem; cursor: pointer; position: relative; padding: 4px 8px; color: var(--text-soft); transition: color 0.2s; line-height: 1; }
+  .notification-bell:hover { color: var(--text); }
+  .notification-badge { position: absolute; top: -2px; right: 0; background: #a3281c; color: #fff; border-radius: 50%; min-width: 16px; height: 16px; font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 4px; }
+  .notification-badge.visible { display: flex; }
+  .notif-wrap { position: relative; }
+  .notification-dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: var(--card); border: 1px solid var(--card-border); border-radius: 6px; width: 320px; max-width: 90vw; box-shadow: 0 4px 16px rgba(0,0,0,0.12); display: none; z-index: 950; }
+  .notification-dropdown.active { display: block; }
+  .notif-header { padding: 10px 14px; border-bottom: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center; }
+  .notif-header-title { font-size: 0.72rem; font-weight: 600; color: var(--text); }
+  .notif-mark-all { font-size: 0.65rem; color: var(--accent); background: none; border: none; cursor: pointer; }
+  .notif-mark-all:hover { text-decoration: underline; }
+  .notif-list { max-height: 300px; overflow-y: auto; }
+  .notif-item { padding: 10px 14px; border-bottom: 1px solid var(--divider); font-size: 0.72rem; cursor: pointer; transition: background 0.15s; display: flex; gap: 8px; align-items: flex-start; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--bg); }
+  .notif-item.unread { background: var(--accent-soft); }
+  .notif-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+  .notif-text { flex: 1; color: var(--text-soft); line-height: 1.4; }
+  .notif-text strong { color: var(--text); font-weight: 600; }
+  .notif-time { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
+  .notif-empty { padding: 20px 14px; text-align: center; font-size: 0.72rem; color: var(--text-muted); }
+
+  .friends-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--divider); }
+  .friends-title { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 10px; }
+  .friends-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .friend-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-soft); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 600; color: var(--accent); overflow: hidden; cursor: default; position: relative; }
+  .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .friend-avatar[title]:hover::after { content: attr(title); position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 2px 8px; border-radius: 2px; font-size: 0.6rem; white-space: nowrap; z-index: 10; pointer-events: none; }
+  .invite-friend-btn { width: 100%; padding: 7px 12px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 0.7rem; font-family: var(--sans); font-weight: 500; cursor: pointer; transition: opacity 0.2s; letter-spacing: 0.02em; }
+  .invite-friend-btn:hover { opacity: 0.85; }
+
+  .social-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 1050; justify-content: center; align-items: center; }
+  .social-modal.active { display: flex; }
+  .social-modal-box { background: var(--card); border-radius: 8px; padding: 22px; width: 400px; max-width: 90vw; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+  .social-modal-close { position: absolute; top: 10px; right: 14px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; line-height: 1; }
+  .social-modal-close:hover { color: var(--text); }
+  .social-modal-title { font-family: var(--serif); font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; color: var(--text); }
+  .social-modal-label { display: block; font-size: 0.68rem; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .social-modal-select { width: 100%; padding: 8px 10px; border: 1px solid var(--card-border); border-radius: var(--radius); background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 0.78rem; }
+  .social-modal-select:focus { border-color: var(--accent); outline: none; }
+  .social-modal-textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--card-border); border-radius: var(--radius); background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 0.78rem; min-height: 70px; resize: vertical; box-sizing: border-box; }
+  .social-modal-textarea:focus { border-color: var(--accent); outline: none; }
+  .social-modal-row { margin-bottom: 12px; }
+  .social-modal-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .social-btn-primary { flex: 1; padding: 8px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 0.75rem; font-family: var(--sans); font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
+  .social-btn-primary:hover { opacity: 0.85; }
+  .social-btn-secondary { flex: 1; padding: 8px; background: var(--bg); border: 1px solid var(--card-border); color: var(--text-soft); border-radius: var(--radius); font-size: 0.75rem; font-family: var(--sans); cursor: pointer; }
+  .social-btn-secondary:hover { border-color: var(--text-soft); }
+
+  .invite-link-box { background: var(--bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 10px; margin: 10px 0; display: flex; gap: 8px; align-items: center; }
+  .invite-link-input { flex: 1; background: #fff; border: 1px solid var(--card-border); padding: 6px 8px; border-radius: 2px; font-size: 0.7rem; font-family: var(--sans); color: var(--text); outline: none; }
+  .invite-copy-btn { background: var(--accent); color: #fff; border: none; border-radius: 2px; padding: 6px 12px; font-size: 0.68rem; font-family: var(--sans); cursor: pointer; white-space: nowrap; transition: opacity 0.2s; }
+  .invite-copy-btn:hover { opacity: 0.85; }
+
+  .recommend-btn { background: none; border: 1px solid var(--card-border); border-radius: var(--radius); color: var(--text-soft); font-family: var(--sans); font-size: 0.62rem; padding: 4px 8px; cursor: pointer; transition: all 0.2s; margin-left: 4px; }
+  .recommend-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .rec-inbox { margin-bottom: 20px; }
+  .rec-inbox-title { font-family: var(--serif); font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .rec-inbox-badge { background: #a3281c; color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 0.6rem; font-family: var(--sans); font-weight: 700; }
+  .rec-card { display: flex; gap: 12px; padding: 12px; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); margin-bottom: 8px; transition: background 0.15s; }
+  .rec-card.unread { border-left: 3px solid var(--accent); }
+  .rec-cover { width: 45px; height: 65px; flex-shrink: 0; background: var(--bg); border-radius: 2px; overflow: hidden; }
+  .rec-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .rec-info { flex: 1; min-width: 0; }
+  .rec-from { font-size: 0.65rem; color: var(--accent); font-weight: 600; margin-bottom: 2px; }
+  .rec-book-title { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+  .rec-book-author { font-size: 0.7rem; color: var(--text-soft); }
+  .rec-message { font-size: 0.7rem; color: var(--text-soft); margin-top: 4px; font-style: italic; }
+  .rec-actions { display: flex; gap: 6px; margin-top: 8px; }
+  .rec-add-btn { padding: 4px 10px; background: var(--accent); color: #fff; border: none; border-radius: 2px; font-size: 0.65rem; font-family: var(--sans); cursor: pointer; transition: opacity 0.2s; }
+  .rec-add-btn:hover { opacity: 0.85; }
+  .rec-dismiss-btn { padding: 4px 10px; background: var(--bg); border: 1px solid var(--card-border); color: var(--text-muted); border-radius: 2px; font-size: 0.65rem; font-family: var(--sans); cursor: pointer; }
+  .rec-dismiss-btn:hover { border-color: var(--text-soft); }
+
+  .social-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 0.78rem; font-family: var(--sans); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .social-toast.visible { opacity: 1; }
+
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -1439,6 +1518,16 @@
   <nav aria-label="Benutzernavigation">
     <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Meine B&uuml;cher-Liste</button>
     <div id="userInfo" class="user-info">
+      <div class="notif-wrap">
+        <button class="notification-bell" onclick="toggleNotificationDropdown()" aria-label="Benachrichtigungen">&#128276;<span id="notifBadge" class="notification-badge">0</span></button>
+        <div id="notifDropdown" class="notification-dropdown" role="region" aria-label="Benachrichtigungen">
+          <div class="notif-header">
+            <span class="notif-header-title">Benachrichtigungen</span>
+            <button class="notif-mark-all" onclick="markAllNotificationsRead()">Alle gelesen</button>
+          </div>
+          <div id="notifList" class="notif-list"><div class="notif-empty">Keine Benachrichtigungen</div></div>
+        </div>
+      </div>
       <div id="userAvatar" class="user-avatar" aria-hidden="true"></div>
       <span id="userName" class="user-name"></span>
       <button class="logout-btn" onclick="handleLogout()">Abmelden</button>
@@ -1632,6 +1721,11 @@
     <aside class="sidebar" aria-label="Heutige Vorschl&auml;ge">
       <h2 class="sidebar-title">Heutige Vorschl&auml;ge</h2>
       <div id="sidebarBooks"></div>
+      <div class="friends-section" id="friendsSection">
+        <div class="friends-title">Meine Freunde</div>
+        <div class="friends-grid" id="friendsGrid"></div>
+        <button class="invite-friend-btn" onclick="openInviteModal()">&#128279; Freund einladen</button>
+      </div>
     </aside>
     <section class="main-content" aria-label="B&uuml;cherverwaltung">
       <div class="dash-header">
@@ -1739,6 +1833,44 @@
   <button class="login-toast-btn" onclick="handleLogin()">Anmelden</button>
 </div>
 
+<!-- Einladungs-Modal -->
+<div id="inviteModal" class="social-modal" onclick="if(event.target===this)closeInviteModal()">
+  <div class="social-modal-box">
+    <button class="social-modal-close" onclick="closeInviteModal()" aria-label="Schlie&szlig;en">&times;</button>
+    <div class="social-modal-title">Freund einladen</div>
+    <p style="font-size:0.75rem;color:var(--text-soft);margin-bottom:12px;line-height:1.5">Teile diesen Link per WhatsApp, E-Mail oder Nachricht. Sobald dein Freund den Link &ouml;ffnet und sich anmeldet, seid ihr verbunden.</p>
+    <div class="invite-link-box">
+      <input type="text" id="inviteLinkInput" class="invite-link-input" readonly>
+      <button class="invite-copy-btn" onclick="copyInviteLink()">Kopieren</button>
+    </div>
+    <div id="inviteStatus" style="font-size:0.68rem;color:var(--text-muted);margin-top:4px"></div>
+  </div>
+</div>
+
+<!-- Empfehlungs-Modal -->
+<div id="recommendModal" class="social-modal" onclick="if(event.target===this)closeRecommendModal()">
+  <div class="social-modal-box">
+    <button class="social-modal-close" onclick="closeRecommendModal()" aria-label="Schlie&szlig;en">&times;</button>
+    <div class="social-modal-title">Buch empfehlen</div>
+    <div id="recModalBook" style="font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:12px"></div>
+    <div class="social-modal-row">
+      <label class="social-modal-label" for="recFriendSelect">Freund ausw&auml;hlen</label>
+      <select id="recFriendSelect" class="social-modal-select"></select>
+    </div>
+    <div class="social-modal-row">
+      <label class="social-modal-label" for="recMessage">Pers&ouml;nliche Nachricht (optional)</label>
+      <textarea id="recMessage" class="social-modal-textarea" placeholder="Das musst du unbedingt lesen!"></textarea>
+    </div>
+    <div class="social-modal-actions">
+      <button class="social-btn-primary" onclick="sendRecommendation()">Empfehlen</button>
+      <button class="social-btn-secondary" onclick="closeRecommendModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Social Toast -->
+<div id="socialToast" class="social-toast"></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -1791,6 +1923,7 @@
       trackBtns.forEach(function(btn) { btn.classList.remove('needs-login'); });
       buildSidebar();
       loadUserBooks();
+      initSocialFeatures();
     } else {
       document.body.classList.remove('logged-in');
       loginBtn.style.display = '';
@@ -2265,6 +2398,7 @@
           }
           html += '<div class="cat-book-actions-wrap">';
           html += '<button class="edit-btn" onclick="toggleEditForm(\'' + book.id + '\')">&#9998; Bearbeiten</button>';
+          html += '<button class="recommend-btn" onclick="openRecommendModal(\'' + escapeHtml(book.id) + '\',\'' + escapeHtml(book.title).replace(/'/g, "\\'") + '\',\'' + escapeHtml(book.author).replace(/'/g, "\\'") + '\',\'' + escapeHtml(book.coverUrl || '').replace(/'/g, "\\'") + '\')">&#128140; Empfehlen</button>';
           html += '</div>';
           html += '</div>';
           html += '<div class="edit-form" id="edit-' + book.id + '">';
@@ -3222,6 +3356,564 @@
       btn.setAttribute('aria-expanded', form.classList.contains('active') ? 'true' : 'false');
     }
   };
+
+  // ═══════════════════════════════════════════
+  // ═══ SOZIALES SYSTEM: Freunde & Empfehlungen ═══
+  // ═══════════════════════════════════════════
+
+  var friendsCache = [];
+  var _recModalData = {};
+
+  // ─── Toast ───
+  function showSocialToast(msg) {
+    var t = document.getElementById('socialToast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('visible');
+    setTimeout(function() { t.classList.remove('visible'); }, 3000);
+  }
+
+  // ─── User-Profil speichern ───
+  function saveUserProfile(user) {
+    if (!user) return;
+    db.collection('users').doc(user.uid).set({
+      displayName: user.displayName || user.email || '',
+      email: user.email || '',
+      photoURL: user.photoURL || '',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  }
+
+  // ─── Random Token ───
+  function generateRandomToken() {
+    var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    var token = '';
+    for (var i = 0; i < 8; i++) {
+      token += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return token;
+  }
+
+  // ─── Invite Modal ───
+  function openInviteModal() {
+    if (!currentUser) { showLoginToast(); return; }
+    var modal = document.getElementById('inviteModal');
+    var input = document.getElementById('inviteLinkInput');
+    var status = document.getElementById('inviteStatus');
+    input.value = 'Link wird erstellt...';
+    status.textContent = '';
+    modal.classList.add('active');
+
+    var token = generateRandomToken();
+    var now = new Date();
+    var expires = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    db.collection('inviteTokens').add({
+      createdBy: currentUser.uid,
+      token: token,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      expiresAt: firebase.firestore.Timestamp.fromDate(expires),
+      usedBy: null,
+      usedAt: null
+    }).then(function() {
+      var base = window.location.origin + window.location.pathname;
+      input.value = base + '?invite=' + token;
+      status.textContent = 'Link ist 30 Tage g\u00fcltig.';
+    }).catch(function(err) {
+      input.value = 'Fehler beim Erstellen';
+      status.textContent = err.message;
+    });
+  }
+
+  function closeInviteModal() {
+    document.getElementById('inviteModal').classList.remove('active');
+  }
+
+  function copyInviteLink() {
+    var input = document.getElementById('inviteLinkInput');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(function() {
+      showSocialToast('Link kopiert!');
+    }).catch(function() {
+      document.execCommand('copy');
+      showSocialToast('Link kopiert!');
+    });
+  }
+
+  // ─── Invite Link einl\u00f6sen ───
+  function processInviteLink() {
+    if (!currentUser) return;
+    var params = new URLSearchParams(window.location.search);
+    var token = params.get('invite');
+    if (!token) return;
+
+    // URL bereinigen
+    var cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+
+    db.collection('inviteTokens')
+      .where('token', '==', token)
+      .limit(1)
+      .get()
+      .then(function(snap) {
+        if (snap.empty) { showSocialToast('Einladungslink ung\u00fcltig oder abgelaufen.'); return; }
+        var doc = snap.docs[0];
+        var data = doc.data();
+
+        if (data.usedBy) { showSocialToast('Dieser Link wurde bereits verwendet.'); return; }
+        if (data.createdBy === currentUser.uid) { showSocialToast('Das ist dein eigener Einladungslink.'); return; }
+        if (data.expiresAt && data.expiresAt.toDate() < new Date()) { showSocialToast('Einladungslink abgelaufen.'); return; }
+
+        // Token als benutzt markieren
+        doc.ref.update({
+          usedBy: currentUser.uid,
+          usedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Freundschaft erstellen
+        createFriendship(data.createdBy, currentUser.uid);
+      })
+      .catch(function(err) {
+        console.error('Invite error:', err);
+      });
+  }
+
+  // ─── Freundschaft erstellen ───
+  function createFriendship(uid1, uid2) {
+    var ids = [uid1, uid2].sort();
+
+    // Pr\u00fcfen ob Freundschaft schon existiert
+    db.collection('friendships')
+      .where('user1Id', '==', ids[0])
+      .where('user2Id', '==', ids[1])
+      .limit(1)
+      .get()
+      .then(function(snap) {
+        if (!snap.empty) {
+          showSocialToast('Ihr seid bereits Freunde!');
+          return;
+        }
+
+        // Freundschaft anlegen
+        db.collection('friendships').add({
+          user1Id: ids[0],
+          user2Id: ids[1],
+          connectedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Benachrichtigungen f\u00fcr beide
+        var myName = currentUser.displayName || currentUser.email || 'Jemand';
+
+        db.collection('users').doc(uid1 === currentUser.uid ? uid2 : uid1).get().then(function(uDoc) {
+          var friendName = uDoc.exists ? (uDoc.data().displayName || uDoc.data().email || 'Jemand') : 'Jemand';
+
+          // Notification f\u00fcr den Einladenden
+          db.collection('notifications').add({
+            userId: uid1 === currentUser.uid ? uid2 : uid1,
+            type: 'friend_new',
+            fromName: myName,
+            detail: myName + ' ist jetzt dein Freund!',
+            relatedId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            readAt: null
+          });
+
+          // Notification f\u00fcr den Eingeladenen
+          db.collection('notifications').add({
+            userId: currentUser.uid,
+            type: 'friend_new',
+            fromName: friendName,
+            detail: friendName + ' ist jetzt dein Freund!',
+            relatedId: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            readAt: null
+          });
+
+          showSocialToast('Freundschaft hergestellt!');
+          loadUserFriends();
+          loadNotifications();
+        });
+      });
+  }
+
+  // ─── Freunde laden ───
+  function loadUserFriends() {
+    if (!currentUser) return;
+    var uid = currentUser.uid;
+    var friends = [];
+
+    Promise.all([
+      db.collection('friendships').where('user1Id', '==', uid).get(),
+      db.collection('friendships').where('user2Id', '==', uid).get()
+    ]).then(function(results) {
+      var friendIds = [];
+      results[0].forEach(function(doc) { friendIds.push({ uid: doc.data().user2Id, friendshipId: doc.id }); });
+      results[1].forEach(function(doc) { friendIds.push({ uid: doc.data().user1Id, friendshipId: doc.id }); });
+
+      if (friendIds.length === 0) {
+        friendsCache = [];
+        renderFriendsSidebar([]);
+        return;
+      }
+
+      var profilePromises = friendIds.map(function(f) {
+        return db.collection('users').doc(f.uid).get().then(function(uDoc) {
+          var data = uDoc.exists ? uDoc.data() : {};
+          return {
+            uid: f.uid,
+            friendshipId: f.friendshipId,
+            displayName: data.displayName || data.email || 'Unbekannt',
+            photoURL: data.photoURL || '',
+            email: data.email || ''
+          };
+        });
+      });
+
+      return Promise.all(profilePromises);
+    }).then(function(profiles) {
+      if (profiles) {
+        friendsCache = profiles;
+        renderFriendsSidebar(profiles);
+      }
+    }).catch(function(err) {
+      console.error('Friends load error:', err);
+    });
+  }
+
+  function renderFriendsSidebar(friends) {
+    var grid = document.getElementById('friendsGrid');
+    if (!grid) return;
+
+    if (!friends || friends.length === 0) {
+      grid.innerHTML = '<div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Noch keine Freunde. Lade jemanden ein!</div>';
+      return;
+    }
+
+    var html = '';
+    friends.forEach(function(f) {
+      var initials = (f.displayName || '??').substring(0, 2).toUpperCase();
+      html += '<div class="friend-avatar" title="' + escapeHtml(f.displayName) + '">';
+      if (f.photoURL) {
+        html += '<img src="' + escapeHtml(f.photoURL) + '" alt="' + escapeHtml(f.displayName) + '">';
+      } else {
+        html += initials;
+      }
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+  }
+
+  // ─── Benachrichtigungen ───
+  function loadNotifications() {
+    if (!currentUser) return;
+
+    db.collection('notifications')
+      .where('userId', '==', currentUser.uid)
+      .orderBy('createdAt', 'desc')
+      .limit(20)
+      .get()
+      .then(function(snap) {
+        var notifs = [];
+        var unread = 0;
+        snap.forEach(function(doc) {
+          var d = doc.data();
+          d.id = doc.id;
+          notifs.push(d);
+          if (!d.readAt) unread++;
+        });
+        updateNotifBadge(unread);
+        renderNotificationDropdown(notifs);
+      })
+      .catch(function(err) {
+        console.error('Notifications error:', err);
+      });
+  }
+
+  function updateNotifBadge(count) {
+    var badge = document.getElementById('notifBadge');
+    if (!badge) return;
+    badge.textContent = count > 9 ? '9+' : count;
+    badge.classList.toggle('visible', count > 0);
+  }
+
+  function renderNotificationDropdown(notifs) {
+    var list = document.getElementById('notifList');
+    if (!list) return;
+
+    if (!notifs || notifs.length === 0) {
+      list.innerHTML = '<div class="notif-empty">Keine Benachrichtigungen</div>';
+      return;
+    }
+
+    var html = '';
+    notifs.forEach(function(n) {
+      var icon = n.type === 'recommendation' ? '&#128218;' : '&#128100;';
+      var cls = n.readAt ? '' : ' unread';
+      var time = n.createdAt ? timeAgo(n.createdAt.toDate()) : '';
+      html += '<div class="notif-item' + cls + '" onclick="handleNotifClick(\'' + n.id + '\',\'' + (n.type || '') + '\')">';
+      html += '<span class="notif-icon">' + icon + '</span>';
+      html += '<div><div class="notif-text">' + escapeHtml(n.detail || '') + '</div>';
+      html += '<div class="notif-time">' + time + '</div></div>';
+      html += '</div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function timeAgo(date) {
+    var now = new Date();
+    var diff = Math.floor((now - date) / 1000);
+    if (diff < 60) return 'Gerade eben';
+    if (diff < 3600) return Math.floor(diff / 60) + ' Min.';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' Std.';
+    if (diff < 604800) return Math.floor(diff / 86400) + ' Tage';
+    return date.toLocaleDateString('de-DE');
+  }
+
+  function toggleNotificationDropdown() {
+    var dd = document.getElementById('notifDropdown');
+    dd.classList.toggle('active');
+
+    // Close on outside click
+    if (dd.classList.contains('active')) {
+      setTimeout(function() {
+        document.addEventListener('click', closeNotifOnOutside);
+      }, 10);
+    }
+  }
+
+  function closeNotifOnOutside(e) {
+    var wrap = document.querySelector('.notif-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('notifDropdown').classList.remove('active');
+      document.removeEventListener('click', closeNotifOnOutside);
+    }
+  }
+
+  function handleNotifClick(notifId, type) {
+    markNotificationRead(notifId);
+    if (type === 'recommendation') {
+      // Scroll to recommendation inbox
+      var inbox = document.querySelector('.rec-inbox');
+      if (inbox) inbox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.getElementById('notifDropdown').classList.remove('active');
+  }
+
+  function markNotificationRead(notifId) {
+    db.collection('notifications').doc(notifId).update({
+      readAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
+      loadNotifications();
+    });
+  }
+
+  function markAllNotificationsRead() {
+    if (!currentUser) return;
+    db.collection('notifications')
+      .where('userId', '==', currentUser.uid)
+      .where('readAt', '==', null)
+      .get()
+      .then(function(snap) {
+        var batch = db.batch();
+        snap.forEach(function(doc) {
+          batch.update(doc.ref, { readAt: firebase.firestore.FieldValue.serverTimestamp() });
+        });
+        return batch.commit();
+      })
+      .then(function() {
+        loadNotifications();
+        showSocialToast('Alle als gelesen markiert');
+      });
+  }
+
+  // ─── Buchempfehlungen ───
+  function openRecommendModal(bookId, bookTitle, bookAuthor, bookCover) {
+    if (!currentUser) { showLoginToast(); return; }
+    if (friendsCache.length === 0) {
+      showSocialToast('Du hast noch keine Freunde. Lade zuerst jemanden ein!');
+      return;
+    }
+
+    _recModalData = { bookId: bookId, title: bookTitle, author: bookAuthor, cover: bookCover };
+
+    document.getElementById('recModalBook').textContent = bookTitle + ' \u2014 ' + bookAuthor;
+
+    var select = document.getElementById('recFriendSelect');
+    var html = '';
+    friendsCache.forEach(function(f) {
+      html += '<option value="' + f.uid + '">' + escapeHtml(f.displayName) + '</option>';
+    });
+    select.innerHTML = html;
+
+    document.getElementById('recMessage').value = '';
+    document.getElementById('recommendModal').classList.add('active');
+  }
+
+  function closeRecommendModal() {
+    document.getElementById('recommendModal').classList.remove('active');
+  }
+
+  function sendRecommendation() {
+    if (!currentUser || !_recModalData.title) return;
+    var toUserId = document.getElementById('recFriendSelect').value;
+    var message = document.getElementById('recMessage').value.trim();
+
+    if (!toUserId) { showSocialToast('Bitte w\u00e4hle einen Freund aus.'); return; }
+
+    var myName = currentUser.displayName || currentUser.email || 'Jemand';
+
+    db.collection('recommendations').add({
+      fromUserId: currentUser.uid,
+      fromName: myName,
+      toUserId: toUserId,
+      bookTitle: _recModalData.title,
+      bookAuthor: _recModalData.author,
+      bookCover: _recModalData.cover || '',
+      personalMessage: message,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      readAt: null,
+      status: 'new'
+    }).then(function() {
+      // Notification erstellen
+      db.collection('notifications').add({
+        userId: toUserId,
+        type: 'recommendation',
+        fromName: myName,
+        detail: myName + ' empfiehlt dir: ' + _recModalData.title,
+        relatedId: '',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        readAt: null
+      });
+
+      closeRecommendModal();
+      showSocialToast('Empfehlung gesendet!');
+    }).catch(function(err) {
+      showSocialToast('Fehler: ' + err.message);
+    });
+  }
+
+  // ─── Empfehlungs-Inbox ───
+  function loadReceivedRecommendations() {
+    if (!currentUser) return;
+
+    db.collection('recommendations')
+      .where('toUserId', '==', currentUser.uid)
+      .orderBy('createdAt', 'desc')
+      .limit(20)
+      .get()
+      .then(function(snap) {
+        var recs = [];
+        snap.forEach(function(doc) {
+          var d = doc.data();
+          d.id = doc.id;
+          recs.push(d);
+        });
+        renderRecommendationInbox(recs);
+      })
+      .catch(function(err) {
+        console.error('Recommendations error:', err);
+        // Index might not exist yet — render empty
+        renderRecommendationInbox([]);
+      });
+  }
+
+  function renderRecommendationInbox(recs) {
+    var container = document.getElementById('recInbox');
+    if (!container) {
+      // Create inbox container before categories
+      var cats = document.getElementById('dashCategories');
+      if (!cats) return;
+      container = document.createElement('div');
+      container.id = 'recInbox';
+      container.className = 'rec-inbox';
+      cats.parentNode.insertBefore(container, cats);
+    }
+
+    var active = recs.filter(function(r) { return r.status !== 'added' && r.status !== 'dismissed'; });
+
+    if (active.length === 0) {
+      container.innerHTML = '';
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = '';
+    var unreadCount = active.filter(function(r) { return !r.readAt; }).length;
+    var html = '<div class="rec-inbox-title">Empfehlungen von Freunden';
+    if (unreadCount > 0) html += ' <span class="rec-inbox-badge">' + unreadCount + '</span>';
+    html += '</div>';
+
+    active.forEach(function(r) {
+      var cls = r.readAt ? '' : ' unread';
+      html += '<div class="rec-card' + cls + '">';
+      if (r.bookCover) {
+        html += '<div class="rec-cover"><img src="' + escapeHtml(r.bookCover) + '" alt="" onerror="this.parentElement.innerHTML=\'&#128218;\'"></div>';
+      }
+      html += '<div class="rec-info">';
+      html += '<div class="rec-from">Von ' + escapeHtml(r.fromName || 'Unbekannt') + '</div>';
+      html += '<div class="rec-book-title">' + escapeHtml(r.bookTitle || '') + '</div>';
+      html += '<div class="rec-book-author">' + escapeHtml(r.bookAuthor || '') + '</div>';
+      if (r.personalMessage) {
+        html += '<div class="rec-message">\u201e' + escapeHtml(r.personalMessage) + '\u201c</div>';
+      }
+      html += '<div class="rec-actions">';
+      html += '<button class="rec-add-btn" onclick="addRecommendedBook(\'' + r.id + '\')">+ Hinzuf\u00fcgen</button>';
+      html += '<button class="rec-dismiss-btn" onclick="dismissRecommendation(\'' + r.id + '\')">Ausblenden</button>';
+      html += '</div>';
+      html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+  }
+
+  function addRecommendedBook(recId) {
+    db.collection('recommendations').doc(recId).get().then(function(doc) {
+      if (!doc.exists) return;
+      var rec = doc.data();
+
+      var bookId = slugify(rec.bookTitle);
+      db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).set({
+        title: rec.bookTitle,
+        author: rec.bookAuthor,
+        coverUrl: rec.bookCover || '',
+        status: 'merkliste',
+        rating: 0,
+        addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        recommendedBy: rec.fromName || '',
+        genres: [],
+        description: ''
+      });
+
+      doc.ref.update({ status: 'added', readAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+      showSocialToast(rec.bookTitle + ' hinzugef\u00fcgt!');
+      setTimeout(function() {
+        loadUserBooks();
+        loadReceivedRecommendations();
+      }, 500);
+    });
+  }
+
+  function dismissRecommendation(recId) {
+    db.collection('recommendations').doc(recId).update({
+      status: 'dismissed',
+      readAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
+      loadReceivedRecommendations();
+    });
+  }
+
+  // ─── Social Init (aufgerufen in onAuthStateChanged) ───
+  function initSocialFeatures() {
+    if (!currentUser) return;
+    saveUserProfile(currentUser);
+    processInviteLink();
+    loadUserFriends();
+    loadNotifications();
+    loadReceivedRecommendations();
+  }
+
 </script>
 </body>
 </html>
