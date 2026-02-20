@@ -2638,6 +2638,10 @@
             html += '<button class="edit-heart-btn' + (hh <= (book.hearts || 0) ? ' filled' : '') + '" data-book="' + book.id + '" data-val="' + hh + '" onclick="setHearts(this)">&hearts;</button>';
           }
           html += '</div>';
+          html += '<div class="edit-hide-row" style="display:flex;align-items:center;gap:8px;padding:6px 0">';
+          html += '<button class="toggle-switch' + (book.hiddenFromFriends ? ' active' : '') + '" id="hideToggle-' + book.id + '" onclick="this.classList.toggle(\'active\')" role="switch" aria-checked="' + (book.hiddenFromFriends ? 'true' : 'false') + '" style="width:34px;height:18px;flex-shrink:0"></button>';
+          html += '<span style="font-size:0.7rem;color:var(--text-soft)">Vor Freunden verbergen</span>';
+          html += '</div>';
           html += '<div class="edit-form-row">';
           html += '<label for="editFazit-' + book.id + '" class="sr-only">Persönliche Notizen</label>';
           html += '<textarea class="edit-fazit-input" id="editFazit-' + book.id + '" placeholder="Pers\u00F6nliche Notizen zum Buch">' + escapeHtml(book.fazit || '') + '</textarea>';
@@ -2786,6 +2790,9 @@
     var selectedFormat = document.querySelector('#editFormat-' + bookId + ' .edit-format-chip.selected');
     if (selectedFormat) readFormat = selectedFormat.getAttribute('data-format');
 
+    var hideToggle = document.getElementById('hideToggle-' + bookId);
+    var hiddenFromFriends = hideToggle ? hideToggle.classList.contains('active') : false;
+
     var baseUpdate = {
       title: title, author: author || 'Unbekannt', coverUrl: coverUrl,
       bookLink: bookLink, status: status,
@@ -2793,7 +2800,8 @@
       hearts: hearts, fazit: fazit,
       recommendedBy: recommendedBy, genres: genres, quotes: quotes,
       readLocations: readLocations,
-      readFormat: readFormat
+      readFormat: readFormat,
+      hiddenFromFriends: hiddenFromFriends
     };
 
     db.collection('users').doc(currentUser.uid).collection('books').doc(bookId).update(baseUpdate).then(function() {
@@ -4330,22 +4338,22 @@
   function loadFriendCurrentReads(friendUid) {
     db.collection('users').doc(friendUid).collection('books')
       .where('status', '==', 'lese-ich')
-      .limit(5).get()
+      .limit(20).get()
       .then(function(snap) {
         var books = [];
-        snap.forEach(function(d) { books.push(d.data()); });
-        renderFriendBookList(books, 'fpCurrentReads', 'Liest gerade nichts');
+        snap.forEach(function(d) { var b = d.data(); if (!b.hiddenFromFriends) books.push(b); });
+        renderFriendBookList(books.slice(0, 5), 'fpCurrentReads', 'Liest gerade nichts');
       }).catch(function(err) { console.error('Friend reads error:', err); });
   }
 
   function loadFriendCompletedBooks(friendUid) {
     db.collection('users').doc(friendUid).collection('books')
       .where('status', '==', 'gelesen')
-      .limit(10).get()
+      .limit(30).get()
       .then(function(snap) {
         var books = [];
-        snap.forEach(function(d) { books.push(d.data()); });
-        renderFriendBookList(books, 'fpCompletedBooks', 'Noch keine B\u00fccher gelesen');
+        snap.forEach(function(d) { var b = d.data(); if (!b.hiddenFromFriends) books.push(b); });
+        renderFriendBookList(books.slice(0, 10), 'fpCompletedBooks', 'Noch keine B\u00fccher gelesen');
       }).catch(function(err) { console.error('Friend completed error:', err); });
   }
 
@@ -4355,6 +4363,7 @@
         var total = 0, gelesen = 0, leseIch = 0, merkliste = 0;
         snap.forEach(function(d) {
           var b = d.data();
+          if (b.hiddenFromFriends) return;
           total++;
           if (b.status === 'gelesen') gelesen++;
           else if (b.status === 'lese-ich') leseIch++;
