@@ -1737,7 +1737,7 @@
 
 <!-- Archiv -->
 <section class="history" aria-label="Archiv der Buchvorschl&auml;ge">
-  <details>
+  <details ontoggle="saveSectionStates()">
     <summary><span class="arrow">&#9654;</span> Archiv</summary>
     <div class="history-list">
       <div class="history-day">
@@ -2335,6 +2335,7 @@
         });
 
         renderDashboard(books);
+        restoreSectionStates();
       });
   }
 
@@ -2855,7 +2856,54 @@
     if (header) {
       header.setAttribute('aria-expanded', el.classList.contains('collapsed') ? 'false' : 'true');
     }
+    saveSectionStates();
   }
+
+  // ─── Abschnittszustände merken ───
+  function saveSectionStates() {
+    try {
+      var states = {};
+      document.querySelectorAll('.book-category').forEach(function(cat) {
+        if (cat.id) states[cat.id] = cat.classList.contains('collapsed') ? 'collapsed' : 'open';
+      });
+      var archiv = document.querySelector('.history details');
+      if (archiv) states['archiv'] = archiv.open ? 'open' : 'collapsed';
+      localStorage.setItem('sectionStates', JSON.stringify(states));
+    } catch(e) {}
+  }
+
+  function restoreSectionStates() {
+    try {
+      var raw = localStorage.getItem('sectionStates');
+      if (!raw) return;
+      var states = JSON.parse(raw);
+
+      // Kategorien
+      Object.keys(states).forEach(function(id) {
+        if (id === 'archiv') return;
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (states[id] === 'collapsed' && !el.classList.contains('collapsed')) {
+          el.classList.add('collapsed');
+          var header = el.querySelector('.category-header');
+          if (header) header.setAttribute('aria-expanded', 'false');
+        } else if (states[id] === 'open' && el.classList.contains('collapsed')) {
+          el.classList.remove('collapsed');
+          var header = el.querySelector('.category-header');
+          if (header) header.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      // Archiv
+      var archiv = document.querySelector('.history details');
+      if (archiv && states['archiv']) {
+        archiv.open = states['archiv'] === 'open';
+      }
+    } catch(e) {}
+  }
+
+  // Archiv-Zustand sofort beim Laden wiederherstellen
+  restoreSectionStates();
 
   function parseBulkList(text) {
     return text.split('\n').map(function(line) {
