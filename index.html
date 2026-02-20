@@ -1500,8 +1500,11 @@
   .social-toast.visible { opacity: 1; }
 
   /* Settings Button */
-  .settings-btn { background: none; border: none; font-size: 0.95rem; color: var(--text-soft); cursor: pointer; padding: 4px 8px; transition: color 0.2s; line-height: 1; margin-right: 4px; }
-  .settings-btn:hover { color: var(--text); }
+  .settings-btn { background: none; border: none; cursor: pointer; padding: 6px; margin-right: 6px; border-radius: 50%; transition: background 0.2s, transform 0.3s; display: flex; align-items: center; justify-content: center; }
+  .settings-btn svg { width: 20px; height: 20px; fill: none; stroke: var(--text-soft); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+  .settings-btn:hover { background: var(--accent-soft); }
+  .settings-btn:hover svg { stroke: var(--accent); }
+  .settings-btn:active { transform: rotate(45deg); }
 
   /* Toggle Switch */
   .toggle-switch { width: 40px; height: 22px; background: var(--text-muted); border-radius: 11px; position: relative; cursor: pointer; transition: background-color 0.3s; flex-shrink: 0; margin-left: 12px; border: none; padding: 0; }
@@ -1556,7 +1559,7 @@
   <nav aria-label="Benutzernavigation">
     <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Meine B&uuml;cher-Liste</button>
     <div id="userInfo" class="user-info">
-      <button class="settings-btn" onclick="openSettingsModal()" aria-label="Datenschutzeinstellungen" title="Einstellungen">&#9881;</button>
+      <button class="settings-btn" onclick="openSettingsModal()" aria-label="Datenschutzeinstellungen" title="Einstellungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <div class="notif-wrap">
         <button class="notification-bell" onclick="toggleNotificationDropdown()" aria-label="Benachrichtigungen">&#128276;<span id="notifBadge" class="notification-badge">0</span></button>
         <div id="notifDropdown" class="notification-dropdown" role="region" aria-label="Benachrichtigungen">
