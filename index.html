@@ -1996,6 +1996,18 @@
   var db = firebase.firestore();
   var currentUser = null;
 
+  // Invite-Token sofort sichern, bevor er durch Redirects verloren geht
+  var _pendingInviteToken = (function() {
+    var p = new URLSearchParams(window.location.search);
+    var t = p.get('invite');
+    if (t) {
+      try { sessionStorage.setItem('pendingInvite', t); } catch(e) {}
+      window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+    }
+    if (!t) { try { t = sessionStorage.getItem('pendingInvite'); } catch(e) {} }
+    return t;
+  })();
+
   // ─── Redirect-Ergebnis abfangen ───
   auth.getRedirectResult().then(function(result) {
     if (result.user) console.log('Login via Redirect erfolgreich:', result.user.displayName);
@@ -3565,13 +3577,14 @@
   // ─── Invite Link einl\u00f6sen ───
   function processInviteLink() {
     if (!currentUser) return;
-    var params = new URLSearchParams(window.location.search);
-    var token = params.get('invite');
+    var token = _pendingInviteToken;
     if (!token) return;
 
-    // URL bereinigen
-    var cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
+    // Token nur einmal verarbeiten
+    _pendingInviteToken = null;
+    try { sessionStorage.removeItem('pendingInvite'); } catch(e) {}
+
+    console.log('Verarbeite Einladungstoken:', token);
 
     db.collection('inviteTokens')
       .where('token', '==', token)
@@ -3597,6 +3610,7 @@
       })
       .catch(function(err) {
         console.error('Invite error:', err);
+        showSocialToast('Fehler beim Einl\u00f6sen des Links. Bitte versuche es nochmal.');
       });
   }
 
