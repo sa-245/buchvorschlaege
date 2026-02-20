@@ -1499,6 +1499,44 @@
   .social-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 0.78rem; font-family: var(--sans); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
   .social-toast.visible { opacity: 1; }
 
+  /* Settings Button */
+  .settings-btn { background: none; border: none; font-size: 0.95rem; color: var(--text-soft); cursor: pointer; padding: 4px 8px; transition: color 0.2s; line-height: 1; margin-right: 4px; }
+  .settings-btn:hover { color: var(--text); }
+
+  /* Toggle Switch */
+  .toggle-switch { width: 40px; height: 22px; background: var(--text-muted); border-radius: 11px; position: relative; cursor: pointer; transition: background-color 0.3s; flex-shrink: 0; margin-left: 12px; border: none; padding: 0; }
+  .toggle-switch.active { background: var(--accent); }
+  .toggle-switch::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: left 0.3s; }
+  .toggle-switch.active::after { left: 20px; }
+
+  /* Privacy Toggle Rows */
+  .privacy-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--card-border); }
+  .privacy-toggle:last-child { border-bottom: none; }
+  .privacy-toggle-info { flex: 1; }
+  .privacy-toggle-label { font-size: 0.78rem; color: var(--text); line-height: 1.4; }
+  .privacy-toggle-hint { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+  .privacy-toggles-box { background: var(--bg); border-radius: var(--radius); padding: 4px 14px; }
+  .settings-section-title { font-size: 0.68rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
+  /* Friend Profile Modal */
+  .friend-profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--card-border); }
+  .friend-profile-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent-soft); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: var(--accent); overflow: hidden; flex-shrink: 0; }
+  .friend-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .friend-profile-name { font-family: var(--serif); font-size: 0.95rem; font-weight: 600; color: var(--text); }
+  .friend-profile-email { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+  .friend-content-title { font-size: 0.70rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 8px; margin-top: 14px; }
+  .friend-content-empty { font-size: 0.72rem; color: var(--text-muted); font-style: italic; padding: 8px 0; }
+  .friend-book-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--card-border); }
+  .friend-book-item:last-child { border-bottom: none; }
+  .friend-book-cover { width: 36px; height: 54px; border-radius: 2px; overflow: hidden; background: rgba(0,0,0,0.05); flex-shrink: 0; }
+  .friend-book-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .friend-book-title { font-size: 0.75rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .friend-book-author { font-size: 0.65rem; color: var(--text-muted); margin-top: 1px; }
+  .friend-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+  .friend-stat-box { background: var(--accent-soft); border-radius: var(--radius); padding: 10px; text-align: center; }
+  .friend-stat-number { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+  .friend-stat-label { font-size: 0.6rem; color: var(--accent); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -1518,6 +1556,7 @@
   <nav aria-label="Benutzernavigation">
     <button id="loginBtn" class="auth-btn" onclick="handleLogin()">Meine B&uuml;cher-Liste</button>
     <div id="userInfo" class="user-info">
+      <button class="settings-btn" onclick="openSettingsModal()" aria-label="Datenschutzeinstellungen" title="Einstellungen">&#9881;</button>
       <div class="notif-wrap">
         <button class="notification-bell" onclick="toggleNotificationDropdown()" aria-label="Benachrichtigungen">&#128276;<span id="notifBadge" class="notification-badge">0</span></button>
         <div id="notifDropdown" class="notification-dropdown" role="region" aria-label="Benachrichtigungen">
@@ -1885,6 +1924,56 @@
   </div>
 </div>
 
+<!-- Privacy Settings Modal -->
+<div id="settingsModal" class="social-modal" onclick="if(event.target===this)closeSettingsModal()">
+  <div class="social-modal-box">
+    <button class="social-modal-close" onclick="closeSettingsModal()" aria-label="Schlie&szlig;en">&times;</button>
+    <div class="social-modal-title">Datenschutzeinstellungen</div>
+    <div class="settings-section-title">Sichtbarkeit f&uuml;r Freunde</div>
+    <div class="privacy-toggles-box">
+      <div class="privacy-toggle">
+        <div class="privacy-toggle-info">
+          <div class="privacy-toggle-label">Zeige, was ich gerade lese</div>
+          <div class="privacy-toggle-hint">Freunde sehen deine aktuelle Lekt&uuml;re</div>
+        </div>
+        <button class="toggle-switch" id="toggleShowCurrentReads" onclick="togglePrivacySetting(this,'showCurrentReads')" role="switch" aria-checked="false" aria-label="Aktuelle Lekt&uuml;re freigeben"></button>
+      </div>
+      <div class="privacy-toggle">
+        <div class="privacy-toggle-info">
+          <div class="privacy-toggle-label">Zeige meine Gelesen-Liste</div>
+          <div class="privacy-toggle-hint">Freunde sehen B&uuml;cher, die du fertig gelesen hast</div>
+        </div>
+        <button class="toggle-switch" id="toggleShowCompletedBooks" onclick="togglePrivacySetting(this,'showCompletedBooks')" role="switch" aria-checked="false" aria-label="Gelesen-Liste freigeben"></button>
+      </div>
+      <div class="privacy-toggle">
+        <div class="privacy-toggle-info">
+          <div class="privacy-toggle-label">Zeige meine Statistiken</div>
+          <div class="privacy-toggle-hint">Anzahl gelesener B&uuml;cher und Durchschnittsbewertung</div>
+        </div>
+        <button class="toggle-switch" id="toggleShowStatistics" onclick="togglePrivacySetting(this,'showStatistics')" role="switch" aria-checked="false" aria-label="Statistiken freigeben"></button>
+      </div>
+    </div>
+    <div class="social-modal-actions" style="margin-top:18px">
+      <button class="social-btn-secondary" onclick="closeSettingsModal()" style="flex:none;padding:8px 24px">Fertig</button>
+    </div>
+  </div>
+</div>
+
+<!-- Friend Profile Modal -->
+<div id="friendProfileModal" class="social-modal" onclick="if(event.target===this)closeFriendProfileModal()">
+  <div class="social-modal-box">
+    <button class="social-modal-close" onclick="closeFriendProfileModal()" aria-label="Schlie&szlig;en">&times;</button>
+    <div class="friend-profile-header">
+      <div class="friend-profile-avatar" id="friendProfileAvatar"></div>
+      <div>
+        <div class="friend-profile-name" id="friendProfileName"></div>
+        <div class="friend-profile-email" id="friendProfileEmail"></div>
+      </div>
+    </div>
+    <div id="friendProfileContent"></div>
+  </div>
+</div>
+
 <!-- Social Toast -->
 <div id="socialToast" class="social-toast"></div>
 
@@ -1960,8 +2049,16 @@
     document.getElementById('loginPassword').value = '';
   }
 
+  function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+  }
+
   function handleGoogleLogin() {
     var provider = new firebase.auth.GoogleAuthProvider();
+    if (isMobileDevice()) {
+      auth.signInWithRedirect(provider);
+      return;
+    }
     auth.signInWithPopup(provider).then(function(result) {
       closeLoginModal();
     }).catch(function(error) {
@@ -3393,12 +3490,19 @@
   // ─── User-Profil speichern ───
   function saveUserProfile(user) {
     if (!user) return;
-    db.collection('users').doc(user.uid).set({
+    var ref = db.collection('users').doc(user.uid);
+    var profileData = {
       displayName: user.displayName || user.email || '',
       email: user.email || '',
       photoURL: user.photoURL || '',
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    };
+    ref.get().then(function(doc) {
+      if (!doc.exists || !doc.data().privacy) {
+        profileData.privacy = { showCurrentReads: false, showCompletedBooks: false, showStatistics: false };
+      }
+      return ref.set(profileData, { merge: true });
+    }).catch(function(err) { console.error('Save profile error:', err); });
   }
 
   // ─── Random Token ───
@@ -3610,7 +3714,7 @@
     var html = '';
     friends.forEach(function(f) {
       var initials = (f.displayName || '??').substring(0, 2).toUpperCase();
-      html += '<div class="friend-avatar" title="' + escapeHtml(f.displayName) + '">';
+      html += '<div class="friend-avatar" title="' + escapeHtml(f.displayName) + '" onclick="openFriendProfile(\'' + f.uid + '\')" style="cursor:pointer" role="button" tabindex="0" aria-label="Profil von ' + escapeHtml(f.displayName) + ' anzeigen" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openFriendProfile(\'' + f.uid + '\')}">';
       if (f.photoURL) {
         html += '<img src="' + escapeHtml(f.photoURL) + '" alt="' + escapeHtml(f.displayName) + '">';
       } else {
@@ -3929,6 +4033,188 @@
     loadUserFriends();
     loadNotifications();
     loadReceivedRecommendations();
+  }
+
+  // ─── Datenschutz-Einstellungen ───
+
+  function openSettingsModal() {
+    if (!currentUser) { showLoginToast(); return; }
+    document.getElementById('settingsModal').classList.add('active');
+    loadPrivacySettings();
+  }
+
+  function closeSettingsModal() {
+    document.getElementById('settingsModal').classList.remove('active');
+  }
+
+  function loadPrivacySettings() {
+    if (!currentUser) return;
+    db.collection('users').doc(currentUser.uid).get().then(function(doc) {
+      if (!doc.exists) return;
+      var privacy = doc.data().privacy || {};
+      setToggleState('toggleShowCurrentReads', privacy.showCurrentReads || false);
+      setToggleState('toggleShowCompletedBooks', privacy.showCompletedBooks || false);
+      setToggleState('toggleShowStatistics', privacy.showStatistics || false);
+    }).catch(function(err) {
+      console.error('Privacy settings load error:', err);
+    });
+  }
+
+  function setToggleState(toggleId, isActive) {
+    var el = document.getElementById(toggleId);
+    if (!el) return;
+    if (isActive) { el.classList.add('active'); el.setAttribute('aria-checked', 'true'); }
+    else { el.classList.remove('active'); el.setAttribute('aria-checked', 'false'); }
+  }
+
+  function togglePrivacySetting(el, settingName) {
+    if (!currentUser) return;
+    var isNowActive = !el.classList.contains('active');
+    el.classList.toggle('active');
+    el.setAttribute('aria-checked', String(isNowActive));
+
+    var update = {};
+    update['privacy.' + settingName] = isNowActive;
+
+    db.collection('users').doc(currentUser.uid).update(update).then(function() {
+      showSocialToast(isNowActive ? 'Freigegeben!' : 'Verborgen!');
+    }).catch(function(err) {
+      console.error('Privacy update error:', err);
+      el.classList.toggle('active');
+      el.setAttribute('aria-checked', String(!isNowActive));
+    });
+  }
+
+  // ─── Freund-Profil ───
+
+  function openFriendProfile(friendUid) {
+    if (!currentUser) { showLoginToast(); return; }
+    document.getElementById('friendProfileModal').classList.add('active');
+    document.getElementById('friendProfileContent').innerHTML = '<div class="friend-content-empty">L&auml;dt...</div>';
+    document.getElementById('friendProfileName').textContent = '';
+    document.getElementById('friendProfileEmail').textContent = '';
+    document.getElementById('friendProfileAvatar').innerHTML = '';
+    loadFriendProfile(friendUid);
+  }
+
+  function closeFriendProfileModal() {
+    document.getElementById('friendProfileModal').classList.remove('active');
+  }
+
+  function loadFriendProfile(friendUid) {
+    db.collection('users').doc(friendUid).get().then(function(doc) {
+      if (!doc.exists) { showSocialToast('Profil nicht gefunden'); return; }
+      var data = doc.data();
+      var privacy = data.privacy || {};
+
+      // Header
+      var initials = (data.displayName || '??').substring(0, 2).toUpperCase();
+      var avatarEl = document.getElementById('friendProfileAvatar');
+      if (data.photoURL) {
+        avatarEl.innerHTML = '<img src="' + escapeHtml(data.photoURL) + '" alt="">';
+      } else {
+        avatarEl.textContent = initials;
+      }
+      document.getElementById('friendProfileName').textContent = data.displayName || 'Freund';
+      document.getElementById('friendProfileEmail').textContent = data.email || '';
+
+      // Content
+      var html = '';
+      var hasContent = false;
+
+      if (privacy.showCurrentReads) {
+        hasContent = true;
+        html += '<div class="friend-content-title">Liest gerade</div>';
+        html += '<div id="fpCurrentReads"><div class="friend-content-empty">L&auml;dt...</div></div>';
+      }
+      if (privacy.showCompletedBooks) {
+        hasContent = true;
+        html += '<div class="friend-content-title">Gelesen</div>';
+        html += '<div id="fpCompletedBooks"><div class="friend-content-empty">L&auml;dt...</div></div>';
+      }
+      if (privacy.showStatistics) {
+        hasContent = true;
+        html += '<div class="friend-content-title">Statistiken</div>';
+        html += '<div id="fpStats"><div class="friend-content-empty">L&auml;dt...</div></div>';
+      }
+
+      if (!hasContent) {
+        html = '<div style="text-align:center;padding:20px 0;color:var(--text-muted);font-size:0.78rem">Dieser Freund hat keine Informationen freigegeben.</div>';
+      }
+
+      document.getElementById('friendProfileContent').innerHTML = html;
+
+      if (privacy.showCurrentReads) loadFriendCurrentReads(friendUid);
+      if (privacy.showCompletedBooks) loadFriendCompletedBooks(friendUid);
+      if (privacy.showStatistics) loadFriendStatistics(friendUid);
+    }).catch(function(err) {
+      console.error('Friend profile error:', err);
+      showSocialToast('Fehler beim Laden');
+    });
+  }
+
+  function renderFriendBookList(books, containerId, emptyMsg) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    if (books.length === 0) {
+      container.innerHTML = '<div class="friend-content-empty">' + emptyMsg + '</div>';
+      return;
+    }
+    var html = '';
+    books.forEach(function(b) {
+      html += '<div class="friend-book-item">';
+      html += '<div class="friend-book-cover">';
+      if (b.coverUrl) { html += '<img src="' + escapeHtml(b.coverUrl) + '" alt="">'; }
+      html += '</div>';
+      html += '<div><div class="friend-book-title">' + escapeHtml(b.title || 'Unbekannt') + '</div>';
+      html += '<div class="friend-book-author">' + escapeHtml(b.author || '') + '</div></div>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function loadFriendCurrentReads(friendUid) {
+    db.collection('users').doc(friendUid).collection('books')
+      .where('status', '==', 'lese-ich')
+      .limit(5).get()
+      .then(function(snap) {
+        var books = [];
+        snap.forEach(function(d) { books.push(d.data()); });
+        renderFriendBookList(books, 'fpCurrentReads', 'Liest gerade nichts');
+      }).catch(function(err) { console.error('Friend reads error:', err); });
+  }
+
+  function loadFriendCompletedBooks(friendUid) {
+    db.collection('users').doc(friendUid).collection('books')
+      .where('status', '==', 'gelesen')
+      .limit(10).get()
+      .then(function(snap) {
+        var books = [];
+        snap.forEach(function(d) { books.push(d.data()); });
+        renderFriendBookList(books, 'fpCompletedBooks', 'Noch keine B\u00fccher gelesen');
+      }).catch(function(err) { console.error('Friend completed error:', err); });
+  }
+
+  function loadFriendStatistics(friendUid) {
+    db.collection('users').doc(friendUid).collection('books').get()
+      .then(function(snap) {
+        var total = 0, gelesen = 0, leseIch = 0, merkliste = 0;
+        snap.forEach(function(d) {
+          var b = d.data();
+          total++;
+          if (b.status === 'gelesen') gelesen++;
+          else if (b.status === 'lese-ich') leseIch++;
+          else if (b.status === 'merkliste') merkliste++;
+        });
+        var el = document.getElementById('fpStats');
+        if (!el) return;
+        el.innerHTML = '<div class="friend-stats-grid">'
+          + '<div class="friend-stat-box"><div class="friend-stat-number">' + total + '</div><div class="friend-stat-label">Gesamt</div></div>'
+          + '<div class="friend-stat-box"><div class="friend-stat-number">' + gelesen + '</div><div class="friend-stat-label">Gelesen</div></div>'
+          + '<div class="friend-stat-box"><div class="friend-stat-number">' + leseIch + '</div><div class="friend-stat-label">Liest gerade</div></div>'
+          + '<div class="friend-stat-box"><div class="friend-stat-number">' + merkliste + '</div><div class="friend-stat-label">Merkliste</div></div>'
+          + '</div>';
+      }).catch(function(err) { console.error('Friend stats error:', err); });
   }
 
 </script>
