@@ -3406,6 +3406,60 @@
     document.getElementById('bookDetailOverlay').classList.remove('active');
   }
 
+  function showBookPreview(title, author, coverUrl) {
+    var content = document.getElementById('bookDetailContent');
+    var html = '<div class="book-detail-header">';
+    html += '<div class="book-detail-cover"><img src="' + escapeHtml(coverUrl || '') + '" alt="Cover: ' + escapeHtml(title) + '"></div>';
+    html += '<div>';
+    html += '<div class="book-detail-title">' + escapeHtml(title) + '</div>';
+    html += '<div class="book-detail-author">' + escapeHtml(author) + '</div>';
+    html += '</div></div>';
+    content.innerHTML = html + '<div class="book-detail-loading">Suche Inhaltsangabe\u2026</div>';
+    document.getElementById('bookDetailOverlay').classList.add('active');
+
+    var q = title + ' ' + author;
+    var googleDe = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(q) + '&maxResults=3&printType=books&langRestrict=de';
+    var googleAll = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(q) + '&maxResults=3&printType=books';
+
+    function extractDesc(data) {
+      if (!data.items) return '';
+      for (var i = 0; i < data.items.length; i++) {
+        var d = (data.items[i].volumeInfo || {}).description || '';
+        if (d) return d;
+      }
+      return '';
+    }
+    function isGerman(text) {
+      var deWords = ['und','der','die','das','ein','eine','ist','mit','von','den','dem','sich','auf','nicht','als','auch','noch','nach','wird','bei','aus','wie','aber','kann','nur','wenn'];
+      var words = text.toLowerCase().split(/\s+/).slice(0, 40);
+      var hits = 0;
+      words.forEach(function(w) { if (deWords.indexOf(w) >= 0) hits++; });
+      return hits >= 3;
+    }
+
+    fetch(googleDe).then(function(r) { return r.json(); }).then(function(data) {
+      var desc = extractDesc(data);
+      if (desc && isGerman(desc)) return desc;
+      return fetch(googleAll).then(function(r2) { return r2.json(); }).then(function(data2) {
+        if (data2.items) {
+          for (var i = 0; i < data2.items.length; i++) {
+            var d = (data2.items[i].volumeInfo || {}).description || '';
+            if (d && isGerman(d)) return d;
+          }
+        }
+        return desc || extractDesc(data2);
+      });
+    }).then(function(desc) {
+      if (desc) {
+        content.innerHTML = html + '<div class="book-detail-desc">' + escapeHtml(desc) + '</div>';
+      } else {
+        content.innerHTML = html + '<div class="book-detail-none">Keine Inhaltsangabe verf\u00fcgbar.</div>';
+      }
+    }).catch(function() {
+      content.innerHTML = html + '<div class="book-detail-none">Inhaltsangabe konnte nicht geladen werden.</div>';
+    });
+  }
+
   function closeSearch() {
     var container = document.getElementById('dashSearchResults');
     container.classList.remove('active');
@@ -4060,11 +4114,11 @@
       var cls = r.readAt ? '' : ' unread';
       html += '<div class="rec-card' + cls + '">';
       if (r.bookCover) {
-        html += '<div class="rec-cover"><img src="' + escapeHtml(r.bookCover) + '" alt="" onerror="this.parentElement.innerHTML=\'&#128218;\'"></div>';
+        html += '<div class="rec-cover" style="cursor:pointer" onclick="showBookPreview(\'' + escapeHtml(r.bookTitle || '').replace(/'/g, '\\\'') + '\',\'' + escapeHtml(r.bookAuthor || '').replace(/'/g, '\\\'') + '\',\'' + escapeHtml(r.bookCover || '').replace(/'/g, '\\\'') + '\')" title="Zusammenfassung anzeigen"><img src="' + escapeHtml(r.bookCover) + '" alt="" onerror="this.parentElement.innerHTML=\'&#128218;\'"></div>';
       }
       html += '<div class="rec-info">';
       html += '<div class="rec-from">Von ' + escapeHtml(r.fromName || 'Unbekannt') + '</div>';
-      html += '<div class="rec-book-title">' + escapeHtml(r.bookTitle || '') + '</div>';
+      html += '<div class="rec-book-title" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px" onclick="showBookPreview(\'' + escapeHtml(r.bookTitle || '').replace(/'/g, '\\\'') + '\',\'' + escapeHtml(r.bookAuthor || '').replace(/'/g, '\\\'') + '\',\'' + escapeHtml(r.bookCover || '').replace(/'/g, '\\\'') + '\')">' + escapeHtml(r.bookTitle || '') + '</div>';
       html += '<div class="rec-book-author">' + escapeHtml(r.bookAuthor || '') + '</div>';
       if (r.personalMessage) {
         html += '<div class="rec-message">\u201e' + escapeHtml(r.personalMessage) + '\u201c</div>';
@@ -4253,12 +4307,15 @@
     }
     var html = '';
     books.forEach(function(b) {
-      html += '<div class="friend-book-item">';
+      var t = escapeHtml(b.title || 'Unbekannt');
+      var a = escapeHtml(b.author || '');
+      var c = escapeHtml(b.coverUrl || '');
+      html += '<div class="friend-book-item" style="cursor:pointer" role="button" tabindex="0" onclick="showBookPreview(\'' + t.replace(/'/g, '\\\'') + '\',\'' + a.replace(/'/g, '\\\'') + '\',\'' + c.replace(/'/g, '\\\'') + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}">';
       html += '<div class="friend-book-cover">';
-      if (b.coverUrl) { html += '<img src="' + escapeHtml(b.coverUrl) + '" alt="">'; }
+      if (b.coverUrl) { html += '<img src="' + c + '" alt="">'; }
       html += '</div>';
-      html += '<div><div class="friend-book-title">' + escapeHtml(b.title || 'Unbekannt') + '</div>';
-      html += '<div class="friend-book-author">' + escapeHtml(b.author || '') + '</div></div>';
+      html += '<div><div class="friend-book-title">' + t + '</div>';
+      html += '<div class="friend-book-author">' + a + '</div></div>';
       html += '</div>';
     });
     container.innerHTML = html;
