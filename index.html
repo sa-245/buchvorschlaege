@@ -4315,8 +4315,14 @@
       if (b.coverUrl) { html += '<img src="' + c + '" alt="">'; }
       html += '</div>';
       html += '<div><div class="friend-book-title">' + t + '</div>';
-      html += '<div class="friend-book-author">' + a + '</div></div>';
-      html += '</div>';
+      html += '<div class="friend-book-author">' + a + '</div>';
+      var hearts = b.hearts || 0;
+      if (hearts > 0) {
+        html += '<div class="cat-book-hearts" style="margin-top:3px">';
+        for (var h = 1; h <= 5; h++) { html += '<span class="' + (h <= hearts ? 'filled' : '') + '">&hearts;</span>'; }
+        html += '</div>';
+      }
+      html += '</div></div>';
     });
     container.innerHTML = html;
   }
