@@ -1452,9 +1452,35 @@
   .invite-friend-btn { width: 100%; padding: 7px 12px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 0.7rem; font-family: var(--sans); font-weight: 500; cursor: pointer; transition: opacity 0.2s; letter-spacing: 0.02em; }
   .invite-friend-btn:hover { opacity: 0.85; }
 
-  .social-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 1050; justify-content: center; align-items: center; }
+  .social-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 1050; justify-content: center; align-items: center; padding: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .social-modal.active { display: flex; }
-  .social-modal-box { background: var(--card); border-radius: 8px; padding: 22px; width: 400px; max-width: 90vw; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+  .social-modal-box { background: var(--card); border-radius: 8px; padding: 22px; width: 400px; max-width: 90vw; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.15); margin: auto; }
+  @media (max-width: 480px) {
+    .social-modal { padding: 8px; align-items: flex-start; padding-top: 16px; }
+    .social-modal-box { width: 100%; max-width: 100%; max-height: 92vh; border-radius: 12px; padding: 16px 14px; }
+    .social-modal-title { font-size: 1rem; }
+    .social-modal-close { top: 12px; right: 12px; font-size: 1.5rem; padding: 4px 8px; }
+    .privacy-toggle { padding: 14px 0; gap: 12px; }
+    .privacy-toggle-label { font-size: 0.82rem; }
+    .privacy-toggle-hint { font-size: 0.7rem; }
+    .toggle-switch { width: 46px; height: 26px; border-radius: 13px; }
+    .toggle-switch::after { width: 22px; height: 22px; }
+    .toggle-switch.active::after { left: 22px; }
+    .friend-profile-header { gap: 12px; margin-bottom: 14px; padding-bottom: 14px; }
+    .friend-profile-avatar { width: 46px; height: 46px; }
+    .friend-profile-name { font-size: 0.9rem; }
+    .friend-book-item { padding: 10px 0; gap: 12px; }
+    .friend-book-cover { width: 40px; height: 60px; }
+    .friend-book-title { font-size: 0.8rem; }
+    .friend-book-author { font-size: 0.7rem; }
+    .friend-stats-grid { gap: 8px; }
+    .friend-stat-box { padding: 12px 8px; }
+    .friend-stat-number { font-size: 1.2rem; }
+    .friend-stat-label { font-size: 0.62rem; }
+    .social-btn-primary, .social-btn-secondary { padding: 10px; font-size: 0.8rem; }
+    .settings-section-title { font-size: 0.72rem; }
+    .invite-link-box input { font-size: 0.75rem; }
+  }
   .social-modal-close { position: absolute; top: 10px; right: 14px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; line-height: 1; }
   .social-modal-close:hover { color: var(--text); }
   .social-modal-title { font-family: var(--serif); font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; color: var(--text); }
