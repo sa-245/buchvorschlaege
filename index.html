@@ -3407,6 +3407,8 @@
   }
 
   function showBookPreview(title, author, coverUrl) {
+    // Alle Social-Modals schließen, damit das Buchdetail sichtbar wird
+    document.querySelectorAll('.social-modal.active').forEach(function(m) { m.classList.remove('active'); });
     var content = document.getElementById('bookDetailContent');
     var html = '<div class="book-detail-header">';
     html += '<div class="book-detail-cover"><img src="' + escapeHtml(coverUrl || '') + '" alt="Cover: ' + escapeHtml(title) + '"></div>';
